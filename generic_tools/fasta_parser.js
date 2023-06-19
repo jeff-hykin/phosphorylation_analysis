@@ -1,3 +1,8 @@
+import { parseCsv, createCsv } from "https://deno.land/x/good@1.2.1.0/csv.js"
+import { flatten, asyncIteratorToList } from "https://deno.land/x/good@1.2.1.0/iterable.js"
+import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno.land/x/good@1.2.1.0/string.js"
+import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.28/main/file_system.js"
+
 // https://en.wikipedia.org/wiki/FASTA_format
 export const amnioEncoding = {
     "A": "Alanine",
