@@ -25,7 +25,8 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
     // other:
         // "KD modal logic"
 
-import { RandomForest } from "./generic_tools/random_forest.js"
+// import { RandomForest } from "./generic_tools/random_forest.js"
+import { forestjs } from "./generic_tools/random_forest.js"
 import { parseCsv, createCsv } from "https://deno.land/x/good@1.2.2.0/csv.js"
 import { intersection } from "https://deno.land/x/good@1.2.2.0/set.js"
 import { flatten, asyncIteratorToList } from "https://deno.land/x/good@1.2.2.0/iterable.js"
@@ -34,7 +35,7 @@ import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.28/main/file_sy
 import { parseFasta } from "./generic_tools/fasta_parser.js"
 import { loadNegativeExamples } from "./specific_tools/load_negative_examples.js"
 import { loadPositiveExamples } from "./specific_tools/load_positive_examples.js"
-
+const _ = (await import('https://cdn.skypack.dev/lodash'))
 
 const windowPadding = 10 // + or - 10 amino acids
 // 
@@ -65,98 +66,34 @@ const windowPadding = 10 // + or - 10 amino acids
 // training
 // 
 // 
-    var data = [
-        {
-            "length":5.1,
-            "width":3.5,
-            "petal_length":1.4,
-            "petal_width":0.2,
-            "species":"setosa"
-        },
-        {
-            "length":6.5,
-            "width":3,
-            "petal_length":5.2,
-            "petal_width":2,
-            "species":"virginica"
-        },
-        {
-            "length":6.6,
-            "width":3,
-            "petal_length":4.4,
-            "petal_width":1.4,
-            "species":"versicolor"
-        }
-    ]
+    const featureKeys = [...Array(windowPadding*2+1)].map((_,index)=>`_${index}`)
+    const data = _.shuffle(positiveExamples.concat(negativeExamples)).slice(0,100)
     
-    var testdata = [
-        {
-            "length":6.3,
-            "width":2.5,
-            "petal_length":5,
-            "petal_width":1.9,
-            //"species":"virginica"
-        },
-        {
-            "length":4.7,
-            "width":3.2,
-            "petal_length":1.3,
-            "petal_width":0.2,
-            //"species":"setosa"
-        }
-    ]
-    
-    const randomForest = await (
-        new RandomForest({
-            numberOfTrees: 100
-        }).fit({
-            data: positiveExamples.concat(negativeExamples),
-            inputAttributes: [...Array(windowPadding*2)].map((_,index)=>index),
-            attributeToPredict: "isPhosSite",
-        })
-    )
-    const labels = randomForest.predict(positiveExamples.slice(0,3))
-    
-    // await new Promise((resolve, reject)=>{
-    //     randomForest.fit(data, ["length", "width"], "target", function(err, trees){
-    //         if (err) {
-    //             reject(err)
-    //         } else {
-    //             resolve(trees)
-    //         }
+    const inputs = data.map(each=>each.inputs)
+    const labels =  data.map(each=>each.isPhosSite)
+    const numberOfSamples = data.length
+    var forest = new forestjs.RandomForest();
+    // data is 2D array of size NxNumberOfSamples. Labels is 1D array of length NumberOfSamples
+    forest.train(inputs, labels) 
+    // testInstance is 1D array of length NumberOfSamples. Returns probability
+    var labelProbability = forest.predictOne(positiveExamples.slice(0,5).map(each=>each.inputs));
+    console.debug(`labelProbability for positiveExamples is:`,labelProbability)
+    var labelProbability = forest.predictOne(negativeExamples.slice(0,5).map(each=>each.inputs));
+    console.debug(`labelProbability for negativeExamples is:`,labelProbability)
+    // testData is 2D array of size MxNumberOfSamples. Returns array of probabilities of length M
+    // var labelProbabilities = forest.predict(testData);
+    // console.debug(`labelProbabilities is:`,labelProbabilities)
+
+
+    // console.debug(`data is:`,data)
+    // const randomForest = await (
+    //     new RandomForest({
+    //         numberOfTrees: 10
+    //     }).fit({
+    //         data,
+    //         // inputAttributes: featureKeys.slice(0,2),
+    //         attributeToPredict: "isPhosSite",
     //     })
-    // })
-
-    // randomForest.fit(data, "aminoAcids", "species", function(err, trees){
-    // //console.log(JSON.stringify(trees, null, 4));
-    // var pred = randomForest.predict(testdata, trees);
-    
-    // console.log(pred);
-    
-    // // pred = ["virginica", "setosa"]
-    // });
-
-
-// var phos = await phosPromise
-// // phos = phos.slice(0,10)
-// function* generateLines() {
-//     console.debug(`testing:`)
-//     yield "[\n"
-//     let index = 0
-//     const encoder = new TextEncoder()
-//     const encode = encoder.encode.bind(encoder)
-//     for (const each of phos) {
-//         Deno.stdout.write(encode(`writing packet ${Math.round((++index/phos.length)*100)}%\r`))
-//         each.pubmedIdForRelatedReferences = `${each.pubmedIdForRelatedReferences}`.split(";")
-//         each.windows = (each.aminoAcidsString.match(/.{0,10}(T|S|Y).{0,10}/g) || [])
-//         yield indent({string:JSON.stringify({...each}, 0, 4),})+",\n"
-//     }
-//     yield "]"
-// }
-
-// FileSystem.write({
-//     path: "phos.json",
-//     data: generateLines(),
-// })
-
-// (this comment is part of deno-guillotine, dont remove) #>
+    // )
+    // const labels = randomForest.predict(negativeExamples.slice(0,10))
+    // console.debug(`labels is:`,labels)

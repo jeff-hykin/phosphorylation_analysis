@@ -69,9 +69,10 @@ export async function loadPositiveExamples({ filePath, geneData, skipEntryIf }) 
         positiveExamples.push({
             indexRelativeToGene: eachPhosSite.indexRelativeToGene,
             aminoAcids: eachPhosSite.aminoAcidsString,
-            isPhosSite: true,
+            isPhosSite: 1,
             geneInfo: geneData[geneName],
-            ...Object.fromEntries([...eachPhosSite.aminoAcidsString].map((each,index)=>[index,each])),
+            inputs: [...eachPhosSite.aminoAcidsString].map(each=>each.charCodeAt(0)),
+            // ...Object.fromEntries([...eachPhosSite.aminoAcidsString].map((each,index)=>[`_${index}`,each.charCodeAt(0)])),
         })
     }
 

@@ -69,9 +69,10 @@ export async function loadNegativeExamples({ filePath, windowPadding, skipEntryI
             negativeExamples.push({
                 indexRelativeToGene: index,
                 amnioAcids: slice,
-                isPhosSite: false,
+                isPhosSite: -1,
                 geneInfo: eachGene,
-                ...Object.fromEntries([...slice].map((each,index)=>[index,each])),
+                inputs: [...slice].map(each=>each.charCodeAt(0)),
+                // ...Object.fromEntries([...slice].map((each,index)=>[`_${index}`,each.charCodeAt(0)])),
             })
         }
     }
