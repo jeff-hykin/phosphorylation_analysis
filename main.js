@@ -8,6 +8,7 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
 // todo:
     // test random forest code
     // encode positive/negative as bit array
+    // remove any positive values from the negative examples dataset
     // cross validate the output
 
     // features
@@ -24,7 +25,7 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
     // other:
         // "KD modal logic"
 
-import { RandomForestClassifier } from "https://esm.sh/random-forest-classifier@0.6.0"
+import { RandomForest } from "./generic_tools/random_forest.js"
 import { parseCsv, createCsv } from "https://deno.land/x/good@1.2.2.0/csv.js"
 import { intersection } from "https://deno.land/x/good@1.2.2.0/set.js"
 import { flatten, asyncIteratorToList } from "https://deno.land/x/good@1.2.2.0/iterable.js"
@@ -34,13 +35,15 @@ import { parseFasta } from "./generic_tools/fasta_parser.js"
 import { loadNegativeExamples } from "./specific_tools/load_negative_examples.js"
 import { loadPositiveExamples } from "./specific_tools/load_positive_examples.js"
 
+
+const windowPadding = 10 // + or - 10 amino acids
 // 
 // human genome
 // 
     let { negativeExamples, summaryData, geneNames, geneData } = await loadNegativeExamples({
         filePath: `${FileSystem.thisFolder}/data/human_genome.small.fasta.txt`,
-        windowPadding: 10,
-        skipEntryIf: ({geneName, ...otherData})=>false, // false=keep
+        windowPadding,
+        skipEntryIf: ({geneName, aminoAcidsString, ...otherData})=>false, // false=keep
     })
     console.debug(`negativeExamples[0] is:`,negativeExamples[0])
 
@@ -52,7 +55,7 @@ import { loadPositiveExamples } from "./specific_tools/load_positive_examples.js
         commonGeneNames,
     } = await loadPositiveExamples({
         filePath: "./data/phosphorylation@00.tsv",
-        skipEntryIf: ({ geneName })=>!geneNames.has(geneName), 
+        skipEntryIf: ({ geneName, aminoAcidsString, })=>!geneNames.has(geneName), 
         geneData,
     })
     console.debug(`positiveExamples[0] is:`,positiveExamples[0])
@@ -84,7 +87,7 @@ import { loadPositiveExamples } from "./specific_tools/load_positive_examples.js
             "petal_width":1.4,
             "species":"versicolor"
         }
-    ];
+    ]
     
     var testdata = [
         {
@@ -101,13 +104,28 @@ import { loadPositiveExamples } from "./specific_tools/load_positive_examples.js
             "petal_width":0.2,
             //"species":"setosa"
         }
-    ];
+    ]
     
-    const randomForest = new RandomForestClassifier({
-        n_estimators: 100
-    });
+    const randomForest = await (
+        new RandomForest({
+            numberOfTrees: 100
+        }).fit({
+            data: positiveExamples.concat(negativeExamples),
+            inputAttributes: [...Array(windowPadding*2)].map((_,index)=>index),
+            attributeToPredict: "isPhosSite",
+        })
+    )
+    const labels = randomForest.predict(positiveExamples.slice(0,3))
     
-    // randomForest.fit(data, "aminoAcids", target, function(err, trees){})
+    // await new Promise((resolve, reject)=>{
+    //     randomForest.fit(data, ["length", "width"], "target", function(err, trees){
+    //         if (err) {
+    //             reject(err)
+    //         } else {
+    //             resolve(trees)
+    //         }
+    //     })
+    // })
 
     // randomForest.fit(data, "aminoAcids", "species", function(err, trees){
     // //console.log(JSON.stringify(trees, null, 4));
