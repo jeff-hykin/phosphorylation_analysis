@@ -67,7 +67,7 @@ const windowPadding = 10 // + or - 10 amino acids
 // 
 // 
     const featureKeys = [...Array(windowPadding*2+1)].map((_,index)=>`_${index}`)
-    const data = _.shuffle(positiveExamples.concat(negativeExamples)).slice(0,100)
+    const data = _.shuffle(positiveExamples.slice(0,500).concat(negativeExamples.slice(0,500))).slice(0,1000)
     
     const inputs = data.map(each=>each.inputs)
     const labels =  data.map(each=>each.isPhosSite)
