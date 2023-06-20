@@ -8,7 +8,7 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
 // todo:
     // DONE: test random forest code
     // DONE: encode positive/negative as bit array
-    // remove any positive values from the negative examples dataset
+    // DONE: remove any positive values from the negative examples dataset
     // cross validate the output
 
     // features
@@ -27,6 +27,7 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
 
 // import { RandomForest } from "./generic_tools/random_forest.js"
 import { RandomForestClassifier } from "./generic_tools/random_forest.js"
+import { crossValidation } from "./generic_tools/cross_validation.js"
 import { parseCsv, createCsv } from "https://deno.land/x/good@1.2.2.0/csv.js"
 import { intersection } from "https://deno.land/x/good@1.2.2.0/set.js"
 import { flatten, asyncIteratorToList, enumerate, } from "https://deno.land/x/good@1.2.2.0/iterable.js"
@@ -92,6 +93,11 @@ const windowPadding = 10 // + or - 10 amino acids
     const examples = positiveExamples.concat(negativeExamples)
     const inputs = examples.map(({inputs})=>inputs)
     const labels = examples.map(({isPhosSite})=>isPhosSite)
+    const folds = crossValidation({
+        inputs,
+        outputs: labels,
+        folds: 3,
+    })
     
     const classifier = new RandomForestClassifier({ numberOfTrees: 10, maxDepth: Infinity }).fit({
         inputs,
