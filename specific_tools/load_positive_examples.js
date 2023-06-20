@@ -5,6 +5,7 @@ import { flatten, asyncIteratorToList } from "https://deno.land/x/good@1.2.2.0/i
 import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno.land/x/good@1.2.2.0/string.js"
 import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.28/main/file_system.js"
 import { parseFasta } from "../generic_tools/fasta_parser.js"
+import { aminoAcidToFeatureVector } from "./amino_acid_to_feature_vector.js"
 
 export async function loadPositiveExamples({ filePath, geneData, skipEntryIf }) {
     const csvData = parseCsv({
@@ -71,8 +72,9 @@ export async function loadPositiveExamples({ filePath, geneData, skipEntryIf }) 
             aminoAcids: eachPhosSite.aminoAcidsString,
             isPhosSite: 1,
             geneInfo: geneData[geneName],
-            inputs: [...eachPhosSite.aminoAcidsString].map(each=>each.charCodeAt(0)),
-            // ...Object.fromEntries([...eachPhosSite.aminoAcidsString].map((each,index)=>[`_${index}`,each.charCodeAt(0)])),
+            inputs: aminoAcidToFeatureVector({
+                aminoAcidString: eachPhosSite.aminoAcidsString,
+            }),
         })
     }
 

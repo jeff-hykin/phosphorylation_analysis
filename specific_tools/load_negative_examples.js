@@ -5,6 +5,7 @@ import { flatten, asyncIteratorToList } from "https://deno.land/x/good@1.2.2.0/i
 import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno.land/x/good@1.2.2.0/string.js"
 import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.28/main/file_system.js"
 import { parseFasta } from "../generic_tools/fasta_parser.js"
+import { aminoAcidToFeatureVector } from "./amino_acid_to_feature_vector.js"
 
 export async function loadNegativeExamples({ filePath, windowPadding, skipEntryIf }) {
     
@@ -71,8 +72,9 @@ export async function loadNegativeExamples({ filePath, windowPadding, skipEntryI
                 amnioAcids: slice,
                 isPhosSite: -1,
                 geneInfo: eachGene,
-                inputs: [...slice].map(each=>each.charCodeAt(0)),
-                // ...Object.fromEntries([...slice].map((each,index)=>[`_${index}`,each.charCodeAt(0)])),
+                inputs: aminoAcidToFeatureVector({
+                    aminoAcidString: slice,
+                }),
             })
         }
     }
