@@ -26,7 +26,7 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
         // "KD modal logic"
 
 // import { RandomForest } from "./generic_tools/random_forest.js"
-import { forestjs } from "./generic_tools/random_forest.js"
+import { RandomForestClassifier } from "./generic_tools/random_forest.js"
 import { parseCsv, createCsv } from "https://deno.land/x/good@1.2.2.0/csv.js"
 import { intersection } from "https://deno.land/x/good@1.2.2.0/set.js"
 import { flatten, asyncIteratorToList } from "https://deno.land/x/good@1.2.2.0/iterable.js"
@@ -35,7 +35,7 @@ import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.28/main/file_sy
 import { parseFasta } from "./generic_tools/fasta_parser.js"
 import { loadNegativeExamples } from "./specific_tools/load_negative_examples.js"
 import { loadPositiveExamples } from "./specific_tools/load_positive_examples.js"
-const _ = (await import('https://cdn.skypack.dev/lodash'))
+const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
 
 const windowPadding = 10 // + or - 10 amino acids
 // 
@@ -66,34 +66,15 @@ const windowPadding = 10 // + or - 10 amino acids
 // training
 // 
 // 
-    const featureKeys = [...Array(windowPadding*2+1)].map((_,index)=>`_${index}`)
-    const data = _.shuffle(positiveExamples.slice(0,500).concat(negativeExamples.slice(0,500))).slice(0,1000)
+    positiveExamples = _.shuffle(positiveExamples.slice(0,500))
+    negativeExamples = _.shuffle(negativeExamples.slice(0,500))
+    const examples = positiveExamples.concat(negativeExamples)
+    const inputs = examples.map(({inputs})=>inputs)
+    const labels = examples.map(({isPhosSite})=>isPhosSite)
     
-    const inputs = data.map(each=>each.inputs)
-    const labels =  data.map(each=>each.isPhosSite)
-    const numberOfSamples = data.length
-    var forest = new forestjs.RandomForest();
-    // data is 2D array of size NxNumberOfSamples. Labels is 1D array of length NumberOfSamples
-    forest.train(inputs, labels) 
-    // testInstance is 1D array of length NumberOfSamples. Returns probability
-    var labelProbability = forest.predictOne(positiveExamples.slice(0,5).map(each=>each.inputs));
-    console.debug(`labelProbability for positiveExamples is:`,labelProbability)
-    var labelProbability = forest.predictOne(negativeExamples.slice(0,5).map(each=>each.inputs));
-    console.debug(`labelProbability for negativeExamples is:`,labelProbability)
-    // testData is 2D array of size MxNumberOfSamples. Returns array of probabilities of length M
-    // var labelProbabilities = forest.predict(testData);
-    // console.debug(`labelProbabilities is:`,labelProbabilities)
-
-
-    // console.debug(`data is:`,data)
-    // const randomForest = await (
-    //     new RandomForest({
-    //         numberOfTrees: 10
-    //     }).fit({
-    //         data,
-    //         // inputAttributes: featureKeys.slice(0,2),
-    //         attributeToPredict: "isPhosSite",
-    //     })
-    // )
-    // const labels = randomForest.predict(negativeExamples.slice(0,10))
-    // console.debug(`labels is:`,labels)
+    const classifier = new RandomForestClassifier({ numberOfTrees: 10, maxDepth: Infinity }).fit({
+        inputs,
+        outputs: labels,
+    })
+    console.debug(`classifier.predictOne(positiveExamples[0].inputs) is:`,classifier.predictOne(positiveExamples[0].inputs))
+    console.debug(`classifier.predictOne(negativeExamples[0].inputs) is:`,classifier.predictOne(negativeExamples[0].inputs))
