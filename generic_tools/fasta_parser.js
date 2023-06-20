@@ -4,37 +4,6 @@ import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno
 import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.28/main/file_system.js"
 
 // https://en.wikipedia.org/wiki/FASTA_format
-export const amnioEncoding = {
-    "A": "Alanine",
-    "B": "Aspartic acid (D) or Asparagine (N)",
-    "C": "Cysteine",
-    "D": "Aspartic acid",
-    "E": "Glutamic acid",
-    "F": "Phenylalanine",
-    "G": "Glycine",
-    "H": "Histidine",
-    "I": "Isoleucine",
-    "J": "Leucine (L) or Isoleucine (I)",
-    "K": "Lysine",
-    "L": "Leucine",
-    "M": "Methionine/Start codon",
-    "N": "Asparagine",
-    "O": "Pyrrolysine (rare)",
-    "P": "Proline",
-    "Q": "Glutamine",
-    "R": "Arginine",
-    "S": "Serine",
-    "T": "Threonine",
-    "U": "Selenocysteine (rare)",
-    "V": "Valine",
-    "W": "Tryptophan",
-    "Y": "Tyrosine",
-    "Z": "Glutamic acid (E) or Glutamine (Q)",
-    "X": "any",
-    "*": "translation stop",
-    "-": "gap of indeterminate length ",
-}
-
 export function parseFasta(incomingString) {
     const accession         = `(?<accession>[^\\| ]+)` // equiv to abbreviatedGeneSpecies
     const name              = `(?<name>[^\\| ]+)`

@@ -61,5 +61,5 @@ export function aminoAcidToFeatureVector({aminoAcidString}) {
             oneHot.push(eachBool)
         }
     }
-    return oneHot
+    return new Uint8Array(oneHot)
 }

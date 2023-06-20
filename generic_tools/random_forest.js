@@ -42,10 +42,10 @@ export class RandomForestClassifier {
     fit({inputs, outputs}) {
         const inputsIsAnArray = inputs instanceof Array
         const inputsIsNonEmpty = inputsIsAnArray && inputs.length > 0
-        const inputsIsAnArrayOfArrays = inputsIsNonEmpty && inputs[0] instanceof Array
+        const inputsIsAnArrayOfArrays = inputsIsNonEmpty && inputs[0] != null && typeof outputs.length == 'number'
         const inputValuesAreNonEmpty = inputsIsAnArrayOfArrays && inputs[0].length > 0
         const inputValuesAreNumbers = inputValuesAreNonEmpty && typeof inputs[0][0] == 'number' && (inputs[0][0] === inputs[0][0])
-        const outputsIsAnArray = outputs instanceof Array
+        const outputsIsAnArray = outputs != null && typeof outputs.length == 'number'
         const outputsHaveSameLengthAsInputs = outputsIsAnArray && inputsIsNonEmpty && outputs.length == inputs.length
         const outputValuesAreNumbers = outputsHaveSameLengthAsInputs && typeof outputs[0] == 'number' && (outputs[0] === outputs[0])
         if (
@@ -69,8 +69,8 @@ export class RandomForestClassifier {
                     outputsHaveSameLengthAsInputs: ${outputsHaveSameLengthAsInputs}
                 
                 Here are the input and output arguments that caused the problem:
-                    inputs: ${indent({string:toRepresentation(inputs), by:"                        ", noLead:true})}
-                    inputs: ${indent({string:toRepresentation(outputs), by:"                        ", noLead:true})}
+                    inputs: ${indent({string:toRepresentation(inputs), by:"                        ", noLead:true}).slice(0,500)} ...
+                    outputs: ${indent({string:toRepresentation(outputs), by:"                        ", noLead:true}).slice(0,500)} ...
             `.replace(/\n                /g,"\n    "))
         }
         for (let i = 0; i < this.numberOfTrees; i++) {
