@@ -59,6 +59,7 @@ export async function loadPositiveExamples({ filePath, geneData, skipEntryIf }) 
 
         // add to gene data
         geneData[geneName] = geneData[geneName]||{}
+        geneData[geneName].name = geneName
         geneData[geneName].phosSites = geneData[geneName].phosSites||[]
         geneData[geneName].phosSites.push(eachPhosSite)
 
@@ -68,6 +69,7 @@ export async function loadPositiveExamples({ filePath, geneData, skipEntryIf }) 
         geneNames.add(geneName)
         
         positiveExamples.push({
+            siteId: `${eachPhosSite.indexRelativeToGene}|${geneName}`,
             indexRelativeToGene: eachPhosSite.indexRelativeToGene,
             aminoAcids: eachPhosSite.aminoAcidsString,
             isPhosSite: 1,

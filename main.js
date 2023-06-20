@@ -6,8 +6,8 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
     // split -l 200 --numeric-suffixes --additional-suffix=".txt" toSplit.txt splited
 
 // todo:
-    // test random forest code
-    // encode positive/negative as bit array
+    // DONE: test random forest code
+    // DONE: encode positive/negative as bit array
     // remove any positive values from the negative examples dataset
     // cross validate the output
 
@@ -29,7 +29,7 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
 import { RandomForestClassifier } from "./generic_tools/random_forest.js"
 import { parseCsv, createCsv } from "https://deno.land/x/good@1.2.2.0/csv.js"
 import { intersection } from "https://deno.land/x/good@1.2.2.0/set.js"
-import { flatten, asyncIteratorToList } from "https://deno.land/x/good@1.2.2.0/iterable.js"
+import { flatten, asyncIteratorToList, enumerate, } from "https://deno.land/x/good@1.2.2.0/iterable.js"
 import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno.land/x/good@1.2.2.0/string.js"
 import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.28/main/file_system.js"
 import { parseFasta } from "./generic_tools/fasta_parser.js"
@@ -41,12 +41,12 @@ const windowPadding = 10 // + or - 10 amino acids
 // 
 // human genome
 // 
-    let { negativeExamples, summaryData, geneNames, geneData } = await loadNegativeExamples({
+    let { negativeExamples: mixedExamples, summaryData, geneNames, geneData } = await loadNegativeExamples({
         filePath: `${FileSystem.thisFolder}/data/human_genome.small.fasta.txt`,
         windowPadding,
         skipEntryIf: ({geneName, aminoAcidsString, ...otherData})=>false, // false=keep
     })
-    console.debug(`negativeExamples[0] is:`,negativeExamples[0])
+    console.debug(`mixedExamples[0] is:`,mixedExamples[0])
 
 // 
 // phosphorylation data
@@ -56,10 +56,31 @@ const windowPadding = 10 // + or - 10 amino acids
         commonGeneNames,
     } = await loadPositiveExamples({
         filePath: "./data/phosphorylation@00.tsv",
-        skipEntryIf: ({ geneName, aminoAcidsString, })=>!geneNames.has(geneName), 
+        skipEntryIf: ({ geneName, aminoAcidsString, })=>!geneNames.has(geneName),
         geneData,
     })
     console.debug(`positiveExamples[0] is:`,positiveExamples[0])
+
+// 
+// remove any positiveExamples that appear in mixedExamples
+// 
+    const siteIdMapping = {}
+    for (const [ index, each ] of enumerate(mixedExamples)) {
+        siteIdMapping[each] = index
+    }
+    const mixedExampleIndiciesToDelete = []
+    for (const each of positiveExamples) {
+        const indexInMixedExamples = siteIdMapping[each.siteId]
+        if (typeof indexInMixedExamples == 'number') {
+            mixedExampleIndiciesToDelete.push(indexInMixedExamples)
+        }
+    }
+    // biggest index comes first
+    mixedExampleIndiciesToDelete.sort().reverse()
+    for (const eachIndex of mixedExampleIndiciesToDelete) {
+        mixedExamples = mixedExamples.splice(eachIndex, 1)
+    }
+    let negativeExamples = mixedExamples
 
 // 
 // 
@@ -76,5 +97,5 @@ const windowPadding = 10 // + or - 10 amino acids
         inputs,
         outputs: labels,
     })
-    console.debug(`classifier.predictOne(positiveExamples[0].inputs) is:`,classifier.predictOne(positiveExamples[0].inputs))
-    console.debug(`classifier.predictOne(negativeExamples[0].inputs) is:`,classifier.predictOne(negativeExamples[0].inputs))
+    console.debug(`classifier.predictOne(positiveExamples[0].inputs) is:`,classifier.predictDistributionForOne(positiveExamples[0].inputs))
+    console.debug(`classifier.predictOne(negativeExamples[0].inputs) is:`,classifier.predictDistributionForOne(negativeExamples[0].inputs))

@@ -39,6 +39,7 @@ export async function loadNegativeExamples({ filePath, windowPadding, skipEntryI
         // add attributes
         // 
         const geneName = eachGene.ncbiIdentifiers[0].args.name
+        eachGene.name = geneName
         eachGene.phosWindows = getWindows(eachGene.aminoAcidsString)
         
         // custom filter
@@ -68,6 +69,7 @@ export async function loadNegativeExamples({ filePath, windowPadding, skipEntryI
         // 
         for (const { index, slice, } of eachGene.phosWindows) {
             negativeExamples.push({
+                siteId: `${index}|${geneName}`,
                 indexRelativeToGene: index,
                 amnioAcids: slice,
                 isPhosSite: -1,
