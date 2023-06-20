@@ -6,12 +6,11 @@ export class RandomForestClassifier {
      * Create a Random Forest Classifier.
      *
      * @example
-     *     // Example usage
+     *     const classifier = new RandomForestClassifier({numberOfTrees: 3, maxDepth: 2})
+     *     // note: maxDepth: Infinity is valid
      *     const inputs = [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6]]
      *     const outputs = [0, 0, 1, 1, 1]
-     *     
-     *     const classifier = new RandomForestClassifier({numberOfTrees: 3, maxDepth: 2}).fit({inputs, outputs})
-     *     // note: maxDepth: Infinity is valid
+     *     classifier.fit({inputs, outputs})
      *     
      *     const sample1 = [1, 1]
      *     const prediction1 = classifier.predictOne(sample1)
@@ -123,12 +122,9 @@ export class RandomForestClassifier {
 
     _majorityVote(predictions) {
         const voteCounts = {}
-        for (let i = 0; i < predictions.length; i++) {
-            const prediction = predictions[i]
-            console.debug(`prediction is:`, prediction)
-            voteCounts[prediction] = (voteCounts[prediction] || 0) + 1
+        for (const eachPrediction of predictions) {
+            voteCounts[eachPrediction] = (voteCounts[eachPrediction] || 0) + 1
         }
-        console.debug(`voteCounts is:`, voteCounts)
         let majorityVote = null
         let maxCount = -Infinity
         for (const prediction in voteCounts) {
@@ -178,7 +174,7 @@ export class DecisionTree {
             const uniqueValues = [...new Set(featureValues)]
 
             for (const value of uniqueValues) {
-                const [leftY, rightY] = this._splitDataset(inputs, outputs, featureIndex, value)
+                const [leftX, rightX, leftY, rightY] = this._splitDataset(inputs, outputs, featureIndex, value)
                 const infoGain = this._informationGain(outputs, leftY, rightY)
 
                 if (infoGain > bestGain) {
@@ -193,8 +189,13 @@ export class DecisionTree {
         if (bestGain === 0) {
             return this._createLeafNode(outputs)
         }
-
+        
         const [leftX, rightX, leftY, rightY] = this._splitDataset(inputs, outputs, bestFeature, bestThreshold)
+        
+        const notEnoughData = leftX.length == 0 || rightX.length == 0
+        if (notEnoughData) {
+            return this._createLeafNode(outputs)
+        }
 
         const leftSubtree = this._buildTree(leftX, leftY, depth + 1)
         const rightSubtree = this._buildTree(rightX, rightY, depth + 1)
@@ -208,8 +209,6 @@ export class DecisionTree {
     }
 
     _traverseTree(sample, node) {
-        console.debug(`sample is:`, sample)
-        console.debug(`node is:`, node)
         if (node.isLeaf) {
             return node.value
         }
@@ -236,15 +235,14 @@ export class DecisionTree {
         for (const eachLabel of outputs) {
             voteCounts[eachLabel] = (voteCounts[eachLabel] || 0) + 1
         }
-        console.debug(`voteCounts is:`, voteCounts)
         const majorityVote = this._majorityVote(voteCounts)
         return { isLeaf: true, value: majorityVote }
     }
 
     _splitDataset(inputs, outputs, featureIndex, threshold) {
-        const leftX = []
+        const leftX  = []
         const rightX = []
-        const leftY = []
+        const leftY  = []
         const rightY = []
 
         for (let i = 0; i < inputs.length; i++) {
