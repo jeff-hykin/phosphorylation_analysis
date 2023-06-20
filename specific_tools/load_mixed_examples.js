@@ -72,7 +72,7 @@ export async function loadMixedExamples({ filePath, windowPadding, skipEntryIf }
                 siteId: `${index}|${geneName}`,
                 indexRelativeToGene: index,
                 amnioAcids: slice,
-                isPhosSite: -1,
+                isPhosSite: 0,
                 geneInfo: eachGene,
                 inputs: aminoAcidToFeatureVector({
                     aminoAcidString: slice,

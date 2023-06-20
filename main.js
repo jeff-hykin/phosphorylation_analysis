@@ -28,10 +28,10 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
 // import { RandomForest } from "./generic_tools/random_forest.js"
 import { RandomForestClassifier } from "./generic_tools/random_forest.js"
 import { crossValidation } from "./generic_tools/cross_validation.js"
-import { parseCsv, createCsv } from "https://deno.land/x/good@1.2.2.0/csv.js"
-import { intersection } from "https://deno.land/x/good@1.2.2.0/set.js"
-import { flatten, asyncIteratorToList, enumerate, } from "https://deno.land/x/good@1.2.2.0/iterable.js"
-import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno.land/x/good@1.2.2.0/string.js"
+import { parseCsv, createCsv } from "https://deno.land/x/good@1.3.0.0/csv.js"
+import { intersection } from "https://deno.land/x/good@1.3.0.0/set.js"
+import { flatten, asyncIteratorToList, enumerate, zip } from "https://deno.land/x/good@1.3.0.0/iterable.js"
+import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno.land/x/good@1.3.0.0/string.js"
 import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.28/main/file_system.js"
 import { parseFasta } from "./generic_tools/fasta_parser.js"
 import { loadMixedExamples } from "./specific_tools/load_mixed_examples.js"
@@ -88,26 +88,45 @@ const windowPadding = 10 // + or - 10 amino acids
 // training
 // 
 // 
-    positiveExamples = _.shuffle(positiveExamples.slice(0,500))
-    negativeExamples = _.shuffle(negativeExamples.slice(0,500))
+    positiveExamples = _.shuffle(positiveExamples)
+    negativeExamples = _.shuffle(negativeExamples)
     const examples = positiveExamples.concat(negativeExamples)
     const inputs = examples.map(({inputs})=>inputs)
     const labels = examples.map(({isPhosSite})=>isPhosSite)
     const folds = crossValidation({
         inputs,
         outputs: labels,
-        folds: 3,
+        numberOfFolds: 3,
     })
-    
     
     for (const {train, test} of folds) {
         const classifier = new RandomForestClassifier({ numberOfTrees: 10, maxDepth: Infinity }).fit({
             inputs: [...train.inputs],
-            outputs: new Uint8Array(train.outputs),
+            outputs: new Int8Array(train.outputs),
         })
         
-        console.debug(`classifier.predictOne(positiveExamples[0].inputs) is:`,classifier.predictDistributionForOne(positiveExamples[0].inputs))
-        console.debug(`classifier.predictOne(negativeExamples[0].inputs) is:`,classifier.predictDistributionForOne(negativeExamples[0].inputs))
-        
-        // TODO: evaluation loop
+        let numberTotal = test.outputs.length
+        let numberCorrect = 0
+        let negativesCount = 0
+        let positivesCount = 0
+        let negativesCorrectCount = 0
+        let positivesCorrectCount = 0
+        for (const [correctAnswer, givenAnswer] of zip(test.outputs, classifier.predictMajorityForMany(test.inputs))) {
+            if (correctAnswer == givenAnswer) {
+                numberCorrect += 1
+                if (correctAnswer == 0) {
+                    negativesCorrectCount += 1
+                } else {
+                    positivesCorrectCount += 1
+                }
+            }
+            if (correctAnswer == 0) {
+                negativesCount += 1
+            } else {
+                positivesCount += 1
+            }
+        }
+        console.debug(`accuracy is              : ${numberCorrect}/${numberTotal}`)
+        console.debug(`accuracy for negatives is: ${negativesCorrectCount}/${negativesCount}`)
+        console.debug(`accuracy for positives is: ${positivesCorrectCount}/${positivesCorrectCount}`)
     }

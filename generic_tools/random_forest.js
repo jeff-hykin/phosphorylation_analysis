@@ -16,7 +16,7 @@ export class RandomForestClassifier {
      *     const prediction1 = classifier.predictMajorityForOne(sample1)
      *     // returns: 0
      *     const sample2 = [1, 1]
-     *     const prediction2 = classifier.predicMajorityForMany([sample1, sample2])
+     *     const prediction2 = classifier.predictMajorityForMany([sample1, sample2])
      *     // returns: [0, 1]
      *
      * @param {number} arg1.numberOfTrees - The number of decision trees in the random forest.
@@ -142,15 +142,15 @@ export class RandomForestClassifier {
      * 
      * @example
      *      classifier.fit({ inputs: [  [1,1], [2,2],  ], outputs: [ 100, 500 ], })
-     *      classifier.predicMajorityForMany([  [1,1], [2,2],  ])
+     *      classifier.predictMajorityForMany([  [1,1], [2,2],  ])
      *      // returns [ 100, 500 ]
      * @param {Array<Array<number>>} inputs - The feature matrix of shape (numberOfSamples, numberOfFeatures).
      */
-    predicMajorityForMany(inputs) {
+    predictMajorityForMany(inputs) {
         const predictions = []
         for (const eachInput of inputs) {
             predictions.push(
-                this.predictMajorityForOne(input)
+                this.predictMajorityForOne(eachInput)
             )
         }
         return predictions

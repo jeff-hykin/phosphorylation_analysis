@@ -1,5 +1,13 @@
-const makeIterable = (generator)=>{
+import { indent, findAll, extractFirst, stringToUtf8Bytes, toRepresentation } from "https://deno.land/x/good@1.3.0.0/string.js"
+
+const makeIterable = (generator, length)=>{
     generator[Symbol.iterator] = ()=>generator()
+    Object.defineProperties(generator, {
+        length: {
+            get() { return length }
+        }
+    })
+    // generator.length = length
     return generator
 }
 
@@ -44,6 +52,9 @@ export function crossValidation({inputs, outputs, numberOfFolds}) {
     const numberOfSamples = inputs.length
     const foldSize = Math.floor(numberOfSamples / numberOfFolds)
     const folds = []
+    if (typeof numberOfFolds != "number") {
+        throw Error(`crossValidation({ numberOfFolds: }), numberOfFolds needs to be a number, instead I got: ${toRepresentation(numberOfFolds)}`)
+    }
 
     for (let i = 0; i < numberOfFolds; i++) {
         const start = i * foldSize
@@ -68,24 +79,24 @@ export function crossValidation({inputs, outputs, numberOfFolds}) {
                     for (const each of trainIndices) {
                         yield inputs[each]
                     }
-                }),
+                },trainIndices.length),
                 outputs: makeIterable(function *() {
                     for (const each of trainIndices) {
                         yield outputs[each]
                     }
-                }),
+                },trainIndices.length)
             },
             test: {
                 inputs: makeIterable(function *() {
                     for (const each of testIndices) {
                         yield inputs[each]
                     }
-                }),
+                }, testIndices.length),
                 outputs: makeIterable(function *() {
                     for (const each of testIndices) {
                         yield outputs[each]
                     }
-                }),
+                }, testIndices.length),
             },
         })
     }
