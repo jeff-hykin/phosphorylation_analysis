@@ -7,9 +7,9 @@ import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.28/main/file_sy
 import { parseFasta } from "../generic_tools/fasta_parser.js"
 import { aminoAcidToFeatureVector } from "./amino_acid_to_feature_vector.js"
 
-export async function loadNegativeExamples({ filePath, windowPadding, skipEntryIf }) {
+export async function loadMixedExamples({ filePath, windowPadding, skipEntryIf }) {
     
-    const negativeString = await FileSystem.read(filePath)
+    const mixedString = await FileSystem.read(filePath)
 
     function getWindows(string) {
         let output = []
@@ -31,9 +31,9 @@ export async function loadNegativeExamples({ filePath, windowPadding, skipEntryI
         styCounts: 0,
     }
     const geneNames = new Set()
-    const geneList = parseFasta(negativeString)
+    const geneList = parseFasta(mixedString)
     const geneData = {}
-    const negativeExamples = []
+    const mixedExamples = []
     for (const eachGene of geneList) {
         // 
         // add attributes
@@ -65,10 +65,10 @@ export async function loadNegativeExamples({ filePath, windowPadding, skipEntryI
         }
         
         // 
-        // negativeExamples
+        // mixedExamples
         // 
         for (const { index, slice, } of eachGene.phosWindows) {
-            negativeExamples.push({
+            mixedExamples.push({
                 siteId: `${index}|${geneName}`,
                 indexRelativeToGene: index,
                 amnioAcids: slice,
@@ -82,7 +82,7 @@ export async function loadNegativeExamples({ filePath, windowPadding, skipEntryI
     }
     
     return {
-        negativeExamples,
+        mixedExamples,
         summaryData,
         geneNames,
         geneData,

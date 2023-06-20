@@ -33,7 +33,7 @@ import { flatten, asyncIteratorToList, enumerate, } from "https://deno.land/x/go
 import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno.land/x/good@1.2.2.0/string.js"
 import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.28/main/file_system.js"
 import { parseFasta } from "./generic_tools/fasta_parser.js"
-import { loadNegativeExamples } from "./specific_tools/load_negative_examples.js"
+import { loadMixedExamples } from "./specific_tools/load_mixed_examples.js"
 import { loadPositiveExamples } from "./specific_tools/load_positive_examples.js"
 const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
 
@@ -41,7 +41,7 @@ const windowPadding = 10 // + or - 10 amino acids
 // 
 // human genome
 // 
-    let { negativeExamples: mixedExamples, summaryData, geneNames, geneData } = await loadNegativeExamples({
+    let { mixedExamples, summaryData, geneNames, geneData } = await loadMixedExamples({
         filePath: `${FileSystem.thisFolder}/data/human_genome.small.fasta.txt`,
         windowPadding,
         skipEntryIf: ({geneName, aminoAcidsString, ...otherData})=>false, // false=keep
