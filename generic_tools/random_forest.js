@@ -1,460 +1,134 @@
-// import { RandomForestClassifier } from "https://esm.sh/random-forest-classifier-update@1.0.0"
-const _ = (await import('https://cdn.skypack.dev/lodash'))
-// export class RandomForest {
-//     constructor({ numberOfTrees }) {
-//         this.numberOfTrees = numberOfTrees
-//         this._classifier = new RandomForestClassifier({
-//             n_estimators: this.numberOfTrees
-//         })
-//         this.trees = null
-//     }
-
-//     /**
-//      * fit some data
-//      *
-//      * @example
-//      *     let trees = await forest.fit({
-//      *         data: [ { input: 1, output: 2 } ],
-//      *         inputAttributes: [ 'input' ],
-//      *         attributeToPredict: 'output',
-//      *     })
-//      *
-//      * @param arg1.data -
-//      * @param arg1.inputAttributes -
-//      * @param arg1.attributeToPredict -
-//      *
-//      */
-//     async fit({ data, inputAttributes, attributeToPredict }) {
-//         return new Promise((resolve, reject)=>{
-//             this._classifier.fit(data, inputAttributes, attributeToPredict, (err, trees) => {
-//                 if (err) {
-//                     reject(err)
-//                 } else {
-//                     this.trees = trees
-//                     resolve(this)
-//                 }
-//             })
-//         })
-//     }
-
-//     /**
-//      * Description
-//      *
-//      * @param {[Object]} arg1 - list of objects (no label attributes)
-//      * @returns {[label]} output - a list of labels
-//      *
-//      */
-//     predict(data) {
-//         if (!this.trees) {
-//             throw Error(`RandomForest: something called .predict() before calling .fit(); I can't make a prediction without data.\nMake sure to do await forest.fit() and not just forest.fit()`)
-//         }
-//         return this._classifier.predict(data, this.trees)
-//     }
-// }
-
-// MIT License
-// Andrej Karpathy
-
-// export var forestjs = (function () {
-//     var RandomForest = function (options) {}
-
-//     RandomForest.prototype = {
-//         /*
-//         data is 2D array of size N x D of examples
-//         labels is a 1D array of labels (only -1 or 1 for now). In future will support multiclass or maybe even regression
-//         options.numTrees can be used to customize number of trees to train (default = 100)
-//         options.maxDepth is the maximum depth of each tree in the forest (default = 4)
-//         options.numTries is the number of random hypotheses generated at each node during training (default = 10)
-//         options.trainFun is a function with signature "function myWeakTrain(data, labels, ix, options)". Here, ix is a list of
-//                         indeces into data of the instances that should be payed attention to. Everything not in the list
-//                         should be ignored. This is done for efficiency. The function should return a model where you store
-//                         variables. (i.e. model = {}; model.myvar = 5;) This will be passed to testFun.
-//         options.testFun is a function with signature "funtion myWeakTest(inst, model)" where inst is 1D array specifying an example,
-//                         and model will be the same model that you return in options.trainFun. For example, model.myvar will be 5.
-//                         see decisionStumpTrain() and decisionStumpTest() downstairs for example.
-//         */
-//         train: function (data, labels, options) {
-//             options = options || {}
-//             this.numTrees = options.numTrees || 100
-
-//             // initialize many trees and train them all independently
-//             this.trees = new Array(this.numTrees)
-//             for (var i = 0; i < this.numTrees; i++) {
-//                 this.trees[i] = new DecisionTree()
-//                 this.trees[i].train(data, labels, options)
-//             }
-//         },
-
-//         /*
-//         inst is a 1D array of length D of an example.
-//         returns the probability of label 1, i.e. a number in range [0, 1]
-//         */
-//         predictOne: function (inst) {
-//             // have each tree predict and average out all votes
-//             var dec = 0
-//             for (var i = 0; i < this.numTrees; i++) {
-//                 dec += this.trees[i].predictOne(inst)
-//             }
-//             dec /= this.numTrees
-//             return dec
-//         },
-
-//         // convenience function. Here, data is NxD array.
-//         // returns probabilities of being 1 for all data in an array.
-//         predict: function (data) {
-//             var probabilities = new Array(data.length)
-//             for (var i = 0; i < data.length; i++) {
-//                 probabilities[i] = this.predictOne(data[i])
-//             }
-//             return probabilities
-//         },
-//     }
-
-//     // represents a single decision tree
-//     var DecisionTree = function (options) {}
-
-//     DecisionTree.prototype = {
-//         train: function (data, labels, options) {
-//             options = options || {}
-//             var maxDepth = options.maxDepth || 4
-//             var weakType = options.type || 0
-
-//             var trainFun = decision2DStumpTrain
-//             var testFun = decision2DStumpTest
-
-//             if (options.trainFun) trainFun = options.trainFun
-//             if (options.testFun) testFun = options.testFun
-
-//             if (weakType == 0) {
-//                 trainFun = decisionStumpTrain
-//                 testFun = decisionStumpTest
-//             }
-//             if (weakType == 1) {
-//                 trainFun = decision2DStumpTrain
-//                 testFun = decision2DStumpTest
-//             }
-
-//             // initialize various helper variables
-//             var numInternals = Math.pow(2, maxDepth) - 1
-//             var numNodes = Math.pow(2, maxDepth + 1) - 1
-//             var ixs = new Array(numNodes)
-//             for (var i = 1; i < ixs.length; i++) ixs[i] = []
-//             ixs[0] = new Array(labels.length)
-//             for (var i = 0; i < labels.length; i++) ixs[0][i] = i // root node starts out with all nodes as relevant
-//             var models = new Array(numInternals)
-
-//             // train
-//             for (var n = 0; n < numInternals; n++) {
-//                 // few base cases
-//                 var ixhere = ixs[n]
-//                 if (ixhere.length == 0) {
-//                     continue
-//                 }
-//                 if (ixhere.length == 1) {
-//                     ixs[n * 2 + 1] = [ixhere[0]]
-//                     continue
-//                 } // arbitrary send it down left
-
-//                 // learn a weak model on relevant data for this node
-//                 var model = trainFun(data, labels, ixhere)
-//                 models[n] = model // back it up model
-
-//                 // split the data according to the learned model
-//                 var ixleft = []
-//                 var ixright = []
-//                 for (var i = 0; i < ixhere.length; i++) {
-//                     var label = testFun(data[ixhere[i]], model)
-//                     if (label === 1) ixleft.push(ixhere[i])
-//                     else ixright.push(ixhere[i])
-//                 }
-//                 ixs[n * 2 + 1] = ixleft
-//                 ixs[n * 2 + 2] = ixright
-//             }
-
-//             // compute data distributions at the leafs
-//             var leafPositives = new Array(numNodes)
-//             var leafNegatives = new Array(numNodes)
-//             for (var n = numInternals; n < numNodes; n++) {
-//                 var numones = 0
-//                 for (var i = 0; i < ixs[n].length; i++) {
-//                     if (labels[ixs[n][i]] === 1) numones += 1
-//                 }
-//                 leafPositives[n] = numones
-//                 leafNegatives[n] = ixs[n].length - numones
-//             }
-
-//             // back up important prediction variables for predicting later
-//             this.models = models
-//             this.leafPositives = leafPositives
-//             this.leafNegatives = leafNegatives
-//             this.maxDepth = maxDepth
-//             this.trainFun = trainFun
-//             this.testFun = testFun
-//         },
-
-//         // returns probability that example inst is 1.
-//         predictOne: function (inst) {
-//             var n = 0
-//             for (var i = 0; i < this.maxDepth; i++) {
-//                 var dir = this.testFun(inst, this.models[n])
-//                 if (dir === 1) n = n * 2 + 1 // descend left
-//                 else n = n * 2 + 2 // descend right
-//             }
-
-//             return (this.leafPositives[n] + 0.5) / (this.leafNegatives[n] + 1.0) // bayesian smoothing!
-//         },
-//     }
-
-//     // returns model
-//     function decisionStumpTrain(data, labels, ix, options) {
-//         options = options || {}
-//         var numtries = options.numTries || 10
-//         // choose a dimension at random and pick a best split
-//         var ri = randi(0, data[0].length)
-//         var N = ix.length
-
-//         // evaluate class entropy of incoming data
-//         var H = entropy(labels, ix)
-//         var bestGain = 0
-//         var bestThr = 0
-//         for (var i = 0; i < numtries; i++) {
-//             // pick a random splitting threshold
-//             var ix1 = ix[randi(0, N)]
-//             var ix2 = ix[randi(0, N)]
-//             while (ix2 == ix1) ix2 = ix[randi(0, N)] // enforce distinctness of ix2
-
-//             var a = Math.random()
-//             var thr = data[ix1][ri] * a + data[ix2][ri] * (1 - a)
-
-//             // measure information gain we'd get from split with thr
-//             var l1 = 1,
-//                 r1 = 1,
-//                 lm1 = 1,
-//                 rm1 = 1 //counts for Left and label 1, right and label 1, left and minus 1, right and minus 1
-//             for (var j = 0; j < ix.length; j++) {
-//                 if (data[ix[j]][ri] < thr) {
-//                     if (labels[ix[j]] == 1) l1++
-//                     else lm1++
-//                 } else {
-//                     if (labels[ix[j]] == 1) r1++
-//                     else rm1++
-//                 }
-//             }
-//             var t = l1 + lm1 // normalize the counts to obtain probability estimates
-//             l1 = l1 / t
-//             lm1 = lm1 / t
-//             t = r1 + rm1
-//             r1 = r1 / t
-//             rm1 = rm1 / t
-
-//             var LH = -l1 * Math.log(l1) - lm1 * Math.log(lm1) // left and right entropy
-//             var RH = -r1 * Math.log(r1) - rm1 * Math.log(rm1)
-
-//             var informationGain = H - LH - RH
-//             //console.log("Considering split %f, entropy %f -> %f, %f. Gain %f", thr, H, LH, RH, informationGain);
-//             if (informationGain > bestGain || i === 0) {
-//                 bestGain = informationGain
-//                 bestThr = thr
-//             }
-//         }
-
-//         var model = {}
-//         model.thr = bestThr
-//         model.ri = ri
-//         return model
-//     }
-
-//     // returns a decision for a single data instance
-//     function decisionStumpTest(inst, model) {
-//         if (!model) {
-//             // this is a leaf that never received any data...
-//             return 1
-//         }
-//         return inst[model.ri] < model.thr ? 1 : -1
-//     }
-
-//     // returns model. Code duplication with decisionStumpTrain :(
-//     function decision2DStumpTrain(data, labels, ix, options) {
-//         options = options || {}
-//         var numtries = options.numTries || 10
-
-//         // choose a dimension at random and pick a best split
-//         var N = ix.length
-
-//         var ri1 = 0
-//         var ri2 = 1
-//         if (data[0].length > 2) {
-//             // more than 2D data. Pick 2 random dimensions
-//             ri1 = randi(0, data[0].length)
-//             ri2 = randi(0, data[0].length)
-//             while (ri2 == ri1) ri2 = randi(0, data[0].length) // must be distinct!
-//         }
-
-//         // evaluate class entropy of incoming data
-//         var H = entropy(labels, ix)
-//         var bestGain = 0
-//         var bestw1, bestw2, bestthr
-//         var dots = new Array(ix.length)
-//         for (var i = 0; i < numtries; i++) {
-//             // pick random line parameters
-//             var alpha = randf(0, 2 * Math.PI)
-//             var w1 = Math.cos(alpha)
-//             var w2 = Math.sin(alpha)
-
-//             // project data on this line and get the dot products
-//             for (var j = 0; j < ix.length; j++) {
-//                 dots[j] = w1 * data[ix[j]][ri1] + w2 * data[ix[j]][ri2]
-//             }
-
-//             // we are in a tricky situation because data dot product distribution
-//             // can be skewed. So we don't want to select just randomly between
-//             // min and max. But we also don't want to sort as that is too expensive
-//             // let's pick two random points and make the threshold be somewhere between them.
-//             // for skewed datasets, the selected points will with relatively high likelihood
-//             // be in the high-desnity regions, so the thresholds will make sense
-//             var ix1 = ix[randi(0, N)]
-//             var ix2 = ix[randi(0, N)]
-//             while (ix2 == ix1) ix2 = ix[randi(0, N)] // enforce distinctness of ix2
-//             var a = Math.random()
-//             var dotthr = dots[ix1] * a + dots[ix2] * (1 - a)
-
-//             // measure information gain we'd get from split with thr
-//             var l1 = 1,
-//                 r1 = 1,
-//                 lm1 = 1,
-//                 rm1 = 1 //counts for Left and label 1, right and label 1, left and minus 1, right and minus 1
-//             for (var j = 0; j < ix.length; j++) {
-//                 if (dots[j] < dotthr) {
-//                     if (labels[ix[j]] == 1) l1++
-//                     else lm1++
-//                 } else {
-//                     if (labels[ix[j]] == 1) r1++
-//                     else rm1++
-//                 }
-//             }
-//             var t = l1 + lm1
-//             l1 = l1 / t
-//             lm1 = lm1 / t
-//             t = r1 + rm1
-//             r1 = r1 / t
-//             rm1 = rm1 / t
-
-//             var LH = -l1 * Math.log(l1) - lm1 * Math.log(lm1) // left and right entropy
-//             var RH = -r1 * Math.log(r1) - rm1 * Math.log(rm1)
-
-//             var informationGain = H - LH - RH
-//             //console.log("Considering split %f, entropy %f -> %f, %f. Gain %f", thr, H, LH, RH, informationGain);
-//             if (informationGain > bestGain || i === 0) {
-//                 bestGain = informationGain
-//                 bestw1 = w1
-//                 bestw2 = w2
-//                 bestthr = dotthr
-//             }
-//         }
-
-//         model = {}
-//         model.w1 = bestw1
-//         model.w2 = bestw2
-//         model.dotthr = bestthr
-//         return model
-//     }
-
-//     // returns label for a single data instance
-//     function decision2DStumpTest(inst, model) {
-//         if (!model) {
-//             // this is a leaf that never received any data...
-//             return 1
-//         }
-//         return inst[0] * model.w1 + inst[1] * model.w2 < model.dotthr ? 1 : -1
-//     }
-
-//     // Misc utility functions
-//     function entropy(labels, ix) {
-//         var N = ix.length
-//         var p = 0.0
-//         for (var i = 0; i < N; i++) {
-//             if (labels[ix[i]] == 1) p += 1
-//         }
-//         p = (1 + p) / (N + 2) // let's be bayesian about this
-//         var q = (1 + N - p) / (N + 2)
-//         return -p * Math.log(p) - q * Math.log(q)
-//     }
-
-//     // generate random floating point number between a and b
-//     function randf(a, b) {
-//         return Math.random() * (b - a) + a
-//     }
-
-//     // generate random integer between a and b (b excluded)
-//     function randi(a, b) {
-//         return Math.floor(Math.random() * (b - a) + a)
-//     }
-
-//     // export public members
-//     var exports = {}
-//     exports.DecisionTree = DecisionTree
-//     exports.RandomForest = RandomForest
-//     return exports
-// })()
-
-// forest = new forestjs.RandomForest();
-// // data is 2D array of size NxD. Labels is 1D array of length D
-// forest.train(data, labels);
-// // testInstance is 1D array of length D. Returns probability
-// labelProbability = forest.predictOne(testInstance);
-// // testData is 2D array of size MxD. Returns array of probabilities of length M
-// labelProbabilities = forest.predict(testData);
+import { capitalize, indent, toCamelCase, digitsToEnglishArray, toPascalCase, toKebabCase, toSnakeCase, toScreamingtoKebabCase, toScreamingtoSnakeCase, toRepresentation, toString, regex, escapeRegexMatch, escapeRegexReplace, extractFirst, isValidIdentifier } from "https://deno.land/x/good@1.3.0.0/string.js"
 
 // Random Forest Classifier
 export class RandomForestClassifier {
-    constructor(numTrees, maxDepth) {
-        this.numTrees = numTrees
+    /**
+     * Create a Random Forest Classifier.
+     *
+     * @example
+     *     // Example usage
+     *     const inputs = [[1, 2], [2, 3], [3, 4], [4, 5], [5, 6]]
+     *     const outputs = [0, 0, 1, 1, 1]
+     *     
+     *     const classifier = new RandomForestClassifier({numberOfTrees: 3, maxDepth: 2}).fit({inputs, outputs})
+     *     // note: maxDepth: Infinity is valid
+     *     
+     *     const sample1 = [1, 1]
+     *     const prediction1 = classifier.predictOne(sample1)
+     *     // returns: 0
+     *     const sample2 = [1, 1]
+     *     const prediction2 = classifier.predictMany([sample1, sample2])
+     *     // returns: [0, 1]
+     *
+     * @param {number} arg1.numberOfTrees - The number of decision trees in the random forest.
+     * @param {number} arg1.maxDepth - The maximum depth of each decision tree.
+     * @returns {RandomForestClassifier} output
+     *
+     */
+    constructor({numberOfTrees, maxDepth}) {
+        this.numberOfTrees = numberOfTrees
         this.maxDepth = maxDepth
         this.trees = []
     }
 
-    fit(X, y) {
-        for (let i = 0; i < this.numTrees; i++) {
-            const tree = new DecisionTree(this.maxDepth)
-            const bootstrapSample = this._bootstrapSample(X, y)
-            tree.fit(bootstrapSample.X, bootstrapSample.y)
+    /**
+     * Fit the Random Forest Classifier to the training data.
+     * 
+     * @example
+     *      classifier.fit({ inputs: [  [1,1], [2,2],  ], outputs: [ 100, 500 ], })
+     * @param {Array<Array<number>>} arg1.inputs - The feature matrix of shape (numberOfSamples, numberOfFeatures).
+     * @param {Array<number>} arg1.outputs - The target array of shape (numberOfSamples).
+     * @throws {Error} If inputs or outputs fails a sanity check
+     */
+    fit({inputs, outputs}) {
+        const inputsIsAnArray = inputs instanceof Array
+        const inputsIsNonEmpty = inputsIsAnArray && inputs.length > 0
+        const inputsIsAnArrayOfArrays = inputsIsNonEmpty && inputs[0] instanceof Array
+        const inputValuesAreNonEmpty = inputsIsAnArrayOfArrays && inputs[0].length > 0
+        const inputValuesAreNumbers = inputValuesAreNonEmpty && typeof inputs[0][0] == 'number' && (inputs[0][0] === inputs[0][0])
+        const outputsIsAnArray = outputs instanceof Array
+        const outputsHaveSameLengthAsInputs = outputsIsAnArray && inputsIsNonEmpty && outputs.length == inputs.length
+        const outputValuesAreNumbers = outputsHaveSameLengthAsInputs && typeof outputs[0] == 'number' && (outputs[0] === outputs[0])
+        if (
+                !inputsIsAnArray
+             || !inputsIsNonEmpty
+             || !inputsIsAnArrayOfArrays
+             || !inputValuesAreNonEmpty
+             || !inputValuesAreNumbers
+             || !outputsIsAnArray
+             || !outputsHaveSameLengthAsInputs
+        ) {
+            throw new Error(`\n\n
+                When calling the .fit({ inputs:[ [], ], outputs:[], }) on a RandomForestClassifier
+                there was a problem with some of the arguments. All of the following need to be true:
+                    inputsIsAnArray: ${inputsIsAnArray}
+                    inputsIsNonEmpty: ${inputsIsNonEmpty}
+                    inputsIsAnArrayOfArrays: ${inputsIsAnArrayOfArrays}
+                    inputValuesAreNonEmpty: ${inputValuesAreNonEmpty}
+                    inputValuesAreNumbers: ${inputValuesAreNumbers}
+                    outputsIsAnArray: ${outputsIsAnArray}
+                    outputsHaveSameLengthAsInputs: ${outputsHaveSameLengthAsInputs}
+                
+                Here are the input and output arguments that caused the problem:
+                    inputs: ${indent({string:toRepresentation(inputs), by:"                        ", noLead:true})}
+                    inputs: ${indent({string:toRepresentation(outputs), by:"                        ", noLead:true})}
+            `.replace(/\n                /g,"\n    "))
+        }
+        for (let i = 0; i < this.numberOfTrees; i++) {
+            const tree = new DecisionTree({maxDepth:this.maxDepth})
+            const bootstrapSample = this._bootstrapSample(inputs, outputs)
+            tree.fit(bootstrapSample.inputs, bootstrapSample.outputs)
             this.trees.push(tree)
         }
+        return this
     }
-
-    predict(X) {
+    
+    /**
+     * Fit the Random Forest Classifier to the training data.
+     * 
+     * @example
+     *      classifier.fit({ inputs: [  [1,1], [2,2],  ], outputs: [ 100, 500 ], })
+     *      classifier.predictMany([  [1,1], [2,2],  ])
+     *      // returns [ 100, 500 ]
+     * @param {Array<Array<number>>} inputs - The feature matrix of shape (numberOfSamples, numberOfFeatures).
+     */
+    predictMany(inputs) {
         const predictions = []
-        for (let i = 0; i < X.length; i++) {
+        for (const eachInput of inputs) {
             const treePredictions = []
             for (const eachTree of this.trees) {
-                const treePrediction = eachTree.predict(X[i])
+                const treePrediction = eachTree.predict(eachInput)
                 treePredictions.push(treePrediction)
             }
             predictions.push(this._majorityVote(treePredictions))
         }
         return predictions
     }
+    
+    predictOne(input) {
+        return this.predictMany([input])[0]
+    }
 
-    _bootstrapSample(X, y) {
+    _bootstrapSample(inputs, outputs) {
         const sampleX = []
         const sampleY = []
-        const nSamples = X.length
-        for (let i = 0; i < nSamples; i++) {
-            const index = Math.floor(Math.random() * nSamples)
-            sampleX.push(X[index])
-            sampleY.push(y[index])
+        const numberOfSamples = inputs.length
+        for (let i = 0; i < numberOfSamples; i++) {
+            const index = Math.floor(Math.random() * numberOfSamples)
+            sampleX.push(inputs[index])
+            sampleY.push(outputs[index])
         }
-        return { X: sampleX, y: sampleY }
+        return { inputs: sampleX, outputs: sampleY }
     }
 
     _majorityVote(predictions) {
         const voteCounts = {}
         for (let i = 0; i < predictions.length; i++) {
             const prediction = predictions[i]
-            console.debug(`prediction is:`,prediction)
+            console.debug(`prediction is:`, prediction)
             voteCounts[prediction] = (voteCounts[prediction] || 0) + 1
         }
-        console.debug(`voteCounts is:`,voteCounts)
+        console.debug(`voteCounts is:`, voteCounts)
         let majorityVote = null
         let maxCount = -Infinity
         for (const prediction in voteCounts) {
@@ -469,26 +143,26 @@ export class RandomForestClassifier {
 
 // Decision Tree
 export class DecisionTree {
-    constructor(maxDepth) {
+    constructor({maxDepth}) {
         this.maxDepth = maxDepth
         this.tree = null
     }
 
-    fit(X, y) {
-        this.tree = this._buildTree(X, y, 0)
+    fit(inputs, outputs) {
+        this.tree = this._buildTree(inputs, outputs, 0)
     }
 
     predict(sample) {
         return this._traverseTree(sample, this.tree)
     }
 
-    _buildTree(X, y, depth) {
-        const nSamples = X.length
-        const nFeatures = X[0].length
+    _buildTree(inputs, outputs, depth) {
+        const numberOfSamples = inputs.length
+        const numberOfFeatures = inputs[0].length
 
         // Stopping conditions
-        if (depth >= this.maxDepth || this._isPure(y)) {
-            return this._createLeafNode(y)
+        if (depth >= this.maxDepth || this._isPure(outputs)) {
+            return this._createLeafNode(outputs)
         }
 
         let bestFeature
@@ -496,16 +170,16 @@ export class DecisionTree {
         let bestGain = -Infinity
 
         // Randomly select features for splitting
-        const featureIndices = Array.from({ length: nFeatures }, (_, i) => i)
-        const randomFeatureIndices = this._randomSubset(featureIndices, Math.sqrt(nFeatures))
+        const featureIndices = Array.from({ length: numberOfFeatures }, (_, i) => i)
+        const randomFeatureIndices = this._randomSubset(featureIndices, Math.sqrt(numberOfFeatures))
 
         for (const featureIndex of randomFeatureIndices) {
-            const featureValues = X.map((sample) => sample[featureIndex])
+            const featureValues = inputs.map((sample) => sample[featureIndex])
             const uniqueValues = [...new Set(featureValues)]
 
             for (const value of uniqueValues) {
-                const [leftY, rightY] = this._splitDataset(X, y, featureIndex, value)
-                const infoGain = this._informationGain(y, leftY, rightY)
+                const [leftY, rightY] = this._splitDataset(inputs, outputs, featureIndex, value)
+                const infoGain = this._informationGain(outputs, leftY, rightY)
 
                 if (infoGain > bestGain) {
                     bestFeature = featureIndex
@@ -517,10 +191,10 @@ export class DecisionTree {
 
         // Stopping condition if no significant information gain
         if (bestGain === 0) {
-            return this._createLeafNode(y)
+            return this._createLeafNode(outputs)
         }
 
-        const [leftX, rightX, leftY, rightY] = this._splitDataset(X, y, bestFeature, bestThreshold)
+        const [leftX, rightX, leftY, rightY] = this._splitDataset(inputs, outputs, bestFeature, bestThreshold)
 
         const leftSubtree = this._buildTree(leftX, leftY, depth + 1)
         const rightSubtree = this._buildTree(rightX, rightY, depth + 1)
@@ -534,8 +208,8 @@ export class DecisionTree {
     }
 
     _traverseTree(sample, node) {
-        console.debug(`sample is:`,sample)
-        console.debug(`node is:`,node)
+        console.debug(`sample is:`, sample)
+        console.debug(`node is:`, node)
         if (node.isLeaf) {
             return node.value
         }
@@ -547,40 +221,40 @@ export class DecisionTree {
         }
     }
 
-    _isPure(y) {
-        const firstValue = y[0]
-        for (let i = 1; i < y.length; i++) {
-            if (y[i] !== firstValue) {
+    _isPure(outputs) {
+        const firstValue = outputs[0]
+        for (let i = 1; i < outputs.length; i++) {
+            if (outputs[i] !== firstValue) {
                 return false
             }
         }
         return true
     }
 
-    _createLeafNode(y) {
+    _createLeafNode(outputs) {
         const voteCounts = {}
-        for (let i = 0; i < y.length; i++) {
-            const label = y[i]
-            voteCounts[label] = (voteCounts[label] || 0) + 1
+        for (const eachLabel of outputs) {
+            voteCounts[eachLabel] = (voteCounts[eachLabel] || 0) + 1
         }
+        console.debug(`voteCounts is:`, voteCounts)
         const majorityVote = this._majorityVote(voteCounts)
         return { isLeaf: true, value: majorityVote }
     }
 
-    _splitDataset(X, y, featureIndex, threshold) {
+    _splitDataset(inputs, outputs, featureIndex, threshold) {
         const leftX = []
         const rightX = []
         const leftY = []
         const rightY = []
 
-        for (let i = 0; i < X.length; i++) {
-            const sample = X[i]
+        for (let i = 0; i < inputs.length; i++) {
+            const sample = inputs[i]
             if (sample[featureIndex] <= threshold) {
                 leftX.push(sample)
-                leftY.push(y[i])
+                leftY.push(outputs[i])
             } else {
                 rightX.push(sample)
-                rightY.push(y[i])
+                rightY.push(outputs[i])
             }
         }
 
@@ -594,64 +268,38 @@ export class DecisionTree {
         return parentEntropy - leftEntropy - rightEntropy
     }
 
-    _entropy(y) {
+    _entropy(outputs) {
         const valueCounts = {}
-        for (let i = 0; i < y.length; i++) {
-            const label = y[i]
+        for (let i = 0; i < outputs.length; i++) {
+            const label = outputs[i]
             valueCounts[label] = (valueCounts[label] || 0) + 1
         }
         let entropy = 0
         for (const label in valueCounts) {
-            const probability = valueCounts[label] / y.length
+            const probability = valueCounts[label] / outputs.length
             entropy -= probability * Math.log2(probability)
         }
         return entropy
     }
 
     _randomSubset(array, size) {
-        return _.shuffle(array).slice(0,size)
-        // const subset = []
-        // const shuffled = array.slice(0)
-        // let count = Math.min(size, array.length)
-        // while (count) {
-        //     subset.push(shuffled.splice(Math.floor(Math.random() * shuffled.length), 1)[0])
-        //     count--
-        // }
-        // return subset
+        const shuffledArray = array.slice() // Create a shallow copy of the array
+        for (let i = shuffledArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1))
+            ;[shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]]
+        }
+        return shuffledArray.slice(0, size)
     }
 
-    _majorityVote(predictions) {
-        const voteCounts = {}
-        for (let i = 0; i < predictions.length; i++) {
-            const prediction = predictions[i]
-            voteCounts[prediction] = (voteCounts[prediction] || 0) + 1
-        }
+    _majorityVote(voteCounts) {
         let majorityVote = null
         let maxCount = -Infinity
-        for (const prediction in voteCounts) {
-            if (voteCounts[prediction] > maxCount) {
-                maxCount = voteCounts[prediction]
+        for (const [prediction, numberOfVotes] of Object.entries(voteCounts)) {
+            if (numberOfVotes > maxCount) {
+                maxCount = numberOfVotes
                 majorityVote = prediction
             }
         }
         return majorityVote
     }
 }
-
-// Example usage
-const X = [
-    [1, 2],
-    [2, 3],
-    [3, 4],
-    [4, 5],
-    [5, 6],
-]
-const y = [0, 0, 1, 1, 1]
-
-const clf = new RandomForestClassifier(3, 2)
-clf.fit(X, y)
-
-const sample = [3, 3]
-const prediction = clf.predict([sample])
-
-console.log(`Prediction for ${sample}: ${prediction}`)
