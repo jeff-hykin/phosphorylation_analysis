@@ -99,9 +99,15 @@ const windowPadding = 10 // + or - 10 amino acids
         folds: 3,
     })
     
-    const classifier = new RandomForestClassifier({ numberOfTrees: 10, maxDepth: Infinity }).fit({
-        inputs,
-        outputs: labels,
-    })
-    console.debug(`classifier.predictOne(positiveExamples[0].inputs) is:`,classifier.predictDistributionForOne(positiveExamples[0].inputs))
-    console.debug(`classifier.predictOne(negativeExamples[0].inputs) is:`,classifier.predictDistributionForOne(negativeExamples[0].inputs))
+    
+    for (const {train, test} of folds) {
+        const classifier = new RandomForestClassifier({ numberOfTrees: 10, maxDepth: Infinity }).fit({
+            inputs: [...train.inputs],
+            outputs: new Uint8Array(train.outputs),
+        })
+        
+        console.debug(`classifier.predictOne(positiveExamples[0].inputs) is:`,classifier.predictDistributionForOne(positiveExamples[0].inputs))
+        console.debug(`classifier.predictOne(negativeExamples[0].inputs) is:`,classifier.predictDistributionForOne(negativeExamples[0].inputs))
+        
+        // TODO: evaluation loop
+    }
