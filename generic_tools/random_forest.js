@@ -13,10 +13,10 @@ export class RandomForestClassifier {
      *     classifier.fit({inputs, outputs})
      *     
      *     const sample1 = [1, 1]
-     *     const prediction1 = classifier.predictOne(sample1)
+     *     const prediction1 = classifier.predictMajorityForOne(sample1)
      *     // returns: 0
      *     const sample2 = [1, 1]
-     *     const prediction2 = classifier.predictMany([sample1, sample2])
+     *     const prediction2 = classifier.predicMajorityForMany([sample1, sample2])
      *     // returns: [0, 1]
      *
      * @param {number} arg1.numberOfTrees - The number of decision trees in the random forest.
@@ -73,6 +73,11 @@ export class RandomForestClassifier {
                     outputs: ${indent({string:toRepresentation(outputs), by:"                        ", noLead:true}).slice(0,500)} ...
             `.replace(/\n                /g,"\n    "))
         }
+
+        this._distributionTemplate = {}
+        for (const eachOutput of new Set(outputs)) {
+            this._distributionTemplate[eachOutput] = 0
+        }
         for (let i = 0; i < this.numberOfTrees; i++) {
             const tree = new DecisionTree({maxDepth:this.maxDepth})
             const bootstrapSample = this._bootstrapSample(inputs, outputs)
@@ -81,33 +86,76 @@ export class RandomForestClassifier {
         }
         return this
     }
+
+    predictDistributionForOne(input) {
+        const treePredictions = []
+        for (const eachTree of this.trees) {
+            treePredictions.push(
+                eachTree.predict(input)
+            )
+        }
+        const frequencyCount = this._voteCounts(treePredictions)
+        const distribution = Object.assign({}, this._distributionTemplate)
+        for (const [key, value] of Object.entries(frequencyCount)) {
+            distribution[key] = value/treePredictions.length
+        }
+        return distribution
+    }
+
+    /**
+     * predict the outcome 
+     * 
+     * @example
+     *      classifier.fit({ inputs: [  [1,1], [2,2],  ], outputs: [ 100, 500 ], })
+     *      classifier.predictDistributionForMany([  [1,1], [2,2],  ])
+     *      // returns somthing like [
+     *      //    { 100: 0.99, 500: 0.01 }, // distribution for [1,1]
+     *      //    { 100: 0.01, 500: 0.99 }, // distribution for [2,2]
+     *      // ]
+     * @param {Array<Array<number>>} inputs - The feature matrix of shape (numberOfSamples, numberOfFeatures).
+     */
+    predictDistributionForMany(inputs) {
+        const predictions = []
+        for (const eachInput of inputs) {
+            predictions.push(
+                this.predictDistributionForOne(input)
+            )
+        }
+        return predictions
+    }
+
+    predictMajorityForOne(input) {
+        const treePredictions = []
+        for (const eachTree of this.trees) {
+            treePredictions.push(
+                eachTree.predict(input)
+            )
+        }
+        return this._majorityVote(
+            this._voteCounts(treePredictions)
+        )
+    }
+    
     
     /**
      * Fit the Random Forest Classifier to the training data.
      * 
      * @example
      *      classifier.fit({ inputs: [  [1,1], [2,2],  ], outputs: [ 100, 500 ], })
-     *      classifier.predictMany([  [1,1], [2,2],  ])
+     *      classifier.predicMajorityForMany([  [1,1], [2,2],  ])
      *      // returns [ 100, 500 ]
      * @param {Array<Array<number>>} inputs - The feature matrix of shape (numberOfSamples, numberOfFeatures).
      */
-    predictMany(inputs) {
+    predicMajorityForMany(inputs) {
         const predictions = []
         for (const eachInput of inputs) {
-            const treePredictions = []
-            for (const eachTree of this.trees) {
-                const treePrediction = eachTree.predict(eachInput)
-                treePredictions.push(treePrediction)
-            }
-            predictions.push(this._majorityVote(treePredictions))
+            predictions.push(
+                this.predictMajorityForOne(input)
+            )
         }
         return predictions
     }
     
-    predictOne(input) {
-        return this.predictMany([input])[0]
-    }
-
     _bootstrapSample(inputs, outputs) {
         const sampleX = []
         const sampleY = []
@@ -120,11 +168,15 @@ export class RandomForestClassifier {
         return { inputs: sampleX, outputs: sampleY }
     }
 
-    _majorityVote(predictions) {
+    _voteCounts(predictions) {
         const voteCounts = {}
         for (const eachPrediction of predictions) {
             voteCounts[eachPrediction] = (voteCounts[eachPrediction] || 0) + 1
         }
+        return voteCounts
+    }
+
+    _majorityVote(voteCounts) {
         let majorityVote = null
         let maxCount = -Infinity
         for (const prediction in voteCounts) {
