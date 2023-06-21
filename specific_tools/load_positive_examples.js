@@ -8,19 +8,6 @@ import { parseFasta } from "../generic_tools/fasta_parser.js"
 import { aminoAcidToFeatureVector } from "./amino_acid_to_feature_vector.js"
 
 export async function loadPositiveExamples({ filePath, geneData, skipEntryIf }) {
-    const csvData = parseCsv({
-        input: await FileSystem.read("./data/phosphorylation@00.tsv"),
-        separator: "\t",
-        columnNames: [
-            "abbreviatedGeneSpecies",
-            "uniprotGeneId",
-            "indexRelativeToGene",
-            "typeOfSite",
-            "pubmedIdForRelatedReferences",
-            "aminoAcidsString",
-        ],
-    })
-
     const geneNamesFromNegativeData = new Set(Object.keys(geneData))
     
     const summaryData = {
@@ -29,55 +16,69 @@ export async function loadPositiveExamples({ filePath, geneData, skipEntryIf }) 
     const geneNames = new Set()
     const haveSeenPhosSite = new Set()
     const positiveExamples = []
-    for await (const eachPhosSite of csvData) {
-        // skip any bad data (trailing newline most likely)
-        if (!eachPhosSite.aminoAcidsString) {
-            continue
-        }
-        // remove any sites near the start/end
-        if (eachPhosSite.aminoAcidsString.match(/-/)) {
-            continue
-        }
-        
-        // add siteId
-        const geneName = eachPhosSite.abbreviatedGeneSpecies
-        eachPhosSite.siteId = `${geneName}|${eachPhosSite.indexRelativeToGene}`
-        
-        // remove duplicate entries (same geneId and indexRelativeToGene), probably a variant (different sequence) but on the safe side, remove it
-        if (haveSeenPhosSite.has(eachPhosSite.siteId)) {
-            continue
-        }
-        haveSeenPhosSite.add(eachPhosSite.siteId)
-        
-        // split up pubmedIdForRelatedReferences
-        eachPhosSite.pubmedIdForRelatedReferences = `${eachPhosSite.pubmedIdForRelatedReferences}`.split(";")
-        
-        // custom filter
-        if (skipEntryIf({...eachPhosSite, geneName})) {
-            continue
-        }
-
-        // add to gene data
-        geneData[geneName] = geneData[geneName]||{}
-        geneData[geneName].name = geneName
-        geneData[geneName].phosSites = geneData[geneName].phosSites||[]
-        geneData[geneName].phosSites.push(eachPhosSite)
-
-        // 
-        // track names and data
-        // 
-        geneNames.add(geneName)
-        
-        positiveExamples.push({
-            siteId: `${eachPhosSite.indexRelativeToGene}|${geneName}`,
-            indexRelativeToGene: eachPhosSite.indexRelativeToGene,
-            aminoAcids: eachPhosSite.aminoAcidsString,
-            isPhosSite: 1,
-            geneInfo: geneData[geneName],
-            inputs: aminoAcidToFeatureVector({
-                aminoAcidString: eachPhosSite.aminoAcidsString,
-            }),
+    for (const eachPath of await glob(filePath)) {
+        const csvData = parseCsv({
+            input: await FileSystem.read(eachPath),
+            separator: "\t",
+            columnNames: [
+                "abbreviatedGeneSpecies",
+                "uniprotGeneId",
+                "indexRelativeToGene",
+                "typeOfSite",
+                "pubmedIdForRelatedReferences",
+                "aminoAcidsString",
+            ],
         })
+        for await (const eachPhosSite of csvData) {
+            // skip any bad data (trailing newline most likely)
+            if (!eachPhosSite.aminoAcidsString) {
+                continue
+            }
+            // remove any sites near the start/end
+            if (eachPhosSite.aminoAcidsString.match(/-/)) {
+                continue
+            }
+            
+            // add siteId
+            const geneName = eachPhosSite.abbreviatedGeneSpecies
+            eachPhosSite.siteId = `${geneName}|${eachPhosSite.indexRelativeToGene}`
+            
+            // remove duplicate entries (same geneId and indexRelativeToGene), probably a variant (different sequence) but on the safe side, remove it
+            if (haveSeenPhosSite.has(eachPhosSite.siteId)) {
+                continue
+            }
+            haveSeenPhosSite.add(eachPhosSite.siteId)
+            
+            // split up pubmedIdForRelatedReferences
+            eachPhosSite.pubmedIdForRelatedReferences = `${eachPhosSite.pubmedIdForRelatedReferences}`.split(";")
+            
+            // custom filter
+            if (skipEntryIf({...eachPhosSite, geneName})) {
+                continue
+            }
+
+            // add to gene data
+            geneData[geneName] = geneData[geneName]||{}
+            geneData[geneName].name = geneName
+            geneData[geneName].phosSites = geneData[geneName].phosSites||[]
+            geneData[geneName].phosSites.push(eachPhosSite)
+
+            // 
+            // track names and data
+            // 
+            geneNames.add(geneName)
+            
+            positiveExamples.push({
+                siteId: `${eachPhosSite.indexRelativeToGene}|${geneName}`,
+                indexRelativeToGene: eachPhosSite.indexRelativeToGene,
+                aminoAcids: eachPhosSite.aminoAcidsString,
+                isPhosSite: 1,
+                geneInfo: geneData[geneName],
+                inputs: aminoAcidToFeatureVector({
+                    aminoAcidString: eachPhosSite.aminoAcidsString,
+                }),
+            })
+        }
     }
 
     // 

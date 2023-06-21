@@ -43,7 +43,7 @@ const windowPadding = 10 // + or - 10 amino acids
 // human genome
 // 
     let { mixedExamples, summaryData, geneNames, geneData } = await loadMixedExamples({
-        filePath: `${FileSystem.thisFolder}/data/human_genome.small.fasta.txt`,
+        filePath: `${FileSystem.thisFolder}/data/human_genome.fasta.txt`,
         windowPadding,
         skipEntryIf: ({geneName, aminoAcidsString, ...otherData})=>false, // false=keep
     })
@@ -56,7 +56,7 @@ const windowPadding = 10 // + or - 10 amino acids
         positiveExamples,
         commonGeneNames,
     } = await loadPositiveExamples({
-        filePath: "./data/phosphorylation@00.tsv",
+        filePath: /.\/data\/phosphorylation@\d+.tsv/,
         skipEntryIf: ({ geneName, aminoAcidsString, })=>!geneNames.has(geneName),
         geneData,
     })
@@ -88,8 +88,8 @@ const windowPadding = 10 // + or - 10 amino acids
 // training
 // 
 // 
-    positiveExamples = _.shuffle(positiveExamples)
-    negativeExamples = _.shuffle(negativeExamples)
+    // positiveExamples = _.shuffle(positiveExamples)
+    // negativeExamples = _.shuffle(negativeExamples)
     const examples = positiveExamples.concat(negativeExamples)
     const inputs = examples.map(({inputs})=>inputs)
     const labels = examples.map(({isPhosSite})=>isPhosSite)
