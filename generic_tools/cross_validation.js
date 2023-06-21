@@ -1,5 +1,7 @@
 import { indent, findAll, extractFirst, stringToUtf8Bytes, toRepresentation } from "https://deno.land/x/good@1.3.0.0/string.js"
 
+const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
+
 const makeIterable = (generator, length)=>{
     generator[Symbol.iterator] = ()=>generator()
     Object.defineProperties(generator, {
@@ -48,7 +50,7 @@ const makeIterable = (generator, length)=>{
  * @param {number} numberOfFolds - The number of numberOfFolds for cross-validation.
  * @returns {Array<Object>} An array of fold objects containing train and test data indices.
  */
-export function crossValidation({inputs, outputs, numberOfFolds}) {
+export function crossValidation({inputs, outputs, numberOfFolds, shouldRandomize=true}) {
     const numberOfSamples = inputs.length
     const foldSize = Math.floor(numberOfSamples / numberOfFolds)
     const folds = []
@@ -61,12 +63,24 @@ export function crossValidation({inputs, outputs, numberOfFolds}) {
         const end = i === numberOfFolds - 1 ? numberOfSamples : (i + 1) * foldSize
         const trainIndices = []
         const testIndices = []
+        
+        if (shouldRandomize) {
+            const indicies = _.shuffle([...Array(numberOfSamples-1)].map((e,i)=>i))
 
-        for (let j = 0; j < numberOfSamples; j++) {
-            if (j >= start && j < end) {
-                testIndices.push(j)
-            } else {
-                trainIndices.push(j)
+            for (let j = 0; j < numberOfSamples; j++) {
+                if (j >= start && j < end) {
+                    testIndices.push(indicies.pop())
+                } else {
+                    trainIndices.push(indicies.pop())
+                }
+            }
+        } else {
+            for (let j = 0; j < numberOfSamples; j++) {
+                if (j >= start && j < end) {
+                    testIndices.push(j)
+                } else {
+                    trainIndices.push(j)
+                }
             }
         }
         
