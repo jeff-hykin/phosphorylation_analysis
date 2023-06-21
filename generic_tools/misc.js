@@ -25,12 +25,17 @@ export function* generateLinesFor(array) {
     console.debug(`writing file`)
     yield "[\n"
     let index = -1
+    let prevPercentString = ""
+    let percentString = "  0.0"
     for (const each of array) {
         index += 1
-        if (index % 10000) {
-            console.debug(`    writing: ${Math.round(index/array.length)*100}%`)
+        percentString = `${((index/array.length)*100).toFixed(1)}`.padStart(5," ")
+        if (prevPercentString != percentString) {
+            prevPercentString = percentString
+            Deno.stdout.write(new TextEncoder().encode(`    writing: ${percentString}%\r`))
         }
-        yield JSON.stringify(each)+"\n"
+        yield JSON.stringify(each)+",\n"
     }
+    console.log()
     yield "]"
 }

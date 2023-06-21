@@ -43,7 +43,6 @@ import { createOneHot } from "../generic_tools/misc.js"
     }
     
     const aminoToOneHot = createOneHot(amnioEncoding)
-    console.debug(`aminoToOneHot is:`,aminoToOneHot)
 
 export function aminoAcidToFeatureVector({aminoAcidString}) {
     const evenNumberOfChars = aminoAcidString.length % 2 == 0
