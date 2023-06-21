@@ -39,54 +39,58 @@ import { loadMixedExamples } from "./specific_tools/load_mixed_examples.js"
 import { loadPositiveExamples } from "./specific_tools/load_positive_examples.js"
 const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
 
+const windowPadding = 10 // + or - 10 amino acids
 // 
+// human genome
 // 
-// training
-// 
-// 
-    console.log(`loading data from file`)
-    let [positiveInputs, negativeInputs] = await Promise.all([
-        FileSystem.read("positive_examples.json").then(JSON.parse),
-        FileSystem.read("negative_examples.json").then(JSON.parse),
-    ])
-    console.log(`file data loaded`)
-    // const examples = _.shuffle(positiveExamples.concat(negativeExamples))
-    const inputs = positiveInputs.concat(negativeInputs)
-    const labels = new Int8Array(  positiveInputs.map(each=>1).concat( negativeInputs.map(each=>0) )  )
-    const folds = crossValidation({
-        inputs,
-        outputs: labels,
-        numberOfFolds: 3,
+    let { mixedExamples, summaryData, geneNames, geneData } = await loadMixedExamples({
+        filePath: `${FileSystem.thisFolder}/data/human_genome.fasta.txt`,
+        windowPadding,
+        skipEntryIf: ({geneName, aminoAcidsString, ...otherData})=>false, // false=keep
     })
-    
-    for (const {train, test} of folds) {
-        const classifier = new RandomForestClassifier({ numberOfTrees: 50, maxDepth: 10 }).fit({
-            inputs: [...train.inputs],
-            outputs: new Int8Array(train.outputs),
-        })
-        
-        let numberTotal = test.outputs.length
-        let numberCorrect = 0
-        let negativesCount = 0
-        let positivesCount = 0
-        let negativesCorrectCount = 0
-        let positivesCorrectCount = 0
-        for (const [correctAnswer, givenAnswer] of zip(test.outputs, classifier.predictMajorityForMany(test.inputs))) {
-            if (correctAnswer == givenAnswer) {
-                numberCorrect += 1
-                if (correctAnswer == 0) {
-                    negativesCorrectCount += 1
-                } else {
-                    positivesCorrectCount += 1
-                }
-            }
-            if (correctAnswer == 0) {
-                negativesCount += 1
-            } else {
-                positivesCount += 1
-            }
-        }
-        console.debug(`accuracy is              : ${numberCorrect}/${numberTotal}`)
-        console.debug(`accuracy for negatives is: ${negativesCorrectCount}/${negativesCount}`)
-        console.debug(`accuracy for positives is: ${positivesCorrectCount}/${positivesCount}`)
+    console.debug(`mixedExamples[0] is:`,mixedExamples[0])
+
+// 
+// phosphorylation data
+// 
+    let {
+        positiveExamples,
+        commonGeneNames,
+    } = await loadPositiveExamples({
+        filePath: /.\/data\/phosphorylation@\d+.tsv/,
+        skipEntryIf: ({ geneName, aminoAcidsString, })=>!geneNames.has(geneName),
+        geneData,
+    })
+    console.debug(`positiveExamples[0] is:`,positiveExamples[0])
+
+// 
+// remove any positiveExamples that appear in mixedExamples
+// 
+    const siteIdMapping = {}
+    for (const [ index, each ] of enumerate(mixedExamples)) {
+        siteIdMapping[each] = index
     }
+    const mixedExampleIndiciesToDelete = []
+    for (const each of positiveExamples) {
+        const indexInMixedExamples = siteIdMapping[each.siteId]
+        if (typeof indexInMixedExamples == 'number') {
+            mixedExampleIndiciesToDelete.push(indexInMixedExamples)
+        }
+    }
+    // biggest index comes first
+    mixedExampleIndiciesToDelete.sort().reverse()
+    for (const eachIndex of mixedExampleIndiciesToDelete) {
+        mixedExamples = mixedExamples.splice(eachIndex, 1)
+    }
+    let negativeExamples = mixedExamples
+
+// 
+// 
+// save
+// 
+// 
+    const commonSize = Math.min(positiveExamples.length, negativeExamples.length)
+    positiveExamples = positiveExamples.slice(0,commonSize)
+    negativeExamples = negativeExamples.slice(0,commonSize)
+    await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(positiveExamples.map(({inputs})=>[...inputs])), })
+    await FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(negativeExamples.map(({inputs})=>[...inputs])), })
