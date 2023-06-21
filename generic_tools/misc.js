@@ -27,8 +27,8 @@ export function* generateLinesFor(array) {
     let index = -1
     for (const each of array) {
         index += 1
-        if (index % 1000) {
-            console.debug(`    writing: ${(index/array.length)*100}%`)
+        if (index % 10000) {
+            console.debug(`    writing: ${Math.round(index/array.length)*100}%`)
         }
         yield JSON.stringify(each)+"\n"
     }
