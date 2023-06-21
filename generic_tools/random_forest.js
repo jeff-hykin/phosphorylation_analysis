@@ -79,6 +79,7 @@ export class RandomForestClassifier {
             this._distributionTemplate[eachOutput] = 0
         }
         for (let i = 0; i < this.numberOfTrees; i++) {
+            console.log(`    training tree: ${i+1}/${this.numberOfTrees}`)
             const tree = new DecisionTree({maxDepth:this.maxDepth})
             const bootstrapSample = this._bootstrapSample(inputs, outputs)
             tree.fit(bootstrapSample.inputs, bootstrapSample.outputs)
