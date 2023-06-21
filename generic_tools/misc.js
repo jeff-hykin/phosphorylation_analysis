@@ -19,3 +19,18 @@ export const createOneHot = (object)=>{
     }
     return newObject
 }
+
+
+export function* generateLinesFor(array) {
+    console.debug(`writing file`)
+    yield "[\n"
+    let index = -1
+    for (const each of array) {
+        index += 1
+        if (index % 1000) {
+            console.debug(`    writing: ${(index/array.length)*100}%`)
+        }
+        yield JSON.stringify(each)+"\n"
+    }
+    yield "]"
+}

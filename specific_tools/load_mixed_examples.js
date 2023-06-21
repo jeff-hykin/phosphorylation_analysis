@@ -3,7 +3,7 @@ import { parseCsv, createCsv } from "https://deno.land/x/good@1.2.2.0/csv.js"
 import { intersection } from "https://deno.land/x/good@1.2.2.0/set.js"
 import { flatten, asyncIteratorToList } from "https://deno.land/x/good@1.2.2.0/iterable.js"
 import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno.land/x/good@1.2.2.0/string.js"
-import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.28/main/file_system.js"
+import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.31/main/file_system.js"
 import { parseFasta } from "../generic_tools/fasta_parser.js"
 import { aminoAcidToFeatureVector } from "./amino_acid_to_feature_vector.js"
 
