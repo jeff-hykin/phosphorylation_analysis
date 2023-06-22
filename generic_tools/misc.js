@@ -34,7 +34,12 @@ export function* generateLinesFor(array) {
             prevPercentString = percentString
             Deno.stdout.write(new TextEncoder().encode(`    writing: ${percentString}%\r`))
         }
-        yield JSON.stringify(each)+",\n"
+        const isLastElement = index == (array.length-1)
+        if (!isLastElement) {
+            yield JSON.stringify(each)+",\n"
+        } else {
+            yield JSON.stringify(each)+"\n"
+        }
     }
     console.log()
     yield "]"
