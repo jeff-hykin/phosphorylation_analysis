@@ -62,7 +62,7 @@ const aminoMatchPattern = /S/
         positiveExamples,
         commonGeneNames,
     } = await loadPositiveExamples({
-        filePath: /.\/data\/phosphorylation@\d+.tsv/,
+        filePath: /.\/data\/phosphorylation@0\d+.tsv/,
         skipEntryIf: ({ geneName, aminoAcidsString, })=>!geneNames.has(geneName)||!aminoAcidsString[windowPadding].match(aminoMatchPattern),
         geneData,
     })
@@ -107,28 +107,36 @@ const aminoMatchPattern = /S/
     let count = 0
     for (const {aminoAcids, ...otherData} of positiveExamples.concat(negativeExamples)) {
         count += 1
-        if (count % 2000) {
-            console.log(`        on ${count}/${commonSize*2}`)
+        if (count % 2000 == 0) {
+            console.log(`        on ${count}/${commonSize*2}: ${count/(commonSize*2)*100}`)
         }
         // text before
         coder.addData(aminoAcids.slice(0,windowPadding))
         // text after
         coder.addData(aminoAcids.slice(windowPadding+1,))
     }
-    const encodedLengths = frequencyCount((function*(){
+    coder.freeze()
+    count = 0
+    console.debug(`building frequency count`)
+    console.debug(`coder.substringToNumber is:`,coder.substringToNumber)
+    const encodedLengths = frequencyCount([...(function*(){
         for (const {aminoAcids} of positiveExamples.concat(negativeExamples)) {
+            count += 1
             const [ before, after ] = [ aminoAcids.slice(0,windowPadding), aminoAcids.slice(windowPadding+1,) ]
+            if ((count-1) % 2000 == 0) {
+                console.log(`        on ${count}/${commonSize*2}: ${count/(commonSize*2)*100}`)
+            }
             // text before
             yield coder.encode(before).length
             // text after
             yield coder.encode(after).length
         }
-    })())
+    })()])
     
     console.debug(`encodedLengths is:`, encodedLengths)
     const smallestEncodingLength = Math.min(...Object.keys(encodedLengths).map(each=>each-0))
     coder.smallestEncodingLength = smallestEncodingLength
-    coder.freeze()
+    
     await FileSystem.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder,0,2) })
 
 // 

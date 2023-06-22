@@ -1,5 +1,11 @@
 import { frequencyCount } from "./misc.js"
 import { recursivelyAllKeysOf, get, set, remove, merge, compareProperty, compare } from "https://deno.land/x/good@1.3.0.1/object.js"
+import {
+  ascend,
+  BinaryHeap,
+  descend,
+} from "https://deno.land/std@0.192.0/collections/binary_heap.ts"
+import { assertEquals } from "https://deno.land/std@0.192.0/testing/asserts.ts"
 
 // TODO: Hykin encoding
 // worst = size of alphabet * number of chars
@@ -53,7 +59,7 @@ export class HuffmanCoder {
      *
      */
     constructor(values) {
-        this.frequencyTable = {}
+        this.effectiveFrequencyTable = {}
         this.isFrozen = false
         // for importing data
         Object.assign(this, values)
@@ -71,7 +77,7 @@ export class HuffmanCoder {
             let substring = ""
             for (const character of string.slice(startIndex)) {
                 substring += character
-                this.frequencyTable[substring] = (this.frequencyTable[substring] || 0) + 1
+                this.effectiveFrequencyTable[substring] = (this.effectiveFrequencyTable[substring] || 0) + 1
             }
         }
         return this
@@ -79,12 +85,8 @@ export class HuffmanCoder {
 
     toJSON() {
         if (!this.isFrozen) {
-            this.tree = this._buildHuffmanTree()
-            this.codeMap = this._buildCodeMap(this.tree)
-            const { encodingToNumber, substringToNumber, numberToSubstring } = this._buildEnumerationMapping(this.codeMap)
-            this.encodingToNumber = encodingToNumber
-            this.numberToSubstring = numberToSubstring
-            this.substringToNumber = substringToNumber
+            this.freeze()
+            this.isFrozen = false
         }
         return {
             ...this
@@ -99,11 +101,15 @@ export class HuffmanCoder {
 
     freeze() {
         this.isFrozen = true
+        console.log(`_buildHuffmanTree`)
         this.tree = this._buildHuffmanTree()
+        console.log(`_buildCodeMap`)
         this.codeMap = this._buildCodeMap(this.tree)
-        const { encodingToNumber, numberToSubstring } = this._buildEnumerationMapping(this.codeMap)
+        console.log(`_buildEnumerationMapping`)
+        const { encodingToNumber, substringToNumber, numberToSubstring } = this._buildEnumerationMapping(this.codeMap)
         this.encodingToNumber = encodingToNumber
         this.numberToSubstring = numberToSubstring
+        this.substringToNumber = substringToNumber
         return this
     }
 
@@ -118,15 +124,19 @@ export class HuffmanCoder {
         }
         const codes = []
         let remainingData = data
-        while (remainingData.length > 0) {
+        outer: while (remainingData.length > 0) {
             for (const [substring, number] of Object.entries(this.substringToNumber)) {
+                if (substring.length == 0) { // this can be removed after debugging
+                    continue
+                }
                 if (remainingData.startsWith(substring)) {
                     remainingData = remainingData.slice(substring.length,)
                     codes.push(number)
                     // need to go to outer loop to make sure biggest-substrings are attempted first
-                    break
+                    continue outer
                 }
             }
+            throw Error(`Unable to encode remaining string: ${remainingData}\nUsing: ${this.substringToNumber}`)
         }
         return codes
     }
@@ -172,25 +182,42 @@ export class HuffmanCoder {
      * @returns {HuffmanNode} The root node of the Huffman tree.
      */
     _buildHuffmanTree() {
-        const priorityQueue = []
-
-        for (const [substring, frequency] of Object.entries(this.frequencyTable)) {
+        
+        // help memory out
+        let numberOfEntries = Object.keys(this.effectiveFrequencyTable).length
+        for (const [substring, effectiveFrequency] of Object.entries(this.effectiveFrequencyTable)) {
+            if (substring.length > 1) {
+                const frequency = effectiveFrequency/substring.length  
+                if ((frequency * Math.log2(substring.length)) < Math.log2(numberOfEntries)) {
+                    numberOfEntries-=1
+                    delete this.effectiveFrequencyTable[substring]
+                }
+            }
+        }
+        
+        const priorityQueue = new BinaryHeap((a, b) => ascend(a.frequency, b.frequency))
+        for (const [substring, frequency] of Object.entries(this.effectiveFrequencyTable)) {
             const effectiveFrequency = frequency *substring.length // maybe this would be more correct: frequency * Math.log2(substring.length+1)
             const node = new HuffmanNode(substring, effectiveFrequency)
             priorityQueue.push(node)
         }
-
+        
+        let iterCount = 0
         while (priorityQueue.length > 1) {
-            priorityQueue.sort((a, b) => a.frequency - b.frequency)
-            const leftChild = priorityQueue.shift()
-            const rightChild = priorityQueue.shift()
+            iterCount += 1
+            if ((iterCount-1) % 1000 == 0) {
+                console.log(`    on iteration ${iterCount}, priorityQueue.length:${priorityQueue.length}`)
+            }
+            const leftChild = priorityQueue.pop()
+            const rightChild = priorityQueue.pop()
             const parent = new HuffmanNode(null, leftChild.frequency + rightChild.frequency)
             parent.left = leftChild
             parent.right = rightChild
             priorityQueue.push(parent)
         }
-
-        return priorityQueue[0]
+        
+        // the only element should be the root element
+        return priorityQueue.pop()
     }
     
     /**
