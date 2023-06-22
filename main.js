@@ -10,14 +10,19 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
     // DONE: encode positive/negative as bit array
     // DONE: remove any positive values from the negative examples dataset
     // DONE: cross validate the output
+    // naieve bayes approach
+    // encoding position as a float 
 
     // features
         // allow amino acid substitues/groups
+        // take a look at these features: https://ieeexplore.ieee.org/document/7837721
     // answer some questions:
+        // what is the most common root split in the trees
         // how many have no phos sites
         // whats the ratio
         // intersection between human genome set and the phos human genome set
         // if trained on phos-human how well does it transfer to phos-plant names end with "_ARATH" 
+        // check the number of exact sequence matches between positive and negative data
     
     // ask: 
         //if it doesn't work on plants isnt that interesting 
