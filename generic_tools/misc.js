@@ -47,8 +47,8 @@ export function* generateLinesFor(array) {
 
 export function frequencyCount(array) {
     const counts = {}
-    for (const eachPrediction of array) {
-        counts[eachPrediction] = (counts[eachPrediction] || 0) + 1
+    for (const element of array) {
+        counts[element] = (counts[element] || 0) + 1
     }
     return counts
 }
