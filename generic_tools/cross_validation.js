@@ -65,7 +65,7 @@ export function crossValidation({inputs, outputs, numberOfFolds, shouldRandomize
         const testIndices = []
         
         if (shouldRandomize) {
-            const indicies = _.shuffle([...Array(numberOfSamples-1)].map((e,i)=>i))
+            const indicies = _.shuffle([...Array(numberOfSamples)].map((e,i)=>i))
 
             for (let j = 0; j < numberOfSamples; j++) {
                 if (j >= start && j < end) {
