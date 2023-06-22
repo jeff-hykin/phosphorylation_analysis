@@ -5,7 +5,6 @@ import { flatten, asyncIteratorToList } from "https://deno.land/x/good@1.3.0.1/i
 import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno.land/x/good@1.3.0.1/string.js"
 import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.32/main/file_system.js"
 import { parseFasta } from "../generic_tools/fasta_parser.js"
-import { aminoAcidToFeatureVector } from "./amino_acid_to_feature_vector.js"
 
 export async function loadPositiveExamples({ filePath, geneData, skipEntryIf }) {
     const geneNamesFromNegativeData = new Set(Object.keys(geneData))
@@ -74,9 +73,6 @@ export async function loadPositiveExamples({ filePath, geneData, skipEntryIf }) 
                 aminoAcids: eachPhosSite.aminoAcidsString,
                 isPhosSite: 1,
                 geneInfo: geneData[geneName],
-                inputs: aminoAcidToFeatureVector({
-                    aminoAcidString: eachPhosSite.aminoAcidsString,
-                }),
             })
         }
     }

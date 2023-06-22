@@ -28,7 +28,7 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
 // import { RandomForest } from "./generic_tools/random_forest.js"
 import { RandomForestClassifier } from "./generic_tools/random_forest.js"
 import { crossValidation } from "./generic_tools/cross_validation.js"
-import { generateLinesFor } from "./generic_tools/misc.js"
+import { frequencyCount, generateLinesFor } from "./generic_tools/misc.js"
 import { parseCsv, createCsv } from "https://deno.land/x/good@1.3.0.1/csv.js"
 import { intersection } from "https://deno.land/x/good@1.3.0.1/set.js"
 import { flatten, asyncIteratorToList, enumerate, zip } from "https://deno.land/x/good@1.3.0.1/iterable.js"
@@ -37,6 +37,9 @@ import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.32/main/file_sy
 import { parseFasta } from "./generic_tools/fasta_parser.js"
 import { loadMixedExamples } from "./specific_tools/load_mixed_examples.js"
 import { loadPositiveExamples } from "./specific_tools/load_positive_examples.js"
+import { aminoAcidToFeatureVector } from "./specific_tools/amino_acid_to_feature_vector.js"
+import { pathToHuffmanCoder } from "./config.js"
+
 const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
 
 const windowPadding = 10 // + or - 10 amino acids
@@ -88,12 +91,47 @@ const aminoMatchPattern = /S/
 
 // 
 // 
-// save
+// shrink
 // 
 // 
     // const commonSize = Math.min(positiveExamples.length, negativeExamples.length)
     const commonSize = 50_000
     positiveExamples = positiveExamples.slice(0,commonSize)
     negativeExamples = negativeExamples.slice(0,commonSize)
-    await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(positiveExamples.map(({inputs})=>[...inputs])), })
-    await FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(negativeExamples.map(({inputs})=>[...inputs])), })
+
+// 
+// "train" HuffmanCoder and save it
+// 
+    const coder = new HuffmanCoder()
+    console.debug(`building huffman coder`, encodedLengths)
+    for (const {aminoAcids, ...otherData} of positiveExamples.concat(negativeExamples)) {
+        if (!aminoAcids) {
+            console.debug(`otherData is:`,otherData)
+        }
+        // text before
+        coder.addData(aminoAcids.slice(0,windowPadding))
+        // text after
+        coder.addData(aminoAcids.slice(windowPadding+1,))
+    }
+    const encodedLengths = frequencyCount((function*(){
+        for (const {aminoAcids} of positiveExamples.concat(negativeExamples)) {
+            const [ before, after ] = [ aminoAcids.slice(0,windowPadding), aminoAcids.slice(windowPadding+1,) ]
+            // text before
+            yield coder.encode(before).length
+            // text after
+            yield coder.encode(after).length
+        }
+    })())
+    
+    console.debug(`encodedLengths is:`, encodedLengths)
+    const smallestEncodingLength = Math.min(...Object.keys(encodedLengths).map(each=>each-0))
+    coder.smallestEncodingLength = smallestEncodingLength
+    coder.freeze()
+    await FileSystem.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder,0,2) })
+
+// 
+// create the feature vector and save it
+// 
+    import { HuffmanCoder } from "./generic_tools/huffman_code.js"
+    await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(    positiveExamples.map(  ({aminoAcids})=>aminoAcidToFeatureVector({ aminoAcidString: aminoAcids })  )    ), })
+    await FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(    negativeExamples.map(  ({aminoAcids})=>aminoAcidToFeatureVector({ aminoAcidString: aminoAcids })  )    ), })

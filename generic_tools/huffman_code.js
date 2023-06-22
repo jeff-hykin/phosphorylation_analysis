@@ -1,6 +1,23 @@
 import { frequencyCount } from "./misc.js"
 import { recursivelyAllKeysOf, get, set, remove, merge, compareProperty, compare } from "https://deno.land/x/good@1.3.0.1/object.js"
 
+// TODO: Hykin encoding
+// worst = size of alphabet * number of chars
+// eval:
+    // for every token, try basically a binary huffman_code
+        // 0 => token
+        // 1+alphabet => other thing
+    // find the token that is most helpful in reducing the total amount of code
+    // instantiate that token
+    // rebuild the frequencyCount with those tokens remove
+    // restart the evaluation
+    // repeat until compression does not improve
+
+// TODO:
+    // when putting items the tree
+    // for all the items (including the one being compared against)
+        // get their substrings, check if the current substring is within any of them
+        // if it is, subtract the frequency of the bigger substring from the current substring, then re-compare
 /**
  * Represents a node in the Huffman tree.
  * @class
@@ -46,19 +63,47 @@ export class HuffmanCoder {
         if (this.isFrozen) {
             throw Error(`Sorry, this coder has been frozen. Data can only be added BEFORE freezeing`)
         }
-        for (const character of string) {
-            this.frequencyTable[character] = (this.frequencyTable[character] || 0) + 1
+        const stringLength = string.length
+        // add all chars but also all substrings
+        let startIndex = -1
+        while (startIndex < stringLength-1) {
+            startIndex++
+            let substring = ""
+            for (const character of string.slice(startIndex)) {
+                substring += character
+                this.frequencyTable[substring] = (this.frequencyTable[substring] || 0) + 1
+            }
         }
         return this
+    }
+
+    toJSON() {
+        if (!this.isFrozen) {
+            this.tree = this._buildHuffmanTree()
+            this.codeMap = this._buildCodeMap(this.tree)
+            const { encodingToNumber, substringToNumber, numberToSubstring } = this._buildEnumerationMapping(this.codeMap)
+            this.encodingToNumber = encodingToNumber
+            this.numberToSubstring = numberToSubstring
+            this.substringToNumber = substringToNumber
+        }
+        return {
+            ...this
+        }
+    }
+
+    static fromJSON(object) {
+        const coder = new HuffmanCoder()
+        Object.assign(coder, object)
+        return coder
     }
 
     freeze() {
         this.isFrozen = true
         this.tree = this._buildHuffmanTree()
         this.codeMap = this._buildCodeMap(this.tree)
-        const { encodingToNumber, numberToChar } = this._buildEnumerationMapping(this.codeMap)
+        const { encodingToNumber, numberToSubstring } = this._buildEnumerationMapping(this.codeMap)
         this.encodingToNumber = encodingToNumber
-        this.numberToChar = numberToChar
+        this.numberToSubstring = numberToSubstring
         return this
     }
 
@@ -72,13 +117,16 @@ export class HuffmanCoder {
             this.freeze()
         }
         const codes = []
-        for (const character of data) {
-            codes.push(
-                // a bit round-about but whatever
-                this.encodingToNumber[
-                    this.codeMap[character]
-                ]
-            )
+        let remainingData = data
+        while (remainingData.length > 0) {
+            for (const [substring, number] of Object.entries(this.substringToNumber)) {
+                if (remainingData.startsWith(substring)) {
+                    remainingData = remainingData.slice(substring.length,)
+                    codes.push(number)
+                    // need to go to outer loop to make sure biggest-substrings are attempted first
+                    break
+                }
+            }
         }
         return codes
     }
@@ -97,7 +145,7 @@ export class HuffmanCoder {
         if (encodedData instanceof Array) {
             if (encodedData.length > 0) {
                 if (typeof encodedData[0] == 'number') {
-                    return encodedData.map(each=>this.numberToChar[each]).join("")
+                    return encodedData.map(each=>this.numberToSubstring[each]).join("")
                 }
             }
             // else
@@ -126,8 +174,9 @@ export class HuffmanCoder {
     _buildHuffmanTree() {
         const priorityQueue = []
 
-        for (const [character, frequency] of Object.entries(this.frequencyTable)) {
-            const node = new HuffmanNode(character, frequency)
+        for (const [substring, frequency] of Object.entries(this.frequencyTable)) {
+            const effectiveFrequency = frequency *substring.length // maybe this would be more correct: frequency * Math.log2(substring.length+1)
+            const node = new HuffmanNode(substring, effectiveFrequency)
             priorityQueue.push(node)
         }
 
@@ -180,13 +229,29 @@ export class HuffmanCoder {
             }),
         )
         let index = -1
-        let encodingToNumber = {}
-        const numberToChar = {}
-        for (const [eachChar, eachEncoding] of encodings) {
+        const substringToNumberUnsorted = {}
+        const encodingToNumber = {}
+        const numberToSubstring = {}
+        for (const [eachSubstring, eachEncoding] of encodings) {
             ++index
+            substringToNumberUnsorted[eachSubstring] = index
             encodingToNumber[eachEncoding] = index
-            numberToChar[index] = eachChar
+            numberToSubstring[index] = eachSubstring
         }
-        return { encodingToNumber, numberToChar }
+        
+        const substrings = Object.keys(substringToNumberUnsorted)
+        substrings.sort(
+            compare({
+                elementToNumber: (each)=>each.length,
+                largestFirst: true,
+            }),
+        )
+        // need to sort the substring attributes in order of length
+        const substringToNumber = {}
+        for (const substring of substrings) {
+            substringToNumber[substring] = substringToNumberUnsorted[substring]
+        }
+
+        return { encodingToNumber, substringToNumber, numberToSubstring }
     }
 }

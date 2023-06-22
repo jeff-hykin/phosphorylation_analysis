@@ -1,0 +1,1 @@
+export const pathToHuffmanCoder = "./huffman_code.ignore.json"

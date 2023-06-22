@@ -6,8 +6,10 @@ import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno
 import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.32/main/file_system.js"
 import { parseFasta } from "../generic_tools/fasta_parser.js"
 import { createOneHot } from "../generic_tools/misc.js"
+import { HuffmanCoder } from "../generic_tools/huffman_code.js"
+import { pathToHuffmanCoder } from "../config.js"
 
-const shouldUseSiplifier = true
+const shouldUseSiplifier = false
 const shouldIncludePhysicochemicalCategories = true
 
 // 
@@ -76,7 +78,16 @@ const shouldIncludePhysicochemicalCategories = true
         tiny: [..."ASGC"],
     }
     // what is the charge amount (negatives and postives)
-    
+
+// 
+// HuffmanCoder
+// 
+    // const coder = HuffmanCoder.fromJSON(
+    //     JSON.parse(
+    //         await FileSystem.read(pathToHuffmanCoder)
+    //     )
+    // )
+
 export function aminoAcidToFeatureVector({aminoAcidString}) {
     const evenNumberOfChars = aminoAcidString.length % 2 == 0
     if (evenNumberOfChars) {
