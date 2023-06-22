@@ -28,7 +28,7 @@ print("splitting up the data")
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Create a Random Forest Classifier object
-rf_classifier = RandomForestClassifier()
+rf_classifier = RandomForestClassifier(n_estimators=150,max_depth=40)
 
 # Train the classifier using the training data
 print("training")
@@ -52,12 +52,13 @@ if True:
     print("Negative Accuracy:", accuracy)
 
 
-# loaded negative_examples
-# loaded positive_examples
-# splitting up the data
-# training
-# getting accuracy scores
+# n_estimators=100,max_depth=None
+    # loaded negative_examples
+    # loaded positive_examples
+    # splitting up the data
+    # training
+    # getting accuracy scores
 
-# Total Accuracy: 0.5799498075568159
-# Positive Accuracy: 0.8671307823275812
-# Negative Accuracy: 0.8583430185840357
+    # Total Accuracy: 0.5799498075568159
+    # Positive Accuracy: 0.8671307823275812
+    # Negative Accuracy: 0.8583430185840357
