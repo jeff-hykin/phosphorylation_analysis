@@ -1,5 +1,5 @@
-import { capitalize, indent, toCamelCase, digitsToEnglishArray, toPascalCase, toKebabCase, toSnakeCase, toScreamingtoKebabCase, toScreamingtoSnakeCase, toRepresentation, toString, regex, escapeRegexMatch, escapeRegexReplace, extractFirst, isValidIdentifier } from "https://deno.land/x/good@1.3.0.0/string.js"
-import {enumerate} from "https://deno.land/x/good@1.3.0.0/iterable.js"
+import { capitalize, indent, toCamelCase, digitsToEnglishArray, toPascalCase, toKebabCase, toSnakeCase, toScreamingtoKebabCase, toScreamingtoSnakeCase, toRepresentation, toString, regex, escapeRegexMatch, escapeRegexReplace, extractFirst, isValidIdentifier } from "https://deno.land/x/good@1.3.0.1/string.js"
+import { enumerate, zip } from "https://deno.land/x/good@1.3.0.1/iterable.js"
 import { frequencyCount } from "../generic_tools/misc.js"
 
 const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
@@ -216,26 +216,25 @@ export class RandomForestClassifier {
         return predictions
     }
     
+    /**
+     * randomize (but not a shuffle)
+     *
+     * @note
+     *     return value has same length as the
+     *     input length, however entries
+     *     might be entirely missing and
+     *     there may be duplicate entries
+     *     (e.g. repeated random sample, not shuffle)
+     *
+     */
     _bootstrapSample(inputs, outputs) {
         const sampleX = []
         const sampleY = []
         const numberOfSamples = inputs.length
-        
-        if (inputs.some(each=>each==null)) {
-            throw Error(`given inputs contained null`)
-        }
         for (let i = 0; i < numberOfSamples; i++) {
             const index = getRandomInt(0, numberOfSamples-1)
-            if (inputs[index] == null){
-                console.debug(`index is:`,index)
-                console.debug(`inputs.length is:`,inputs.length)
-                console.debug(`inputs.slice(-10,) is:`,inputs.slice(-10,))
-            }
             sampleX.push(inputs[index])
             sampleY.push(outputs[index])
-        }
-        if (sampleX.some(each=>each==null)) {
-            throw Error(`inputs contained null`)
         }
         return { inputs: sampleX, outputs: sampleY }
     }
@@ -261,9 +260,6 @@ export class DecisionTree {
     }
 
     fit(inputs, outputs) {
-        if (inputs.some(each=>each == null)) {
-            throw Error(`inputs contains null`)
-        }
         this.tree = this._buildTree(inputs, outputs, 0)
     }
 
@@ -274,9 +270,6 @@ export class DecisionTree {
     _buildTree(inputs, outputs, depth) {
         const numberOfSamples = inputs.length
         const numberOfFeatures = inputs[0].length
-        if (inputs.some(each=>each==null)) {
-            throw Error(`inputs contained a null entry`)
-        }
         // Stopping conditions
         if (depth >= this.maxDepth || this._isPure(outputs)) {
             return this._createLeafNode(outputs)
@@ -291,20 +284,12 @@ export class DecisionTree {
         const randomFeatureIndices = _.shuffle(featureIndices).slice(0, Math.sqrt(numberOfFeatures))
 
         for (const featureIndex of randomFeatureIndices) {
-            const featureValues = inputs.map((sample, index) => {
-                try {
-                    return sample[featureIndex]
-                } catch (error) {
-                    console.debug(`featureIndex is:`,featureIndex)
-                    console.debug(`index is:`,index)
-                    console.debug(`sample is:`,sample)
-                    console.debug(`inputs is:`,inputs)
-                }
-                sample[featureIndex]
-            })
-            const uniqueValues = [...new Set(featureValues)]
-
-            for (const value of uniqueValues) {
+            const featureValues = new Set()
+            for (const sample of inputs) {
+                featureValues.add(sample[featureIndex])
+            }
+            
+            for (const value of featureValues) {
                 const [leftX, rightX, leftY, rightY] = this._splitDataset(inputs, outputs, featureIndex, value)
                 const infoGain = this._informationGain(outputs, leftY, rightY)
 
@@ -353,8 +338,8 @@ export class DecisionTree {
 
     _isPure(outputs) {
         const firstValue = outputs[0]
-        for (let i = 1; i < outputs.length; i++) {
-            if (outputs[i] !== firstValue) {
+        for (const eachOutput of outputs) {
+            if (eachOutput !== firstValue) {
                 return false
             }
         }
@@ -372,23 +357,21 @@ export class DecisionTree {
         const rightX = []
         const leftY  = []
         const rightY = []
-
-        for (let i = 0; i < inputs.length; i++) {
-            const sample = inputs[i]
+        for (const [sample, label] of zip(inputs, outputs)) {
             if (sample[featureIndex] <= threshold) {
                 leftX.push(sample)
-                leftY.push(outputs[i])
+                leftY.push(label)
             } else {
                 rightX.push(sample)
-                rightY.push(outputs[i])
+                rightY.push(label)
             }
         }
 
         return [
-            leftX.filter(each=>each!=null),
-            rightX.filter(each=>each!=null),
-            leftY.filter(each=>each!=null),
-            rightY.filter(each=>each!=null)
+            leftX,
+            rightX,
+            leftY,
+            rightY
         ]
     }
 
@@ -400,11 +383,7 @@ export class DecisionTree {
     }
 
     _entropy(outputs) {
-        const valueCounts = {}
-        for (let i = 0; i < outputs.length; i++) {
-            const label = outputs[i]
-            valueCounts[label] = (valueCounts[label] || 0) + 1
-        }
+        const valueCounts = frequencyCount(outputs)
         let entropy = 0
         for (const label in valueCounts) {
             const probability = valueCounts[label] / outputs.length
