@@ -44,3 +44,11 @@ export function* generateLinesFor(array) {
     console.log()
     yield "]"
 }
+
+export function frequencyCount(array) {
+    const counts = {}
+    for (const eachPrediction of array) {
+        counts[eachPrediction] = (counts[eachPrediction] || 0) + 1
+    }
+    return counts
+}
