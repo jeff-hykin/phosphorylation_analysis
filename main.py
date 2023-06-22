@@ -4,6 +4,7 @@ from os.path import join
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import confusion_matrix
 
 # 
 # read data
@@ -42,11 +43,17 @@ if True:
     # 
     # total
     # 
+    y_pred = rf_classifier.predict(X_test)
     accuracy = accuracy_score(y_test, rf_classifier.predict(X_test))
     print("Total Accuracy:", accuracy)
- 
-    accuracy = accuracy_score(positive_outputs, rf_classifier.predict(positive_inputs))
+    print(f'''confusion_matrix(y_test, y_pred) = {confusion_matrix(y_test, y_pred)}''')
+    
+    positive_test_inputs  = tuple(each_input   for each_input, each_output in zip(X_test, y_test) if each_output == 1)
+    positive_test_outputs = tuple(each_output  for each_input, each_output in zip(X_test, y_test) if each_output == 1)
+    accuracy = accuracy_score(positive_test_outputs, rf_classifier.predict(positive_test_inputs))
     print("Positive Accuracy:", accuracy)
     
-    accuracy = accuracy_score(negative_outputs, rf_classifier.predict(negative_inputs))
+    negative_test_inputs  = tuple(each_input   for each_input, each_output in zip(X_test, y_test) if each_output == 0)
+    negative_test_outputs = tuple(each_output  for each_input, each_output in zip(X_test, y_test) if each_output == 0)
+    accuracy = accuracy_score(negative_test_outputs, rf_classifier.predict(negative_test_inputs))
     print("Negative Accuracy:", accuracy)
