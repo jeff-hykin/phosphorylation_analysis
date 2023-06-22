@@ -50,3 +50,14 @@ if True:
     
     accuracy = accuracy_score(negative_outputs, rf_classifier.predict(negative_inputs))
     print("Negative Accuracy:", accuracy)
+
+
+# loaded negative_examples
+# loaded positive_examples
+# splitting up the data
+# training
+# getting accuracy scores
+
+# Total Accuracy: 0.5799498075568159
+# Positive Accuracy: 0.8671307823275812
+# Negative Accuracy: 0.8583430185840357
