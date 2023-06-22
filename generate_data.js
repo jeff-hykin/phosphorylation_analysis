@@ -45,6 +45,7 @@ const windowPadding = 10 // + or - 10 amino acids
 // 
     let { mixedExamples, summaryData, geneNames, geneData } = await loadMixedExamples({
         filePath: `${FileSystem.thisFolder}/data/human_genome.fasta.txt`,
+        aminoMatchPattern: /T|S/,
         windowPadding,
         skipEntryIf: ({geneName, aminoAcidsString, ...otherData})=>false, // false=keep
     })
@@ -58,7 +59,7 @@ const windowPadding = 10 // + or - 10 amino acids
         commonGeneNames,
     } = await loadPositiveExamples({
         filePath: /.\/data\/phosphorylation@\d+.tsv/,
-        skipEntryIf: ({ geneName, aminoAcidsString, })=>!geneNames.has(geneName),
+        skipEntryIf: ({ geneName, aminoAcidsString, })=>!geneNames.has(geneName)||aminoAcidsString[windowPadding]=="Y",
         geneData,
     })
     console.debug(`positiveExamples[0] is:`,positiveExamples[0])
@@ -89,7 +90,8 @@ const windowPadding = 10 // + or - 10 amino acids
 // save
 // 
 // 
-    const commonSize = Math.min(positiveExamples.length, negativeExamples.length)
+    // const commonSize = Math.min(positiveExamples.length, negativeExamples.length)
+    const commonSize = 50_000
     positiveExamples = positiveExamples.slice(0,commonSize)
     negativeExamples = negativeExamples.slice(0,commonSize)
     await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(positiveExamples.map(({inputs})=>[...inputs])), })

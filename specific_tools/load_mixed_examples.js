@@ -7,14 +7,14 @@ import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.31/main/file_sy
 import { parseFasta } from "../generic_tools/fasta_parser.js"
 import { aminoAcidToFeatureVector } from "./amino_acid_to_feature_vector.js"
 
-export async function loadMixedExamples({ filePath, windowPadding, skipEntryIf }) {
+export async function loadMixedExamples({ filePath, aminoMatchPattern, windowPadding, skipEntryIf }) {
     
     const mixedString = await FileSystem.read(filePath)
 
     function getWindows(string) {
         let output = []
         const windowSize = (windowPadding*2)+1
-        for (const each of findAll(/T|S|V/,string)) {
+        for (const each of findAll(aminoMatchPattern,string)) {
             const min = each.index-windowPadding >= 0 ? each.index-windowPadding : 0
             const slice = string.slice(min,each.index+windowPadding+1)
             if (slice.length === windowSize) {
