@@ -1,4 +1,20 @@
 import { capitalize, indent, toCamelCase, digitsToEnglishArray, toPascalCase, toKebabCase, toSnakeCase, toScreamingtoKebabCase, toScreamingtoSnakeCase, toRepresentation, toString, regex, escapeRegexMatch, escapeRegexReplace, extractFirst, isValidIdentifier } from "https://deno.land/x/good@1.3.0.0/string.js"
+import {enumerate} from "https://deno.land/x/good@1.3.0.0/iterable.js"
+import { frequencyCount } from "../generic_tools/misc.js"
+
+const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
+/**
+ * Returns a random integer between min (inclusive) and max (inclusive).
+ * The value is no lower than min (or the next integer greater than min
+ * if min isn't an integer) and no greater than max (or the next integer
+ * lower than max if max isn't an integer).
+ * Using Math.round() will give you a non-uniform distribution!
+ */
+function getRandomInt(min, max) {
+    min = Math.ceil(min)
+    max = Math.floor(max)
+    return Math.floor(Math.random() * (max - min + 1)) + min
+}
 
 // Random Forest Classifier
 export class RandomForestClassifier {
@@ -73,17 +89,60 @@ export class RandomForestClassifier {
                     outputs: ${indent({string:toRepresentation(outputs), by:"                        ", noLead:true}).slice(0,500)} ...
             `.replace(/\n                /g,"\n    "))
         }
-
-        this._distributionTemplate = {}
-        for (const eachOutput of new Set(outputs)) {
-            this._distributionTemplate[eachOutput] = 0
-        }
-        for (let i = 0; i < this.numberOfTrees; i++) {
-            console.log(`    training tree: ${i+1}/${this.numberOfTrees}`)
-            const tree = new DecisionTree({maxDepth:this.maxDepth})
-            const bootstrapSample = this._bootstrapSample(inputs, outputs)
-            tree.fit(bootstrapSample.inputs, bootstrapSample.outputs)
-            this.trees.push(tree)
+        try {
+            this._distributionTemplate = {}
+            for (const eachOutput of new Set(outputs)) {
+                this._distributionTemplate[eachOutput] = 0
+            }
+            for (let i = 0; i < this.numberOfTrees; i++) {
+                console.log(`    training tree: ${i+1}/${this.numberOfTrees}`)
+                const tree = new DecisionTree({maxDepth:this.maxDepth})
+                const bootstrapSample = this._bootstrapSample(inputs, outputs)
+                tree.fit(bootstrapSample.inputs, bootstrapSample.outputs)
+                this.trees.push(tree)
+            }
+        } catch (error) {
+            // 
+            // additional sanity checks to analyze what went wrong
+            // (computationally expensive, but doesn't matter because were in an error state)
+            // 
+            const lengthFrequencyMapping = {}
+            for (const [index, each] of enumerate(inputs)) {
+                if (each == null) {
+                    throw Error(`\n\nWhen calling fit, the inputs contained a null entry at index ${index}. (Each entry should be an array with a length equal to numberOfFeatures)`)
+                } else if (typeof each.length != 'number') {
+                    throw Error(`\n\nWhen calling fit, the inputs contained an entry at index ${index} which didn't have a length. (Each entry should be an array or array-like with a length equal to numberOfFeatures)`)
+                } else {
+                    lengthFrequencyMapping[each.length] = (lengthFrequencyMapping[each.length] || []).concat([ index ])
+                }
+            }
+            // additional sanity checks
+            for (const [index, each] of enumerate(outputs)) {
+                if (each == null) {
+                    throw Error(`\n\nWhen calling fit, the inputs contained a null entry at index ${index}. (Each entry should be an array with a length equal to numberOfFeatures)`)
+                }
+            }
+            const inputSizes = Object.keys(lengthFrequencyMapping).map(each=>each-0)
+            // there should be one size (e.g. size == numberOfFeatures)
+            if (inputSizes.length !== 0) {
+                const quantites = Object.values(lengthFrequencyMapping).map(each=>each.length)
+                const highestCount = Math.max(...quantites)
+                const thereIsADominantSize = quantites.filter(each=>each.length == highestCount).length == 1
+                if (thereIsADominantSize) {
+                    let theMostCommonSize = null
+                    for (let [index, each] of enumerate(quantites)) {
+                        if (each == highestCount) {
+                            theMostCommonSize = inputSizes[index]
+                        } 
+                    }
+                    throw Error(`The sizes of input values was inconsistent. The most commmon size is: ${theMostCommonSize}\nThe other sizes were: ${[...new Set(quantites)]}, here's a mapping with sizes as the key and indicies as the values:\n${JSON.stringify(lengthFrequencyMapping)}`)
+                } else {
+                    throw Error(`The sizes of input values was inconsistent. There was no "most common" size\nThe other sizes were: ${[...new Set(quantites)]}, here's a mapping with sizes as the key and indicies as the values:\n${JSON.stringify(lengthFrequencyMapping)}`)
+                }
+            }
+            
+            // passed the checks, so throw the normal error
+            throw error
         }
         return this
     }
@@ -95,9 +154,9 @@ export class RandomForestClassifier {
                 eachTree.predict(input)
             )
         }
-        const frequencyCount = this._voteCounts(treePredictions)
+        const voteCounts = frequencyCount(treePredictions)
         const distribution = Object.assign({}, this._distributionTemplate)
-        for (const [key, value] of Object.entries(frequencyCount)) {
+        for (const [key, value] of Object.entries(voteCounts)) {
             distribution[key] = value/treePredictions.length
         }
         return distribution
@@ -133,7 +192,7 @@ export class RandomForestClassifier {
             )
         }
         return this._majorityVote(
-            this._voteCounts(treePredictions)
+            frequencyCount(treePredictions)
         )
     }
     
@@ -161,20 +220,24 @@ export class RandomForestClassifier {
         const sampleX = []
         const sampleY = []
         const numberOfSamples = inputs.length
+        
+        if (inputs.some(each=>each==null)) {
+            throw Error(`given inputs contained null`)
+        }
         for (let i = 0; i < numberOfSamples; i++) {
-            const index = Math.floor(Math.random() * numberOfSamples)
+            const index = getRandomInt(0, numberOfSamples-1)
+            if (inputs[index] == null){
+                console.debug(`index is:`,index)
+                console.debug(`inputs.length is:`,inputs.length)
+                console.debug(`inputs.slice(-10,) is:`,inputs.slice(-10,))
+            }
             sampleX.push(inputs[index])
             sampleY.push(outputs[index])
         }
-        return { inputs: sampleX, outputs: sampleY }
-    }
-
-    _voteCounts(predictions) {
-        const voteCounts = {}
-        for (const eachPrediction of predictions) {
-            voteCounts[eachPrediction] = (voteCounts[eachPrediction] || 0) + 1
+        if (sampleX.some(each=>each==null)) {
+            throw Error(`inputs contained null`)
         }
-        return voteCounts
+        return { inputs: sampleX, outputs: sampleY }
     }
 
     _majorityVote(voteCounts) {
@@ -198,6 +261,9 @@ export class DecisionTree {
     }
 
     fit(inputs, outputs) {
+        if (inputs.some(each=>each == null)) {
+            throw Error(`inputs contains null`)
+        }
         this.tree = this._buildTree(inputs, outputs, 0)
     }
 
@@ -208,7 +274,9 @@ export class DecisionTree {
     _buildTree(inputs, outputs, depth) {
         const numberOfSamples = inputs.length
         const numberOfFeatures = inputs[0].length
-
+        if (inputs.some(each=>each==null)) {
+            throw Error(`inputs contained a null entry`)
+        }
         // Stopping conditions
         if (depth >= this.maxDepth || this._isPure(outputs)) {
             return this._createLeafNode(outputs)
@@ -219,11 +287,21 @@ export class DecisionTree {
         let bestGain = -Infinity
 
         // Randomly select features for splitting
-        const featureIndices = Array.from({ length: numberOfFeatures }, (_, i) => i)
-        const randomFeatureIndices = this._randomSubset(featureIndices, Math.sqrt(numberOfFeatures))
+        const featureIndices = [...Array(numberOfFeatures)].map((_,i)=>i)
+        const randomFeatureIndices = _.shuffle(featureIndices).slice(0, Math.sqrt(numberOfFeatures))
 
         for (const featureIndex of randomFeatureIndices) {
-            const featureValues = inputs.map((sample) => sample[featureIndex])
+            const featureValues = inputs.map((sample, index) => {
+                try {
+                    return sample[featureIndex]
+                } catch (error) {
+                    console.debug(`featureIndex is:`,featureIndex)
+                    console.debug(`index is:`,index)
+                    console.debug(`sample is:`,sample)
+                    console.debug(`inputs is:`,inputs)
+                }
+                sample[featureIndex]
+            })
             const uniqueValues = [...new Set(featureValues)]
 
             for (const value of uniqueValues) {
@@ -249,7 +327,7 @@ export class DecisionTree {
         if (notEnoughData) {
             return this._createLeafNode(outputs)
         }
-
+        
         const leftSubtree = this._buildTree(leftX, leftY, depth + 1)
         const rightSubtree = this._buildTree(rightX, rightY, depth + 1)
 
@@ -284,10 +362,7 @@ export class DecisionTree {
     }
 
     _createLeafNode(outputs) {
-        const voteCounts = {}
-        for (const eachLabel of outputs) {
-            voteCounts[eachLabel] = (voteCounts[eachLabel] || 0) + 1
-        }
+        const voteCounts = frequencyCount(outputs)
         const majorityVote = this._majorityVote(voteCounts)
         return { isLeaf: true, value: majorityVote }
     }
@@ -309,7 +384,12 @@ export class DecisionTree {
             }
         }
 
-        return [leftX, rightX, leftY, rightY]
+        return [
+            leftX.filter(each=>each!=null),
+            rightX.filter(each=>each!=null),
+            leftY.filter(each=>each!=null),
+            rightY.filter(each=>each!=null)
+        ]
     }
 
     _informationGain(parentY, leftY, rightY) {
@@ -331,15 +411,6 @@ export class DecisionTree {
             entropy -= probability * Math.log2(probability)
         }
         return entropy
-    }
-
-    _randomSubset(array, size) {
-        const shuffledArray = array.slice() // Create a shallow copy of the array
-        for (let i = shuffledArray.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1))
-            ;[shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]]
-        }
-        return shuffledArray.slice(0, size)
     }
 
     _majorityVote(voteCounts) {
