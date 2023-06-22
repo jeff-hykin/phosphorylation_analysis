@@ -1,4 +1,4 @@
-import { flatten, asyncIteratorToList, enumerate } from "https://deno.land/x/good@1.2.2.0/iterable.js"
+import { flatten, asyncIteratorToList, enumerate } from "https://deno.land/x/good@1.3.0.1/iterable.js"
 /**
  * create onehot encoding
  *
