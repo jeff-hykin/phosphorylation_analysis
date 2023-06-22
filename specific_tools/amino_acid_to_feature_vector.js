@@ -7,6 +7,8 @@ import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.31/main/file_sy
 import { parseFasta } from "../generic_tools/fasta_parser.js"
 import { createOneHot } from "../generic_tools/misc.js"
 
+const shouldUseSiplifier = true
+const shouldIncludePhysicochemicalCategories = true
 
 // 
 // setup the one-hot encoding
@@ -41,15 +43,59 @@ import { createOneHot } from "../generic_tools/misc.js"
         // "*": "translation stop",
         // "-": "gap of indeterminate length ",
     }
-    
+    const aminoAcidSimplifier = {
+        "I": "J",
+        "L": "J",
+        
+        "Q": "Z",
+        "E": "Z",
+        
+        "D": "B",
+        "N": "B",
+    }
+    if (shouldUseSiplifier) {
+        // remove the ones that will get simplified
+        for (const [key, value] of Object.entries(aminoAcidSimplifier)) {
+            delete amnioEncoding[key]
+        }
+    } 
     const aminoToOneHot = createOneHot(amnioEncoding)
 
+// 
+// additional features
+// 
+    const physicochemicalCategories = {
+        polar: [..."NQSDECTKRHYW"],
+        positive: [..."KHR"],
+        negative: [..."DE"],
+        charged: [..."KHRDE"],
+        hydrophobic: [..."AGCTIVLKHFYWM"],
+        aliphatic: [..."IVL"],
+        aromatic: [..."FYWH"],
+        small: [..."PNDTCAGSV"],
+        tiny: [..."ASGC"],
+    }
+    // what is the charge amount (negatives and postives)
+    
 export function aminoAcidToFeatureVector({aminoAcidString}) {
     const evenNumberOfChars = aminoAcidString.length % 2 == 0
     if (evenNumberOfChars) {
         throw Error(`This aminoAcid string doesnt have an odd of characters (e.g. no center): ${aminoAcidString}`)
     }
-    const oneHot = []
+    const featureVector = []
+
+    // 
+    // simplify encodings
+    // 
+    if (shouldUseSiplifier) {
+        for (const [key, value] of Object.entries(aminoAcidSimplifier)) {
+            aminoAcidString = aminoAcidString.replace(new RegExp(key, "g"), value)
+        }
+    }
+
+    // 
+    // normal positional data (20x20)
+    // 
     const centerIndex = (aminoAcidString.length-1)/2
     for (const [index, eachAminoChar] of enumerate(aminoAcidString)) {
         // skip the one we are trying to predict
@@ -57,8 +103,33 @@ export function aminoAcidToFeatureVector({aminoAcidString}) {
             continue
         }
         for (const eachBool of aminoToOneHot[eachAminoChar]) {
-            oneHot.push(eachBool)
+            featureVector.push(eachBool)
         }
     }
-    return new Uint8Array(oneHot)
+    
+    // 
+    // additional features
+    // 
+    const acidsBefore = aminoAcidString.slice(0,centerIndex)
+    const acidsAfter = aminoAcidString.slice(centerIndex+1,)
+    if (shouldIncludePhysicochemicalCategories) {
+        for (const [key, qualities] of Object.entries(physicochemicalCategories)) {
+            let featureMagnitude = 0
+            let beforeFeatureMagnitude = 0
+            let afterFeatureMagnitude = 0
+            for (const eachAcid of acidsBefore) {
+                featureMagnitude += 1
+                beforeFeatureMagnitude += 1
+            }
+            for (const eachAcid of acidsAfter) {
+                featureMagnitude += 1
+                afterFeatureMagnitude += 1
+            }
+            featureVector.push(featureMagnitude)
+            featureVector.push(beforeFeatureMagnitude)
+            featureVector.push(afterFeatureMagnitude)
+        }
+    }
+
+    return new Uint8Array(featureVector)
 }
