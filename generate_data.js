@@ -39,6 +39,7 @@ import { loadMixedExamples } from "./specific_tools/load_mixed_examples.js"
 import { loadPositiveExamples } from "./specific_tools/load_positive_examples.js"
 import { aminoAcidToFeatureVector } from "./specific_tools/amino_acid_to_feature_vector.js"
 import { pathToHuffmanCoder } from "./config.js"
+import { HuffmanCoder } from "./generic_tools/huffman_code.js"
 
 const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
 
@@ -142,6 +143,5 @@ const aminoMatchPattern = /S/
 // 
 // create the feature vector and save it
 // 
-    import { HuffmanCoder } from "./generic_tools/huffman_code.js"
     await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(    positiveExamples.map(  ({aminoAcids})=>aminoAcidToFeatureVector({ aminoAcidString: aminoAcids })  )    ), })
     await FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(    negativeExamples.map(  ({aminoAcids})=>aminoAcidToFeatureVector({ aminoAcidString: aminoAcids })  )    ), })
