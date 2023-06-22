@@ -103,10 +103,12 @@ const aminoMatchPattern = /S/
 // "train" HuffmanCoder and save it
 // 
     const coder = new HuffmanCoder()
-    console.debug(`building huffman coder`, encodedLengths)
+    console.debug(`building huffman coder`)
+    let count = 0
     for (const {aminoAcids, ...otherData} of positiveExamples.concat(negativeExamples)) {
-        if (!aminoAcids) {
-            console.debug(`otherData is:`,otherData)
+        count += 1
+        if (count % 2000) {
+            console.log(`        on ${count}/${commonSize*2}`)
         }
         // text before
         coder.addData(aminoAcids.slice(0,windowPadding))
