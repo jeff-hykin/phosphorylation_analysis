@@ -40,12 +40,13 @@ import { loadPositiveExamples } from "./specific_tools/load_positive_examples.js
 const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
 
 const windowPadding = 10 // + or - 10 amino acids
+const aminoMatchPattern = /S/
 // 
 // human genome
 // 
     let { mixedExamples, summaryData, geneNames, geneData } = await loadMixedExamples({
         filePath: `${FileSystem.thisFolder}/data/human_genome.fasta.txt`,
-        aminoMatchPattern: /T|S/,
+        aminoMatchPattern: aminoMatchPattern,
         windowPadding,
         skipEntryIf: ({geneName, aminoAcidsString, ...otherData})=>false, // false=keep
     })
@@ -59,7 +60,7 @@ const windowPadding = 10 // + or - 10 amino acids
         commonGeneNames,
     } = await loadPositiveExamples({
         filePath: /.\/data\/phosphorylation@\d+.tsv/,
-        skipEntryIf: ({ geneName, aminoAcidsString, })=>!geneNames.has(geneName)||aminoAcidsString[windowPadding]=="Y",
+        skipEntryIf: ({ geneName, aminoAcidsString, })=>!geneNames.has(geneName)||!aminoAcidsString[windowPadding].match(aminoMatchPattern),
         geneData,
     })
     console.debug(`positiveExamples[0] is:`,positiveExamples[0])
