@@ -29,7 +29,7 @@ print("splitting up the data")
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Create a Random Forest Classifier object
-rf_classifier = RandomForestClassifier(n_estimators=150,max_depth=40)
+rf_classifier = RandomForestClassifier(n_estimators=500,max_depth=20)
 
 # Train the classifier using the training data
 print("training")
