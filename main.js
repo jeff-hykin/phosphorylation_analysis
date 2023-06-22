@@ -60,7 +60,7 @@ const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
     })
     
     for (const {train, test} of folds) {
-        const classifier = new RandomForestClassifier({ numberOfTrees: 50, maxDepth: 10 }).fit({
+        const classifier = new RandomForestClassifier({ numberOfTrees: 150, maxDepth: 50 }).fit({
             inputs: [...train.inputs],
             outputs: new Int8Array(train.outputs),
         })
