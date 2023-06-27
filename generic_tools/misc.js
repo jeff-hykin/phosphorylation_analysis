@@ -27,7 +27,10 @@ export function* generateLinesFor(array) {
     let index = -1
     let prevPercentString = ""
     let percentString = "  0.0"
-    for (const each of array) {
+    for (let each of array) {
+        if (each instanceof Uint8Array) {
+            each = [...each]
+        }
         index += 1
         percentString = `${((index/array.length)*100).toFixed(1)}`.padStart(5," ")
         if (prevPercentString != percentString) {
