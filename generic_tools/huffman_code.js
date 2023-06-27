@@ -51,14 +51,17 @@ export class HuffmanCoder {
      *     console.log("Original data:", data)
      *     console.log("Encoded data:", coder.encode(data)) // Encoded data: 101010110101100110011011110100111101000001
      *     console.log("Decoded data:", coder.decode(encodedData))
+     * @note
+     *     the cap is a softCap because single-char encodings will always be kept
      *
-     * @param arg1 - description
-     * @param arg1.parameter - description
+     * @param arg1.softCap - the max size of the encoding
+     * @param arg1.values - values that were loaded from a file
      * @returns {Object} output - description
      * @returns output.x - description
      *
      */
-    constructor(values) {
+    constructor({values={}, softCap=Infinity}) {
+        this.cap = softCap
         this.effectiveFrequencyTable = {}
         this.isFrozen = false
         // for importing data
@@ -106,7 +109,7 @@ export class HuffmanCoder {
         console.log(`_buildCodeMap`)
         this.codeMap = this._buildCodeMap(this.tree)
         console.log(`_buildEnumerationMapping`)
-        const { encodingToNumber, substringToNumber, numberToSubstring } = this._buildEnumerationMapping(this.codeMap)
+        const { encodingToNumber, substringToNumber, numberToSubstring } = this._buildEnumerationMapping(this.codeMap, this.cap)
         this.encodingToNumber = encodingToNumber
         this.numberToSubstring = numberToSubstring
         this.substringToNumber = substringToNumber
@@ -247,19 +250,24 @@ export class HuffmanCoder {
         return codeMap
     }
 
-    _buildEnumerationMapping(codeMap) {
+    _buildEnumerationMapping(codeMap, cap) {
         const encodings = Object.entries(codeMap)
         encodings.sort(
             compare({
-                elementToNumber: ([eachChar, eachEncoding])=>eachEncoding.length,
+                elementToNumber: ([eachSubstring, eachEncoding])=>eachEncoding.length,
                 largestFirst:false 
             }),
         )
+        const thresholdElement = encodings.slice(0, cap).slice(-1)[0]
+        const threshold = thresholdElement[1].length // encoding length
+        const truncatedEncodings = encodings.filter(([eachSubstring, eachEncoding])=>eachSubstring.length == 1 || eachEncoding.length <= threshold)
+        const truncatedCodeMap = Object.fromEntries(truncatedEncodings)
+
         let index = -1
         const substringToNumberUnsorted = {}
         const encodingToNumber = {}
         const numberToSubstring = {}
-        for (const [eachSubstring, eachEncoding] of encodings) {
+        for (const [eachSubstring, eachEncoding] of truncatedEncodings) {
             ++index
             substringToNumberUnsorted[eachSubstring] = index
             encodingToNumber[eachEncoding] = index

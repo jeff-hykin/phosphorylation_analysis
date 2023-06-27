@@ -46,6 +46,7 @@ const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
 
 const windowPadding = 10 // + or - 10 amino acids
 const aminoMatchPattern = /S/
+const huffmanEncoderCap = 60
 // 
 // human genome
 // 
@@ -104,13 +105,13 @@ const aminoMatchPattern = /S/
 // 
 // "train" HuffmanCoder and save it
 // 
-    const coder = new HuffmanCoder()
+    const coder = new HuffmanCoder({ softCap: huffmanEncoderCap })
     console.debug(`building huffman coder`)
     let count = 0
     for (const {aminoAcids, ...otherData} of positiveExamples.concat(negativeExamples)) {
         count += 1
         if (count % 2000 == 0) {
-            console.log(`        on ${count}/${commonSize*2}: ${count/(commonSize*2)*100}`)
+            console.log(`    on ${count}/${commonSize*2}: ${Math.round(count/(commonSize*2)*100)}%`)
         }
         // text before
         coder.addData(aminoAcids.slice(0,windowPadding))
@@ -119,14 +120,14 @@ const aminoMatchPattern = /S/
     }
     coder.freeze()
     count = 0
-    console.debug(`building frequency count`)
     console.debug(`coder.substringToNumber is:`,coder.substringToNumber)
+    console.debug(`building frequency count`)
     const encodedLengths = frequencyCount([...(function*(){
         for (const {aminoAcids} of positiveExamples.concat(negativeExamples)) {
             count += 1
             const [ before, after ] = [ aminoAcids.slice(0,windowPadding), aminoAcids.slice(windowPadding+1,) ]
             if ((count-1) % 2000 == 0) {
-                console.log(`        on ${count}/${commonSize*2}: ${count/(commonSize*2)*100}`)
+                console.log(`        on ${count}/${commonSize*2}: ${Math.round(count/(commonSize*2)*100)}%`)
             }
             // text before
             yield coder.encode(before).length
