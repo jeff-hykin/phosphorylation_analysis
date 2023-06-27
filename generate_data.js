@@ -99,7 +99,7 @@ const huffmanEncoderCap = 60
 // 
 // 
     // const commonSize = Math.min(positiveExamples.length, negativeExamples.length)
-    const commonSize = 5000
+    const commonSize = 50000
     positiveExamples = positiveExamples.slice(0,commonSize)
     negativeExamples = negativeExamples.slice(0,commonSize)
 
