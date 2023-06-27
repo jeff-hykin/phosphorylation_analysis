@@ -99,9 +99,15 @@ const huffmanEncoderCap = 60
 // 
 // 
     // const commonSize = Math.min(positiveExamples.length, negativeExamples.length)
-    const commonSize = 50000
+    const commonSize = 200000
     positiveExamples = positiveExamples.slice(0,commonSize)
     negativeExamples = negativeExamples.slice(0,commonSize)
+    if (negativeExamples.length != negativeExamples.length) {
+        let max = Math.min(positiveExamples.length, negativeExamples.length)
+        console.error(`commonSize was too big needs to be: ${max}`)
+        positiveExamples = positiveExamples.slice(0, max)
+        negativeExamples = negativeExamples.slice(0, max)
+    }
 
 // 
 // "train" HuffmanCoder and save it

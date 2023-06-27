@@ -1,5 +1,6 @@
 import json
 from os.path import join
+from random import shuffle
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -27,8 +28,7 @@ y = negative_outputs + positive_outputs
 # Assuming you have your data and labels ready, let's call them X and y respectively
 # Split the data into training and testing sets
 print("splitting up the data")
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=43)
 
 # Create a Random Forest Classifier object
 classifier = GaussianNB()
@@ -61,7 +61,14 @@ if True:
     print("Negative Accuracy:", accuracy)
 
 
-# default parameters, 50,000 samples, uniprotId based filtering
+# default parameters, 200,000 samples, uniprotId based filtering, physico-chemical features present
+    # Total Accuracy: 0.5420136381869234
+    # confusion_matrix(y_test, y_pred) = [[14539 25473]
+    #  [ 3071 19242]]
+    # Positive Accuracy: 0.8623672298659975
+    # Negative Accuracy: 0.36336599020293914
+
+# default parameters, 50,000 samples, uniprotId based filtering, physico-chemical features present
     # Total Accuracy: 0.62175
     # confusion_matrix(y_test, y_pred) = [
     #     [4525 5510]
