@@ -13,6 +13,7 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
     // DONE: allow amino acid substitues/groups
 
     // todo:
+        // recreate structure features like the paper did
         // naive bayes
     // answer some questions:
         // how many have no phos sites
@@ -34,7 +35,7 @@ import { parseCsv, createCsv } from "https://deno.land/x/good@1.3.0.1/csv.js"
 import { intersection } from "https://deno.land/x/good@1.3.0.1/set.js"
 import { flatten, asyncIteratorToList, enumerate, zip } from "https://deno.land/x/good@1.3.0.1/iterable.js"
 import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno.land/x/good@1.3.0.1/string.js"
-import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.32/main/file_system.js"
+import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.35/main/file_system.js"
 import { parseFasta } from "./generic_tools/fasta_parser.js"
 import { loadMixedExamples } from "./specific_tools/load_mixed_examples.js"
 import { loadPositiveExamples } from "./specific_tools/load_positive_examples.js"
@@ -98,49 +99,49 @@ const huffmanEncoderCap = 60
 // 
 // 
     // const commonSize = Math.min(positiveExamples.length, negativeExamples.length)
-    const commonSize = 50_000
+    const commonSize = 5000
     positiveExamples = positiveExamples.slice(0,commonSize)
     negativeExamples = negativeExamples.slice(0,commonSize)
 
 // 
 // "train" HuffmanCoder and save it
 // 
-    const coder = new HuffmanCoder({ softCap: huffmanEncoderCap })
-    console.debug(`building huffman coder`)
-    let count = 0
-    for (const {aminoAcids, ...otherData} of positiveExamples.concat(negativeExamples)) {
-        count += 1
-        if (count % 2000 == 0) {
-            console.log(`    on ${count}/${commonSize*2}: ${Math.round(count/(commonSize*2)*100)}%`)
-        }
-        // text before
-        coder.addData(aminoAcids.slice(0,windowPadding))
-        // text after
-        coder.addData(aminoAcids.slice(windowPadding+1,))
-    }
-    coder.freeze()
-    count = 0
-    console.debug(`coder.substringToNumber is:`,coder.substringToNumber)
-    console.debug(`building frequency count`)
-    const encodedLengths = frequencyCount([...(function*(){
-        for (const {aminoAcids} of positiveExamples.concat(negativeExamples)) {
-            count += 1
-            const [ before, after ] = [ aminoAcids.slice(0,windowPadding), aminoAcids.slice(windowPadding+1,) ]
-            if ((count-1) % 2000 == 0) {
-                console.log(`        on ${count}/${commonSize*2}: ${Math.round(count/(commonSize*2)*100)}%`)
-            }
-            // text before
-            yield coder.encode(before).length
-            // text after
-            yield coder.encode(after).length
-        }
-    })()])
+    // const coder = new HuffmanCoder({ softCap: huffmanEncoderCap })
+    // console.debug(`building huffman coder`)
+    // let count = 0
+    // for (const {aminoAcids, ...otherData} of positiveExamples.concat(negativeExamples)) {
+    //     count += 1
+    //     if (count % 2000 == 0) {
+    //         console.log(`    on ${count}/${commonSize*2}: ${Math.round(count/(commonSize*2)*100)}%`)
+    //     }
+    //     // text before
+    //     coder.addData(aminoAcids.slice(0,windowPadding))
+    //     // text after
+    //     coder.addData(aminoAcids.slice(windowPadding+1,))
+    // }
+    // coder.freeze()
+    // count = 0
+    // console.debug(`coder.substringToNumber is:`,coder.substringToNumber)
+    // console.debug(`building frequency count`)
+    // const encodedLengths = frequencyCount([...(function*(){
+    //     for (const {aminoAcids} of positiveExamples.concat(negativeExamples)) {
+    //         count += 1
+    //         const [ before, after ] = [ aminoAcids.slice(0,windowPadding), aminoAcids.slice(windowPadding+1,) ]
+    //         if ((count-1) % 2000 == 0) {
+    //             console.log(`        on ${count}/${commonSize*2}: ${Math.round(count/(commonSize*2)*100)}%`)
+    //         }
+    //         // text before
+    //         yield coder.encode(before).length
+    //         // text after
+    //         yield coder.encode(after).length
+    //     }
+    // })()])
     
-    console.debug(`encodedLengths is:`, encodedLengths)
-    const smallestEncodingLength = Math.min(...Object.keys(encodedLengths).map(each=>each-0))
-    coder.smallestEncodingLength = smallestEncodingLength
+    // console.debug(`encodedLengths is:`, encodedLengths)
+    // const smallestEncodingLength = Math.min(...Object.keys(encodedLengths).map(each=>each-0))
+    // coder.smallestEncodingLength = smallestEncodingLength
     
-    await FileSystem.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder,0,2) })
+    // await FileSystem.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder,0,2) })
 
 // 
 // create the feature vector and save it
