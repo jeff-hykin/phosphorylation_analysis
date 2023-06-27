@@ -29,7 +29,7 @@ export async function loadMixedExamples({ filePath, aminoMatchPattern, windowPad
         aminoAcidCount: 0,
         styCounts: 0,
     }
-    const geneNames = new Set()
+    const geneIds = new Set()
     const geneList = parseFasta(mixedString)
     const geneData = {}
     const mixedExamples = []
@@ -38,19 +38,21 @@ export async function loadMixedExamples({ filePath, aminoMatchPattern, windowPad
         // add attributes
         // 
         const geneName = eachGene.ncbiIdentifiers[0].args.name
-        eachGene.name = geneName
+        const uniprotGeneId = eachGene.ncbiIdentifiers[0].args.accession
+        eachGene.abbreviatedGeneSpecies = geneName
+        eachGene.uniprotGeneId = uniprotGeneId
         eachGene.phosWindows = getWindows(eachGene.aminoAcidsString)
         
         // custom filter
-        if (skipEntryIf({...eachGene, geneName})) {
+        if (skipEntryIf({...eachGene, uniprotGeneId})) {
             continue
         }
 
         // 
         // track names and data
         // 
-        geneNames.add(geneName)
-        geneData[geneName] = eachGene
+        geneIds.add(uniprotGeneId)
+        geneData[uniprotGeneId] = eachGene
 
         // 
         // counts
@@ -68,7 +70,7 @@ export async function loadMixedExamples({ filePath, aminoMatchPattern, windowPad
         // 
         for (const { index, slice, } of eachGene.phosWindows) {
             mixedExamples.push({
-                siteId: `${index}|${geneName}`,
+                siteId: `${uniprotGeneId}|${index}`,
                 indexRelativeToGene: index,
                 aminoAcids: slice,
                 isPhosSite: 0,
@@ -80,7 +82,7 @@ export async function loadMixedExamples({ filePath, aminoMatchPattern, windowPad
     return {
         mixedExamples,
         summaryData,
-        geneNames,
+        geneIds,
         geneData,
     }
 }

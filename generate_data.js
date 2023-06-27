@@ -10,9 +10,10 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
     // DONE: encode positive/negative as bit array
     // DONE: remove any positive values from the negative examples dataset
     // DONE: cross validate the output
+    // DONE: allow amino acid substitues/groups
 
-    // features
-        // allow amino acid substitues/groups
+    // todo:
+        // naive bayes
     // answer some questions:
         // how many have no phos sites
         // whats the ratio
@@ -48,11 +49,11 @@ const aminoMatchPattern = /S/
 // 
 // human genome
 // 
-    let { mixedExamples, summaryData, geneNames, geneData } = await loadMixedExamples({
+    let { mixedExamples, summaryData, geneIds, geneData } = await loadMixedExamples({
         filePath: `${FileSystem.thisFolder}/data/human_genome.fasta.txt`,
         aminoMatchPattern: aminoMatchPattern,
         windowPadding,
-        skipEntryIf: ({geneName, aminoAcidsString, ...otherData})=>false, // false=keep
+        skipEntryIf: ({ uniprotGeneId, aminoAcidsString, ...otherData })=>false, // false=keep
     })
     console.debug(`mixedExamples[0] is:`,mixedExamples[0])
 
@@ -61,10 +62,10 @@ const aminoMatchPattern = /S/
 // 
     let {
         positiveExamples,
-        commonGeneNames,
+        commonGeneIds,
     } = await loadPositiveExamples({
         filePath: /.\/data\/phosphorylation@0\d+.tsv/,
-        skipEntryIf: ({ geneName, aminoAcidsString, })=>!geneNames.has(geneName)||!aminoAcidsString[windowPadding].match(aminoMatchPattern),
+        skipEntryIf: ({ uniprotGeneId, aminoAcidsString, })=>!geneIds.has(uniprotGeneId)||!aminoAcidsString[windowPadding].match(aminoMatchPattern),
         geneData,
     })
     console.debug(`positiveExamples[0] is:`,positiveExamples[0])

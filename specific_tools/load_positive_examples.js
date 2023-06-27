@@ -7,12 +7,12 @@ import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.32/main/file_sy
 import { parseFasta } from "../generic_tools/fasta_parser.js"
 
 export async function loadPositiveExamples({ filePath, geneData, skipEntryIf }) {
-    const geneNamesFromNegativeData = new Set(Object.keys(geneData))
+    const geneIdsFromNegativeData = new Set(Object.keys(geneData))
     
     const summaryData = {
         frequencyPerHumanGene: {},
     }
-    const geneNames = new Set()
+    const geneIds = new Set()
     const haveSeenPhosSite = new Set()
     const positiveExamples = []
     for (const eachPath of await glob(filePath)) {
@@ -40,7 +40,8 @@ export async function loadPositiveExamples({ filePath, geneData, skipEntryIf }) 
             
             // add siteId
             const geneName = eachPhosSite.abbreviatedGeneSpecies
-            eachPhosSite.siteId = `${geneName}|${eachPhosSite.indexRelativeToGene}`
+            const uniprotGeneId = eachPhosSite.uniprotGeneId
+            eachPhosSite.siteId = `${uniprotGeneId}|${eachPhosSite.indexRelativeToGene}`
             
             // remove duplicate entries (same geneId and indexRelativeToGene), probably a variant (different sequence) but on the safe side, remove it
             if (haveSeenPhosSite.has(eachPhosSite.siteId)) {
@@ -52,27 +53,27 @@ export async function loadPositiveExamples({ filePath, geneData, skipEntryIf }) 
             eachPhosSite.pubmedIdForRelatedReferences = `${eachPhosSite.pubmedIdForRelatedReferences}`.split(";")
             
             // custom filter
-            if (skipEntryIf({...eachPhosSite, geneName})) {
+            if (skipEntryIf({...eachPhosSite, uniprotGeneId})) {
                 continue
             }
 
             // add to gene data
-            geneData[geneName] = geneData[geneName]||{}
-            geneData[geneName].name = geneName
-            geneData[geneName].phosSites = geneData[geneName].phosSites||[]
-            geneData[geneName].phosSites.push(eachPhosSite)
+            geneData[uniprotGeneId] = geneData[uniprotGeneId]||{}
+            geneData[uniprotGeneId].name = uniprotGeneId
+            geneData[uniprotGeneId].phosSites = geneData[uniprotGeneId].phosSites||[]
+            geneData[uniprotGeneId].phosSites.push(eachPhosSite)
 
             // 
             // track names and data
             // 
-            geneNames.add(geneName)
+            geneIds.add(uniprotGeneId)
             
             positiveExamples.push({
-                siteId: `${eachPhosSite.indexRelativeToGene}|${geneName}`,
+                siteId: `${uniprotGeneId}|${eachPhosSite.indexRelativeToGene}`,
                 indexRelativeToGene: eachPhosSite.indexRelativeToGene,
                 aminoAcids: eachPhosSite.aminoAcidsString,
                 isPhosSite: 1,
-                geneInfo: geneData[geneName],
+                geneInfo: geneData[uniprotGeneId],
             })
         }
     }
@@ -80,21 +81,21 @@ export async function loadPositiveExamples({ filePath, geneData, skipEntryIf }) 
     // 
     // process phos
     // 
-        const commonGeneNames = intersection(
-            geneNamesFromNegativeData, 
-            new Set(geneNames),
+        const commonGeneIds = intersection(
+            geneIdsFromNegativeData, 
+            new Set(geneIds),
         )
 
-        for (const eachGeneName of commonGeneNames) {
-            const numberOfPhosSites = geneData[eachGeneName]?.phosSites?.length || 0
+        for (const eachGeneId of commonGeneIds) {
+            const numberOfPhosSites = geneData[eachGeneId]?.phosSites?.length || 0
             summaryData.frequencyPerHumanGene[numberOfPhosSites] = (summaryData.frequencyPerHumanGene[numberOfPhosSites]||0) + 1
         }
 
     return {
         positiveExamples,
         summaryData,
-        geneNames,
-        commonGeneNames,
+        geneIds,
+        commonGeneIds,
         geneData,
     }
 }
