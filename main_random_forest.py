@@ -59,6 +59,20 @@ if True:
     print("Negative Accuracy:", accuracy)
 
 
+# n_estimators=500,max_depth=20, 200,000 samples, uniprotId based filtering, physico-chemical features NOT present
+    # Total Accuracy: 0.6626714801444044
+    # confusion_matrix(y_test, y_pred) = [[38433  1639]
+    #  [19385  2868]]
+    # Positive Accuracy: 0.12888149912371366
+    # Negative Accuracy: 0.9590986224795368
+
+# n_estimators=500,max_depth=20, 200,000 samples, uniprotId based filtering, physico-chemical features present
+    # Total Accuracy: 0.6657841957480947
+    # confusion_matrix(y_test, y_pred) = [[38250  1822]
+    # [19008  3245]]
+    # Positive Accuracy: 0.1458230350963915
+    # Negative Accuracy: 0.9545318426831703
+
 # n_estimators=500,max_depth=20, 50,000 samples, uniprotId based filtering
     # Total Accuracy: 0.64575
     # confusion_matrix(y_test, y_pred) = [

@@ -61,6 +61,13 @@ if True:
     print("Negative Accuracy:", accuracy)
 
 
+# default parameters, 200,000 samples, uniprotId based filtering, physico-chemical features NOT present
+    # Total Accuracy: 0.5420136381869234
+    # confusion_matrix(y_test, y_pred) = [[14539 25473]
+    #  [ 3071 19242]]
+    # Positive Accuracy: 0.8623672298659975
+    # Negative Accuracy: 0.36336599020293914
+
 # default parameters, 200,000 samples, uniprotId based filtering, physico-chemical features present
     # Total Accuracy: 0.5420136381869234
     # confusion_matrix(y_test, y_pred) = [[14539 25473]

@@ -8,7 +8,7 @@ import { parseFasta } from "../generic_tools/fasta_parser.js"
 import { createOneHot } from "../generic_tools/misc.js"
 
 const shouldUseSiplifier = false
-const shouldIncludePhysicochemicalCategories = true
+const shouldIncludePhysicochemicalCategories = false
 
 // 
 // setup the one-hot encoding
