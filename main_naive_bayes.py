@@ -61,7 +61,16 @@ if True:
     print("Negative Accuracy:", accuracy)
 
 
-# default parameters:
+# default parameters, 50,000 samples, uniprotId based filtering
+    # Total Accuracy: 0.62175
+    # confusion_matrix(y_test, y_pred) = [
+    #     [4525 5510]
+    #     [2055 7910]
+    # ]
+    # Positive Accuracy: 0.7937782237832414
+    # Negative Accuracy: 0.45092177379172893
+
+# default parameters, 5000 samples, uniprotId based filtering
     # Total Accuracy: 0.6375
     # confusion_matrix(y_test, y_pred) = [
     #     [585 427]

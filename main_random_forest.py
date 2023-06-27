@@ -59,6 +59,15 @@ if True:
     print("Negative Accuracy:", accuracy)
 
 
+# n_estimators=500,max_depth=20, 50,000 samples, uniprotId based filtering
+    # Total Accuracy: 0.64575
+    # confusion_matrix(y_test, y_pred) = [
+    #     [7035 3000]
+    #     [4085 5880]
+    # ]
+    # Positive Accuracy: 0.5900652282990466
+    # Negative Accuracy: 0.7010463378176383
+
 # n_estimators=100,max_depth=None
     # loaded negative_examples
     # loaded positive_examples
