@@ -68,7 +68,11 @@ const huffmanEncoderCap = 60
         commonGeneIds,
     } = await loadPositiveExamples({
         filePath: /.\/data\/phosphorylation@0\d+.tsv/,
-        skipEntryIf: ({ uniprotGeneId, aminoAcidsString, })=>!geneIds.has(uniprotGeneId)||!aminoAcidsString[windowPadding].match(aminoMatchPattern),
+        skipEntryIf: ({ uniprotGeneId, aminoAcidsString, })=>(
+            !geneIds.has(uniprotGeneId)
+            || !aminoAcidsString[windowPadding].match(aminoMatchPattern)
+            || aminoAcidsString.match(/SSS+/)
+        ),
         geneData,
     })
     console.debug(`positiveExamples[0] is:`,positiveExamples[0])
@@ -100,7 +104,7 @@ const huffmanEncoderCap = 60
 // 
 // 
     // const commonSize = Math.min(positiveExamples.length, negativeExamples.length)
-    const commonSize = 5_000
+    const commonSize = 50_000
     positiveExamples = positiveExamples.slice(-commonSize)
     negativeExamples = negativeExamples.slice(-commonSize)
     if (negativeExamples.length != negativeExamples.length) {
@@ -113,42 +117,42 @@ const huffmanEncoderCap = 60
 // 
 // "train" HuffmanCoder and save it
 // 
-    // const coder = new HuffmanCoder({ softCap: huffmanEncoderCap })
-    // console.debug(`building huffman coder`)
-    // let count = 0
-    // for (const {aminoAcids, ...otherData} of positiveExamples.concat(negativeExamples)) {
-    //     count += 1
-    //     if (count % 2000 == 0) {
-    //         console.log(`    on ${count}/${commonSize*2}: ${Math.round(count/(commonSize*2)*100)}%`)
-    //     }
-    //     // text before
-    //     coder.addData(aminoAcids.slice(0,windowPadding))
-    //     // text after
-    //     coder.addData(aminoAcids.slice(windowPadding+1,))
-    // }
-    // coder.freeze()
-    // count = 0
-    // console.debug(`coder.substringToNumber is:`,coder.substringToNumber)
-    // console.debug(`building frequency count`)
-    // const encodedLengths = frequencyCount([...(function*(){
-    //     for (const {aminoAcids} of positiveExamples.concat(negativeExamples)) {
-    //         count += 1
-    //         const [ before, after ] = [ aminoAcids.slice(0,windowPadding), aminoAcids.slice(windowPadding+1,) ]
-    //         if ((count-1) % 2000 == 0) {
-    //             console.log(`        on ${count}/${commonSize*2}: ${Math.round(count/(commonSize*2)*100)}%`)
-    //         }
-    //         // text before
-    //         yield coder.encode(before).length
-    //         // text after
-    //         yield coder.encode(after).length
-    //     }
-    // })()])
+    const coder = new HuffmanCoder({ softCap: huffmanEncoderCap })
+    console.debug(`building huffman coder`)
+    let count = 0
+    for (const {aminoAcids, ...otherData} of positiveExamples) {
+        count += 1
+        if (count % 2000 == 0) {
+            console.log(`    on ${count}/${commonSize*2}: ${Math.round(count/(commonSize*2)*100)}%`)
+        }
+        // text before
+        coder.addData(aminoAcids.slice(0,windowPadding))
+        // text after
+        coder.addData(aminoAcids.slice(windowPadding+1,))
+    }
+    coder.freeze()
+    count = 0
+    console.debug(`coder.substringToNumber is:`,coder.substringToNumber)
+    console.debug(`building frequency count`)
+    const encodedLengths = frequencyCount([...(function*(){
+        for (const {aminoAcids} of positiveExamples) {
+            count += 1
+            const [ before, after ] = [ aminoAcids.slice(0,windowPadding), aminoAcids.slice(windowPadding+1,) ]
+            if ((count-1) % 2000 == 0) {
+                console.log(`        on ${count}/${commonSize*2}: ${Math.round(count/(commonSize*2)*100)}%`)
+            }
+            // text before
+            yield coder.encode(before).length
+            // text after
+            yield coder.encode(after).length
+        }
+    })()])
     
-    // console.debug(`encodedLengths is:`, encodedLengths)
-    // const smallestEncodingLength = Math.min(...Object.keys(encodedLengths).map(each=>each-0))
-    // coder.smallestEncodingLength = smallestEncodingLength
+    console.debug(`encodedLengths is:`, encodedLengths)
+    const smallestEncodingLength = Math.min(...Object.keys(encodedLengths).map(each=>each-0))
+    coder.smallestEncodingLength = smallestEncodingLength
     
-    // await FileSystem.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder,0,2) })
+    await FileSystem.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder,0,2) })
 
 // 
 // create the feature vector and save it
