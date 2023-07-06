@@ -1,5 +1,5 @@
-import { capitalize, indent, toCamelCase, digitsToEnglishArray, toPascalCase, toKebabCase, toSnakeCase, toScreamingtoKebabCase, toScreamingtoSnakeCase, toRepresentation, toString, regex, escapeRegexMatch, escapeRegexReplace, extractFirst, isValidIdentifier } from "https://deno.land/x/good@1.3.0.1/string.js"
-import { enumerate, zip } from "https://deno.land/x/good@1.3.0.1/iterable.js"
+import { capitalize, indent, toCamelCase, digitsToEnglishArray, toPascalCase, toKebabCase, toSnakeCase, toScreamingtoKebabCase, toScreamingtoSnakeCase, toRepresentation, toString, regex, escapeRegexMatch, escapeRegexReplace, extractFirst, isValidIdentifier } from "https://deno.land/x/good@1.3.0.4/string.js"
+import { enumerate, zip } from "https://deno.land/x/good@1.3.0.4/iterable.js"
 import { frequencyCount } from "../generic_tools/misc.js"
 
 const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
@@ -124,7 +124,7 @@ export class RandomForestClassifier {
             }
             const inputSizes = Object.keys(lengthFrequencyMapping).map(each=>each-0)
             // there should be one size (e.g. size == numberOfFeatures)
-            if (inputSizes.length !== 0) {
+            if (inputSizes.length !== 1) {
                 const quantites = Object.values(lengthFrequencyMapping).map(each=>each.length)
                 const highestCount = Math.max(...quantites)
                 const thereIsADominantSize = quantites.filter(each=>each.length == highestCount).length == 1
@@ -137,7 +137,7 @@ export class RandomForestClassifier {
                     }
                     throw Error(`The sizes of input values was inconsistent. The most commmon size is: ${theMostCommonSize}\nThe other sizes were: ${[...new Set(quantites)]}, here's a mapping with sizes as the key and indicies as the values:\n${JSON.stringify(lengthFrequencyMapping)}`)
                 } else {
-                    throw Error(`The sizes of input values was inconsistent. There was no "most common" size\nThe other sizes were: ${[...new Set(quantites)]}, here's a mapping with sizes as the key and indicies as the values:\n${JSON.stringify(lengthFrequencyMapping)}`)
+                    throw Error(`The sizes of input values was inconsistent. There was no "most common" size\nThe sizes were: ${[...new Set(quantites)]}, here's a mapping with sizes as the key and indicies as the values:\n${JSON.stringify(lengthFrequencyMapping)}`)
                 }
             }
             
@@ -219,12 +219,18 @@ export class RandomForestClassifier {
     get featureImportance() {
         let frequencyCountingPerFeature = {}
         for (const eachTree of this.trees) {
-            for (const [rank, featureIndex] of Object.entries(eachTree._featureRanking(eachTree.tree))) {
-                if (!frequencyCountingPerFeature[featureIndex]) {
-                    frequencyCountingPerFeature[featureIndex] = 0
+            const featureRanking = eachTree._featureRanking(eachTree.tree)
+            for (const [rank, featureIndices] of Object.entries(featureRanking)) {
+                for (let featureIndex of featureIndices) {
+                    if (!frequencyCountingPerFeature[featureIndex]) {
+                        frequencyCountingPerFeature[featureIndex] = 0
+                    }
+                    // first rank is 1, then importance tapers off
+                    frequencyCountingPerFeature[featureIndex] += 1/(+rank)
+                    if (Object.keys(frequencyCountingPerFeature).includes("undefined")) {
+                        throw Error(`${featureIndex}: featureIndex`)
+                    }
                 }
-                // first rank is 1, then importance tapers off
-                frequencyCountingPerFeature[featureIndex] += 1/(+rank)
             }
         }
         return frequencyCountingPerFeature
@@ -329,7 +335,7 @@ export class DecisionTree {
         
         const leftSubtree = this._buildTree(leftX, leftY, depth + 1)
         const rightSubtree = this._buildTree(rightX, rightY, depth + 1)
-
+        
         return {
             featureIndex: bestFeature,
             threshold: bestThreshold,
@@ -351,13 +357,13 @@ export class DecisionTree {
     }
     
     _featureRanking(node, ranking={}, depth=1) {
-        if (!ranking[depth]) {
+        if (ranking[depth] == null) {
             ranking[depth] = []
         }
-        ranking[depth].push(node.featureIndex)
         if (node.isLeaf) {
             return
         }
+        ranking[depth].push(node.featureIndex)
         this._featureRanking(node.leftChild, ranking, (depth-0)+1)
         this._featureRanking(node.rightChild, ranking, (depth-0)+1)
         return ranking
