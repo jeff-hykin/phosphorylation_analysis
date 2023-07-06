@@ -6,11 +6,19 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
     // split -l 200 --numeric-suffixes --additional-suffix=".txt" toSplit.txt splited
 
 // todo:
+    // get importance from python for random forest
+    // get libsvm working
+        // data representation; features
+        // psi pred program for feature
+    // huffman code
+        // postive only "training"
+    // try getting an existing one running
+        // SVM: phoSVM: Prediction of phosphorylation sites by integrating various protein sequence attributes with a support vector machine
     // DONE: test random forest code
     // DONE: encode positive/negative as bit array
     // DONE: remove any positive values from the negative examples dataset
     // DONE: cross validate the output
-    // naieve bayes approach
+    // DONE:naieve bayes approach
     // encoding position as a float 
 
     // features
@@ -65,10 +73,12 @@ const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
     })
     
     for (const {train, test} of folds) {
-        const classifier = new RandomForestClassifier({ numberOfTrees: 150, maxDepth: 50 }).fit({
+        const classifier = new RandomForestClassifier({ numberOfTrees: 100, maxDepth: 20 }).fit({
             inputs: [...train.inputs],
             outputs: new Int8Array(train.outputs),
         })
+
+        console.log("feature importance", JSON.stringify(classifier.featureImportance, 0,4))
         
         let numberTotal = test.outputs.length
         let numberCorrect = 0

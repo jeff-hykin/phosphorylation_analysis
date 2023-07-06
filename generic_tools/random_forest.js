@@ -215,6 +215,20 @@ export class RandomForestClassifier {
         }
         return predictions
     }
+
+    get featureImportance() {
+        let frequencyCountingPerFeature = {}
+        for (const eachTree of this.trees) {
+            for (const [rank, featureIndex] of Object.entries(eachTree._featureRanking(eachTree.tree))) {
+                if (!frequencyCountingPerFeature[featureIndex]) {
+                    frequencyCountingPerFeature[featureIndex] = 0
+                }
+                // first rank is 1, then importance tapers off
+                frequencyCountingPerFeature[featureIndex] += 1/(+rank)
+            }
+        }
+        return frequencyCountingPerFeature
+    }
     
     /**
      * randomize (but not a shuffle)
@@ -334,6 +348,19 @@ export class DecisionTree {
         } else {
             return this._traverseTree(sample, node.rightChild)
         }
+    }
+    
+    _featureRanking(node, ranking={}, depth=1) {
+        if (!ranking[depth]) {
+            ranking[depth] = []
+        }
+        ranking[depth].push(node.featureIndex)
+        if (node.isLeaf) {
+            return
+        }
+        this._featureRanking(node.leftChild, ranking, (depth-0)+1)
+        this._featureRanking(node.rightChild, ranking, (depth-0)+1)
+        return ranking
     }
 
     _isPure(outputs) {

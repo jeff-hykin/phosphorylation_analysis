@@ -25,6 +25,9 @@ with open(join(__dirname__, './positive_examples.json'), 'r') as in_file:
 X = negative_inputs + positive_inputs
 y = negative_outputs + positive_outputs
 
+print(f'''len(y) = {len(y)}''')
+print(f'''sum(y) = {sum(y)}''')
+
 # Assuming you have your data and labels ready, let's call them X and y respectively
 # Split the data into training and testing sets
 print("splitting up the data")
@@ -63,15 +66,19 @@ if True:
 
 # default parameters, 200,000 samples, uniprotId based filtering, physico-chemical features NOT present
     # Total Accuracy: 0.5420136381869234
-    # confusion_matrix(y_test, y_pred) = [[14539 25473]
-    #  [ 3071 19242]]
+    # confusion_matrix(y_test, y_pred) = [
+    #  [14539 25473]
+    #  [ 3071 19242]
+    # ]
     # Positive Accuracy: 0.8623672298659975
     # Negative Accuracy: 0.36336599020293914
 
 # default parameters, 200,000 samples, uniprotId based filtering, physico-chemical features present
     # Total Accuracy: 0.5420136381869234
-    # confusion_matrix(y_test, y_pred) = [[14539 25473]
-    #  [ 3071 19242]]
+    # confusion_matrix(y_test, y_pred) = [
+    #  [14539 25473]
+    #  [ 3071 19242]
+    # ]
     # Positive Accuracy: 0.8623672298659975
     # Negative Accuracy: 0.36336599020293914
 
@@ -92,3 +99,4 @@ if True:
     # ]
     # Positive Accuracy: 0.6983805668016194
     # Negative Accuracy: 0.5780632411067194
+    

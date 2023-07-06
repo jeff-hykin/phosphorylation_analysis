@@ -10,11 +10,12 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
     // DONE: encode positive/negative as bit array
     // DONE: remove any positive values from the negative examples dataset
     // DONE: cross validate the output
-    // DONE: allow amino acid substitues/groups
 
     // todo:
+        // DONE: naive bayes
+        // DONE: allow amino acid substitues/groups
         // recreate structure features like the paper did
-        // naive bayes
+        // try creating cross comparison heatmap similar to paper using random forest commonalities
     // answer some questions:
         // how many have no phos sites
         // whats the ratio
@@ -99,9 +100,9 @@ const huffmanEncoderCap = 60
 // 
 // 
     // const commonSize = Math.min(positiveExamples.length, negativeExamples.length)
-    const commonSize = 200000
-    positiveExamples = positiveExamples.slice(0,commonSize)
-    negativeExamples = negativeExamples.slice(0,commonSize)
+    const commonSize = 5_000
+    positiveExamples = positiveExamples.slice(-commonSize)
+    negativeExamples = negativeExamples.slice(-commonSize)
     if (negativeExamples.length != negativeExamples.length) {
         let max = Math.min(positiveExamples.length, negativeExamples.length)
         console.error(`commonSize was too big needs to be: ${max}`)
