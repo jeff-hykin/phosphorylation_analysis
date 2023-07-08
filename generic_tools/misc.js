@@ -27,6 +27,7 @@ export function* generateLinesFor(array) {
     let index = -1
     let prevPercentString = ""
     let percentString = "  0.0"
+    let sendNext
     for (let each of array) {
         if (each instanceof Uint8Array) {
             each = [...each]
@@ -37,12 +38,13 @@ export function* generateLinesFor(array) {
             prevPercentString = percentString
             Deno.stdout.write(new TextEncoder().encode(`    writing: ${percentString}%\r`))
         }
-        const isLastElement = index == (array.length-1)
-        if (!isLastElement) {
-            yield JSON.stringify(each)+",\n"
-        } else {
-            yield JSON.stringify(each)+"\n"
+        if (sendNext != null) {
+            yield sendNext
         }
+        sendNext = JSON.stringify(each)+",\n" 
+    }
+    if (sendNext != null) {
+        yield sendNext.slice(0,-2)+"\n" // no comma on last value
     }
     console.log()
     yield "]"
@@ -54,4 +56,9 @@ export function frequencyCount(array) {
         counts[element] = (counts[element] || 0) + 1
     }
     return counts
+}
+
+export function hasLength(length, iterable) {
+    iterable.length = length
+    return iterable
 }

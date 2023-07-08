@@ -83,10 +83,10 @@ const minOneSideEncodedLength = 5
 // 
 // 
     // const commonSize = Math.min(positiveExamples.length, negativeExamples.length)
-    const commonSize = 50_000
+    const commonSize = 200_000
     positiveExamples = positiveExamples.slice(-commonSize)
     negativeExamples = negativeExamples.slice(-commonSize)
-    if (negativeExamples.length != negativeExamples.length) {
+    if (negativeExamples.length != positiveExamples.length) {
         let max = Math.min(positiveExamples.length, negativeExamples.length)
         console.error(`commonSize was too big needs to be: ${max}`)
         positiveExamples = positiveExamples.slice(0, max)
@@ -102,6 +102,8 @@ const minOneSideEncodedLength = 5
     const coder = new HuffmanCoder({ softCap: huffmanEncoderCap })
     console.debug(`building huffman coder`)
     let count = 0
+    // edgecase of uracil only existing in negative_examples (causing encoding to fail altogether)
+    coder.addData("UGKTEVNYT".slice(0,windowPadding))
     for (const {aminoAcids, ...otherData} of positiveExamples) {
         count += 1
         if (count % 2000 == 0) {
@@ -113,7 +115,6 @@ const minOneSideEncodedLength = 5
         coder.addData(aminoAcids.slice(windowPadding+1,))
     }
     coder.freeze()
-    console.debug(`coder.substringToNumber is:`,coder.substringToNumber)
     const numberToVector = createOneHot(coder.numberToSubstring)
     console.debug(`numberToVector is:`,numberToVector)
     function* applyHuffmanEncoding(examples) {
@@ -143,7 +144,9 @@ const minOneSideEncodedLength = 5
     // 
     // save
     // 
+    console.debug(`saving huffman coder`)
     await FileSystem.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder,0,2) })
+    console.debug(`saved huffman coder`)
 
     // 
     // apply 
@@ -189,6 +192,7 @@ const minOneSideEncodedLength = 5
                 yield output
             }
         }
+        
 
 // 
 // create the feature vector and save it
