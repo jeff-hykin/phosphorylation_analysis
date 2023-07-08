@@ -83,7 +83,7 @@ const minOneSideEncodedLength = 5
 // 
 // 
     // const commonSize = Math.min(positiveExamples.length, negativeExamples.length)
-    const commonSize = 5_000
+    const commonSize = 50_000
     positiveExamples = positiveExamples.slice(-commonSize)
     negativeExamples = negativeExamples.slice(-commonSize)
     if (negativeExamples.length != negativeExamples.length) {
