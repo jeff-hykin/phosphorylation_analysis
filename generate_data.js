@@ -92,6 +92,8 @@ const minOneSideEncodedLength = 5
         positiveExamples = positiveExamples.slice(0, max)
         negativeExamples = negativeExamples.slice(0, max)
     }
+    console.debug(`negativeExamples.length is:`,negativeExamples.length)
+    console.debug(`positiveExamples.length is:`,positiveExamples.length)
 
 // 
 // "train" HuffmanCoder and save it
