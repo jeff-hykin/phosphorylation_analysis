@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 from sklearn.svm import SVC
+from sklearn.neural_network import MLPClassifier
 
 # 
 # read data
@@ -107,6 +108,28 @@ if True:
     print("svm_predictions")
     test_accuracy_of(svm_classifier.predict)
     print("\n\n")
+# 
+# Neural
+# 
+if True:
+    X = negative_inputs + positive_inputs
+    y = negative_outputs + positive_outputs
+
+    # Assuming you have your data and labels ready, let's call them X and y respectively
+    # Split the data into training and testing sets
+    print("splitting up the data")
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Create a Random Forest Classifier object
+    mlp_classifier = MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=1000)
+
+    # Train the svm_classifier using the training data
+    print("training mlp_classifier")
+    mlp_classifier.fit(X_train, y_train)
+
+    print("mlp_classifier_predictions")
+    test_accuracy_of(mlp_classifier.predict)
+    print("\n\n")
 
 # 
 # random_forest
@@ -147,7 +170,7 @@ def predict(X):
     rf_predictions = real_rf_classifier_predict(X)
     svm_predictions = svm_classifier.predict_proba(X)
     predictions = [0]*len(rf_predictions)
-    for index, probs in enumerate(zip( rf_predictions, svm_predictions)):
+    for index, probs in enumerate(zip( rf_predictions, svm_predictions, mlp_classifier )):
         combined_probabilites = [ sum(each)/2.0 for each in zip(*probs)]
         best_label = None
         max_probability = -1

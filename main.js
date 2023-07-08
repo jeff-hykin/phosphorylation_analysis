@@ -5,22 +5,20 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
 
     // split -l 200 --numeric-suffixes --additional-suffix=".txt" toSplit.txt splited
 
+
 // todo:
+    // PARTIALLY DONE: try ensemble
+        // more clever ensemble: sticking to random forest, then only using others when confidence is low
     // get importance from python for random forest
     // get libsvm working
         // data representation; features
         // psi pred program for feature
-    // huffman code
-        // postive only "training"
-        // fully implement
     // try getting an existing one running
         // SVM: phoSVM: Prediction of phosphorylation sites by integrating various protein sequence attributes with a support vector machine
-    // DONE: test random forest code
-    // DONE: encode positive/negative as bit array
-    // DONE: remove any positive values from the negative examples dataset
-    // DONE: cross validate the output
-    // DONE:naieve bayes approach
-    // encoding position as a float 
+    // DONE: encoding position as a float 
+    // DONE:huffman code
+        // postive only "training"
+        // fully implement
 
     // features
         // allow amino acid substitues/groups
