@@ -5,37 +5,14 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
 
     // split -l 200 --numeric-suffixes --additional-suffix=".txt" toSplit.txt splited
 
-// todo:
-    // DONE: test random forest code
-    // DONE: encode positive/negative as bit array
-    // DONE: remove any positive values from the negative examples dataset
-    // DONE: cross validate the output
-
-    // todo:
-        // DONE: naive bayes
-        // DONE: allow amino acid substitues/groups
-        // recreate structure features like the paper did
-        // try creating cross comparison heatmap similar to paper using random forest commonalities
-    // answer some questions:
-        // how many have no phos sites
-        // whats the ratio
-        // intersection between human genome set and the phos human genome set
-        // if trained on phos-human how well does it transfer to phos-plant names end with "_ARATH" 
-    
-    // ask: 
-        //if it doesn't work on plants isnt that interesting 
-
-    // other:
-        // "KD modal logic"
-
 // import { RandomForest } from "./generic_tools/random_forest.js"
 import { RandomForestClassifier } from "./generic_tools/random_forest.js"
 import { crossValidation } from "./generic_tools/cross_validation.js"
-import { frequencyCount, generateLinesFor } from "./generic_tools/misc.js"
-import { parseCsv, createCsv } from "https://deno.land/x/good@1.3.0.1/csv.js"
-import { intersection } from "https://deno.land/x/good@1.3.0.1/set.js"
-import { flatten, asyncIteratorToList, enumerate, zip } from "https://deno.land/x/good@1.3.0.1/iterable.js"
-import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno.land/x/good@1.3.0.1/string.js"
+import { frequencyCount, generateLinesFor, createOneHot } from "./generic_tools/misc.js"
+import { parseCsv, createCsv } from "https://deno.land/x/good@1.3.0.4/csv.js"
+import { intersection } from "https://deno.land/x/good@1.3.0.4/set.js"
+import { flatten, asyncIteratorToList, enumerate, zip, Iterable } from "https://deno.land/x/good@1.3.0.4/iterable.js"
+import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno.land/x/good@1.3.0.4/string.js"
 import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.35/main/file_system.js"
 import { parseFasta } from "./generic_tools/fasta_parser.js"
 import { loadMixedExamples } from "./specific_tools/load_mixed_examples.js"
@@ -48,7 +25,9 @@ const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
 
 const windowPadding = 10 // + or - 10 amino acids
 const aminoMatchPattern = /S/
-const huffmanEncoderCap = 60
+const huffmanEncoderCap = 30
+const minOneSideEncodedLength = 5
+
 // 
 // human genome
 // 
@@ -104,7 +83,7 @@ const huffmanEncoderCap = 60
 // 
 // 
     // const commonSize = Math.min(positiveExamples.length, negativeExamples.length)
-    const commonSize = 50_000
+    const commonSize = 5_000
     positiveExamples = positiveExamples.slice(-commonSize)
     negativeExamples = negativeExamples.slice(-commonSize)
     if (negativeExamples.length != negativeExamples.length) {
@@ -117,6 +96,9 @@ const huffmanEncoderCap = 60
 // 
 // "train" HuffmanCoder and save it
 // 
+    // 
+    // build
+    // 
     const coder = new HuffmanCoder({ softCap: huffmanEncoderCap })
     console.debug(`building huffman coder`)
     let count = 0
@@ -131,31 +113,59 @@ const huffmanEncoderCap = 60
         coder.addData(aminoAcids.slice(windowPadding+1,))
     }
     coder.freeze()
-    count = 0
     console.debug(`coder.substringToNumber is:`,coder.substringToNumber)
-    console.debug(`building frequency count`)
-    const encodedLengths = frequencyCount([...(function*(){
-        for (const {aminoAcids} of positiveExamples) {
-            count += 1
+    const numberToVector = createOneHot(coder.numberToSubstring)
+    console.debug(`numberToVector is:`,numberToVector)
+    function* applyHuffmanEncoding(examples) {
+        let count = 0
+        for (const { aminoAcids } of examples) {
             const [ before, after ] = [ aminoAcids.slice(0,windowPadding), aminoAcids.slice(windowPadding+1,) ]
-            if ((count-1) % 2000 == 0) {
-                console.log(`        on ${count}/${commonSize*2}: ${Math.round(count/(commonSize*2)*100)}%`)
-            }
-            // text before
-            yield coder.encode(before).length
-            // text after
-            yield coder.encode(after).length
+            yield [ coder.encode(before), coder.encode(after) ]
         }
-    })()])
-    
-    console.debug(`encodedLengths is:`, encodedLengths)
-    const smallestEncodingLength = Math.min(...Object.keys(encodedLengths).map(each=>each-0))
-    coder.smallestEncodingLength = smallestEncodingLength
-    
+    }
+
+    // 
+    // analyze encoded lengths
+    // 
+        // count = 0
+        // console.debug(`building frequency count`)
+        // const encodedLengths = frequencyCount(
+        //     Iterable(
+        //         applyHuffmanEncoding(positiveExamples.concat(negativeExamples))
+        //     ).map(
+        //         ([before, after])=>[before.length, after.length]
+        //     ).flattened
+        // )
+        // const smallestEncodingLength = Math.min(...Object.keys(encodedLengths).map(each=>each-0))
+        // coder.encodedLengths = encodedLengths
+        // coder.smallestEncodingLength = smallestEncodingLength
+
+    // 
+    // save
+    // 
     await FileSystem.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder,0,2) })
+
+    // 
+    // apply 
+    // 
+    console.debug(`applying huffman encoding`)
+    function *encodeExamples(examples) {
+        for (const [before, after] of applyHuffmanEncoding(examples)) {
+            // skip encodings that are too small
+            if (before.length < minOneSideEncodedLength || after.length < minOneSideEncodedLength) {
+                continue
+            }
+            const featureVectorBefore = before.slice(-minOneSideEncodedLength).map(each=>[...numberToVector[each]]).flat()
+            const featureVectorAfter  = after.slice(0,minOneSideEncodedLength).map(each=>[...numberToVector[each]]).flat()
+            const output = new Uint8Array(featureVectorBefore.concat(featureVectorAfter))
+            yield output
+        }
+    }
 
 // 
 // create the feature vector and save it
 // 
-    await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(    positiveExamples.map(  ({aminoAcids})=>aminoAcidToFeatureVector({ aminoAcidString: aminoAcids })  )    ), })
-    await FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(    negativeExamples.map(  ({aminoAcids})=>aminoAcidToFeatureVector({ aminoAcidString: aminoAcids })  )    ), })
+    await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(   encodeExamples(positiveExamples)   ), })
+    await FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(   encodeExamples(negativeExamples)   ), })
+    // await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(    positiveExamples.map(  ({aminoAcids})=>aminoAcidToFeatureVector({ aminoAcidString: aminoAcids })  )    ), })
+    // await FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(    negativeExamples.map(  ({aminoAcids})=>aminoAcidToFeatureVector({ aminoAcidString: aminoAcids })  )    ), })
