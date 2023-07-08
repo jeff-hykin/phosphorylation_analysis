@@ -7,6 +7,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
+from sklearn.svm import SVC
 
 # 
 # read data
@@ -31,7 +32,7 @@ print(f'''sum(y) = {sum(y)}''')
 # Assuming you have your data and labels ready, let's call them X and y respectively
 # Split the data into training and testing sets
 print("splitting up the data")
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=43)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 
 # 
@@ -61,8 +62,20 @@ def test_accuracy_of(predict):
 # naive_bayes_classifier
 # 
 if True:
+    positive_truncate = 10_000
+    X = negative_inputs + positive_inputs[0:positive_truncate]
+    y = negative_outputs + positive_outputs[0:positive_truncate]
+
+    print(f'''len(y) = {len(y)}''')
+    print(f'''sum(y) = {sum(y)}''')
+
+    # Assuming you have your data and labels ready, let's call them X and y respectively
+    # Split the data into training and testing sets
+    print("splitting up the data")
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
     # Create a Random Forest Classifier object
-    naive_bayes_classifier = GaussianNB()
+    naive_bayes_classifier = GaussianNB(priors=[0.5, 0.5])
 
     # Train the naive_bayes_classifier using the training data
     print("training naive_bayes")
@@ -73,9 +86,43 @@ if True:
     print("\n\n")
 
 # 
+# SVM
+# 
+if True:
+    X = negative_inputs + positive_inputs
+    y = negative_outputs + positive_outputs
+
+    # Assuming you have your data and labels ready, let's call them X and y respectively
+    # Split the data into training and testing sets
+    print("splitting up the data")
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Create a Random Forest Classifier object
+    svm_classifier = SVC()
+
+    # Train the svm_classifier using the training data
+    print("training svm")
+    svm_classifier.fit(X_train, y_train)
+
+    print("svm_predictions")
+    test_accuracy_of(svm_classifier.predict)
+    print("\n\n")
+
+# 
 # random_forest
 # 
 if True:
+    
+    X = negative_inputs + positive_inputs
+    y = negative_outputs + positive_outputs
+
+    print(f'''len(y) = {len(y)}''')
+    print(f'''sum(y) = {sum(y)}''')
+
+    # Assuming you have your data and labels ready, let's call them X and y respectively
+    # Split the data into training and testing sets
+    print("splitting up the data")
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Create a Random Forest Classifier object
     rf_classifier = RandomForestClassifier(n_estimators=500,max_depth=20)
@@ -84,7 +131,7 @@ if True:
     print("training random_forest")
     rf_classifier.fit(X_train, y_train)
     
-    print("naive_bayes_predictions")
+    print("random_forest_predictions")
     test_accuracy_of(rf_classifier.predict)
     print("\n\n")
 
@@ -92,57 +139,26 @@ if True:
 # 
 # combined
 # 
-real_naive_bayes_predict = naive_bayes_classifier.predict
-real_rf_classifier_predict = rf_classifier.predict
+real_naive_bayes_predict = naive_bayes_classifier.predict_proba
+real_rf_classifier_predict = rf_classifier.predict_proba
 
 def predict(X):
     naive_bayes_predictions = real_naive_bayes_predict(X)
     rf_predictions = real_rf_classifier_predict(X)
+    svm_predictions = svm_classifier.predict_proba(X)
     predictions = [0]*len(rf_predictions)
-    for index, (each_naive_bayes, each_rf) in enumerate(zip(naive_bayes_predictions, rf_predictions)):
-        # Naive bayes is good at positive accuracy
-        if each_naive_bayes == 1:
-            predictions[index] = 1
-        else:
-            predictions[index] = each_rf
+    for index, probs in enumerate(zip( rf_predictions, svm_predictions)):
+        combined_probabilites = [ sum(each)/2.0 for each in zip(*probs)]
+        best_label = None
+        max_probability = -1
+        for label_index, probability in enumerate(combined_probabilites):
+            if probability > max_probability:
+                max_probability = probability
+                best_label = label_index
+                
+        predictions[index] = best_label
+            
     return predictions
 
 print("combined")
 test_accuracy_of(predict)
-
-# default parameters, 200,000 samples, uniprotId based filtering, physico-chemical features NOT present
-    # Total Accuracy: 0.5420136381869234
-    # confusion_matrix(y_test, y_pred) = [
-    #  [14539 25473]
-    #  [ 3071 19242]
-    # ]
-    # Positive Accuracy: 0.8623672298659975
-    # Negative Accuracy: 0.36336599020293914
-
-# default parameters, 200,000 samples, uniprotId based filtering, physico-chemical features present
-    # Total Accuracy: 0.5420136381869234
-    # confusion_matrix(y_test, y_pred) = [
-    #  [14539 25473]
-    #  [ 3071 19242]
-    # ]
-    # Positive Accuracy: 0.8623672298659975
-    # Negative Accuracy: 0.36336599020293914
-
-# default parameters, 50,000 samples, uniprotId based filtering, physico-chemical features present
-    # Total Accuracy: 0.62175
-    # confusion_matrix(y_test, y_pred) = [
-    #     [4525 5510]
-    #     [2055 7910]
-    # ]
-    # Positive Accuracy: 0.7937782237832414
-    # Negative Accuracy: 0.45092177379172893
-
-# default parameters, 5000 samples, uniprotId based filtering
-    # Total Accuracy: 0.6375
-    # confusion_matrix(y_test, y_pred) = [
-    #     [585 427]
-    #     [298 690]
-    # ]
-    # Positive Accuracy: 0.6983805668016194
-    # Negative Accuracy: 0.5780632411067194
-    
