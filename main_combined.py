@@ -33,40 +33,11 @@ print(f'''sum(y) = {sum(y)}''')
 print("splitting up the data")
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=43)
 
-# Create a Random Forest Classifier object
-naive_bayes_classifier = GaussianNB()
-
-# Train the naive_bayes_classifier using the training data
-print("training naive_bayes")
-naive_bayes_classifier.fit(X_train, y_train)
-
-# Create a Random Forest Classifier object
-rf_classifier = RandomForestClassifier(n_estimators=500,max_depth=20)
-
-# Train the classifier using the training data
-print("training random_forest")
-rf_classifier.fit(X_train, y_train)
-
-real_naive_bayes_predict = naive_bayes_classifier.predict
-real_rf_classifier_predict = rf_classifier.predict
-
-def predict(X):
-    naive_bayes_predictions = real_naive_bayes_predict(X)
-    rf_predictions = real_rf_classifier_predict(X)
-    predictions = [0]*len(rf_predictions)
-    for index, (each_naive_bayes, each_rf) in enumerate(zip(naive_bayes_predictions, rf_predictions)):
-        # Naive bayes is good at positive accuracy
-        if each_naive_bayes == 1:
-            predictions[index] = 1
-        else:
-            predictions[index] = each_rf
-    return predictions
-
 
 # 
-# test
+# helper
 # 
-if True:
+def test_accuracy_of(predict):
     print("getting accuracy scores\n")
     # 
     # total
@@ -86,6 +57,58 @@ if True:
     accuracy = accuracy_score(negative_test_outputs, predict(negative_test_inputs))
     print("Negative Accuracy:", accuracy)
 
+# 
+# naive_bayes_classifier
+# 
+if True:
+    # Create a Random Forest Classifier object
+    naive_bayes_classifier = GaussianNB()
+
+    # Train the naive_bayes_classifier using the training data
+    print("training naive_bayes")
+    naive_bayes_classifier.fit(X_train, y_train)
+
+    print("naive_bayes_predictions")
+    test_accuracy_of(naive_bayes_classifier.predict)
+    print("\n\n")
+
+# 
+# random_forest
+# 
+if True:
+
+    # Create a Random Forest Classifier object
+    rf_classifier = RandomForestClassifier(n_estimators=500,max_depth=20)
+
+    # Train the classifier using the training data
+    print("training random_forest")
+    rf_classifier.fit(X_train, y_train)
+    
+    print("naive_bayes_predictions")
+    test_accuracy_of(rf_classifier.predict)
+    print("\n\n")
+
+
+# 
+# combined
+# 
+real_naive_bayes_predict = naive_bayes_classifier.predict
+real_rf_classifier_predict = rf_classifier.predict
+
+def predict(X):
+    naive_bayes_predictions = real_naive_bayes_predict(X)
+    rf_predictions = real_rf_classifier_predict(X)
+    predictions = [0]*len(rf_predictions)
+    for index, (each_naive_bayes, each_rf) in enumerate(zip(naive_bayes_predictions, rf_predictions)):
+        # Naive bayes is good at positive accuracy
+        if each_naive_bayes == 1:
+            predictions[index] = 1
+        else:
+            predictions[index] = each_rf
+    return predictions
+
+print("combined")
+test_accuracy_of(predict)
 
 # default parameters, 200,000 samples, uniprotId based filtering, physico-chemical features NOT present
     # Total Accuracy: 0.5420136381869234

@@ -98,108 +98,108 @@ const minOneSideEncodedLength = 5
 // 
 // "train" HuffmanCoder and save it
 // 
-    // 
-    // build
-    // 
-    const coder = new HuffmanCoder({ softCap: huffmanEncoderCap })
-    console.debug(`building huffman coder`)
-    let count = 0
-    // edgecase of uracil only existing in negative_examples (causing encoding to fail altogether)
-    coder.addData("UGKTEVNYT".slice(0,windowPadding))
-    for (const {aminoAcids, ...otherData} of positiveExamples) {
-        count += 1
-        if (count % 2000 == 0) {
-            console.log(`    on ${count}/${commonSize*2}: ${Math.round(count/(commonSize*2)*100)}%`)
-        }
-        // text before
-        coder.addData(aminoAcids.slice(0,windowPadding))
-        // text after
-        coder.addData(aminoAcids.slice(windowPadding+1,))
-    }
-    coder.freeze()
-    const numberToVector = createOneHot(coder.numberToSubstring)
-    console.debug(`numberToVector is:`,numberToVector)
-    function* applyHuffmanEncoding(examples) {
-        let count = 0
-        for (const { aminoAcids } of examples) {
-            const [ before, after ] = [ aminoAcids.slice(0,windowPadding), aminoAcids.slice(windowPadding+1,) ]
-            yield [ coder.encode(before), coder.encode(after) ]
-        }
-    }
+    // // 
+    // // build
+    // // 
+    // const coder = new HuffmanCoder({ softCap: huffmanEncoderCap })
+    // console.debug(`building huffman coder`)
+    // let count = 0
+    // // edgecase of uracil only existing in negative_examples (causing encoding to fail altogether)
+    // coder.addData("UGKTEVNYT".slice(0,windowPadding))
+    // for (const {aminoAcids, ...otherData} of positiveExamples) {
+    //     count += 1
+    //     if (count % 2000 == 0) {
+    //         console.log(`    on ${count}/${commonSize*2}: ${Math.round(count/(commonSize*2)*100)}%`)
+    //     }
+    //     // text before
+    //     coder.addData(aminoAcids.slice(0,windowPadding))
+    //     // text after
+    //     coder.addData(aminoAcids.slice(windowPadding+1,))
+    // }
+    // coder.freeze()
+    // const numberToVector = createOneHot(coder.numberToSubstring)
+    // console.debug(`numberToVector is:`,numberToVector)
+    // function* applyHuffmanEncoding(examples) {
+    //     let count = 0
+    //     for (const { aminoAcids } of examples) {
+    //         const [ before, after ] = [ aminoAcids.slice(0,windowPadding), aminoAcids.slice(windowPadding+1,) ]
+    //         yield [ coder.encode(before), coder.encode(after) ]
+    //     }
+    // }
 
-    // 
-    // analyze encoded lengths
-    // 
-        // count = 0
-        // console.debug(`building frequency count`)
-        // const encodedLengths = frequencyCount(
-        //     Iterable(
-        //         applyHuffmanEncoding(positiveExamples.concat(negativeExamples))
-        //     ).map(
-        //         ([before, after])=>[before.length, after.length]
-        //     ).flattened
-        // )
-        // const smallestEncodingLength = Math.min(...Object.keys(encodedLengths).map(each=>each-0))
-        // coder.encodedLengths = encodedLengths
-        // coder.smallestEncodingLength = smallestEncodingLength
+    // // 
+    // // analyze encoded lengths
+    // // 
+    //     // count = 0
+    //     // console.debug(`building frequency count`)
+    //     // const encodedLengths = frequencyCount(
+    //     //     Iterable(
+    //     //         applyHuffmanEncoding(positiveExamples.concat(negativeExamples))
+    //     //     ).map(
+    //     //         ([before, after])=>[before.length, after.length]
+    //     //     ).flattened
+    //     // )
+    //     // const smallestEncodingLength = Math.min(...Object.keys(encodedLengths).map(each=>each-0))
+    //     // coder.encodedLengths = encodedLengths
+    //     // coder.smallestEncodingLength = smallestEncodingLength
 
-    // 
-    // save
-    // 
-    console.debug(`saving huffman coder`)
-    await FileSystem.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder,0,2) })
-    console.debug(`saved huffman coder`)
+    // // 
+    // // save
+    // // 
+    // console.debug(`saving huffman coder`)
+    // await FileSystem.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder,0,2) })
+    // console.debug(`saved huffman coder`)
 
-    // 
-    // apply 
-    // 
+    // // 
+    // // apply 
+    // // 
     
-    // direct encoding
-        // function *encodeExamples(examples) {
-        //     for (const [before, after] of applyHuffmanEncoding(examples)) {
-        //         // skip encodings that are too small
-        //         if (before.length < minOneSideEncodedLength || after.length < minOneSideEncodedLength) {
-        //             continue
-        //         }
-        //         const featureVectorBefore = before.slice(-minOneSideEncodedLength).map(each=>[...numberToVector[each]]).flat()
-        //         const featureVectorAfter  = after.slice(0,minOneSideEncodedLength).map(each=>[...numberToVector[each]]).flat()
-        //         const output = new Uint8Array(featureVectorBefore.concat(featureVectorAfter))
-        //         yield output
-        //     }
-        // }
-    // exists-encoding
-        function *encodeExamples(examples) {
-            for (const [before, after] of applyHuffmanEncoding(examples)) {
-                // skip encodings that are too small
-                if (before.length < minOneSideEncodedLength || after.length < minOneSideEncodedLength) {
-                    continue
-                }
+    // // direct encoding
+    //     // function *encodeExamples(examples) {
+    //     //     for (const [before, after] of applyHuffmanEncoding(examples)) {
+    //     //         // skip encodings that are too small
+    //     //         if (before.length < minOneSideEncodedLength || after.length < minOneSideEncodedLength) {
+    //     //             continue
+    //     //         }
+    //     //         const featureVectorBefore = before.slice(-minOneSideEncodedLength).map(each=>[...numberToVector[each]]).flat()
+    //     //         const featureVectorAfter  = after.slice(0,minOneSideEncodedLength).map(each=>[...numberToVector[each]]).flat()
+    //     //         const output = new Uint8Array(featureVectorBefore.concat(featureVectorAfter))
+    //     //         yield output
+    //     //     }
+    //     // }
+    // // exists-encoding
+    //     function *encodeExamples(examples) {
+    //         for (const [before, after] of applyHuffmanEncoding(examples)) {
+    //             // skip encodings that are too small
+    //             if (before.length < minOneSideEncodedLength || after.length < minOneSideEncodedLength) {
+    //                 continue
+    //             }
                 
-                const beforeVector = []
-                const afterVector = []
-                for (const [substringNumber, vector] of Object.entries(numberToVector)) {
-                    beforeVector[substringNumber] = 255 // e.g. far away
-                    afterVector[substringNumber]  = 255 // e.g. far away
-                }
+    //             const beforeVector = []
+    //             const afterVector = []
+    //             for (const [substringNumber, vector] of Object.entries(numberToVector)) {
+    //                 beforeVector[substringNumber] = 255 // e.g. far away
+    //                 afterVector[substringNumber]  = 255 // e.g. far away
+    //             }
 
-                // what features were present
-                for (const [distance, substringNumber] of [...enumerate(before.reverse())].reverse()) {
-                    beforeVector[substringNumber] = distance
-                }
-                for (const [distance, substringNumber] of [...enumerate(after)].reverse()) {
-                    afterVector[substringNumber] = distance
-                }
+    //             // what features were present
+    //             for (const [distance, substringNumber] of [...enumerate(before.reverse())].reverse()) {
+    //                 beforeVector[substringNumber] = distance
+    //             }
+    //             for (const [distance, substringNumber] of [...enumerate(after)].reverse()) {
+    //                 afterVector[substringNumber] = distance
+    //             }
 
-                const output = new Uint8Array(beforeVector.concat(afterVector))
-                yield output
-            }
-        }
+    //             const output = new Uint8Array(beforeVector.concat(afterVector))
+    //             yield output
+    //         }
+    //     }
         
 
 // 
 // create the feature vector and save it
 // 
-    await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(   encodeExamples(positiveExamples)   ), })
-    await FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(   encodeExamples(negativeExamples)   ), })
-    // await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(    positiveExamples.map(  ({aminoAcids})=>aminoAcidToFeatureVector({ aminoAcidString: aminoAcids })  )    ), })
-    // await FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(    negativeExamples.map(  ({aminoAcids})=>aminoAcidToFeatureVector({ aminoAcidString: aminoAcids })  )    ), })
+    // await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(   encodeExamples(positiveExamples)   ), })
+    // await FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(   encodeExamples(negativeExamples)   ), })
+    await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(    positiveExamples.map(  ({aminoAcids})=>aminoAcidToFeatureVector({ aminoAcidString: aminoAcids })  )    ), })
+    await FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(    negativeExamples.map(  ({aminoAcids})=>aminoAcidToFeatureVector({ aminoAcidString: aminoAcids })  )    ), })
