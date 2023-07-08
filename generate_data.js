@@ -148,19 +148,47 @@ const minOneSideEncodedLength = 5
     // 
     // apply 
     // 
-    console.debug(`applying huffman encoding`)
-    function *encodeExamples(examples) {
-        for (const [before, after] of applyHuffmanEncoding(examples)) {
-            // skip encodings that are too small
-            if (before.length < minOneSideEncodedLength || after.length < minOneSideEncodedLength) {
-                continue
+    
+    // direct encoding
+        // function *encodeExamples(examples) {
+        //     for (const [before, after] of applyHuffmanEncoding(examples)) {
+        //         // skip encodings that are too small
+        //         if (before.length < minOneSideEncodedLength || after.length < minOneSideEncodedLength) {
+        //             continue
+        //         }
+        //         const featureVectorBefore = before.slice(-minOneSideEncodedLength).map(each=>[...numberToVector[each]]).flat()
+        //         const featureVectorAfter  = after.slice(0,minOneSideEncodedLength).map(each=>[...numberToVector[each]]).flat()
+        //         const output = new Uint8Array(featureVectorBefore.concat(featureVectorAfter))
+        //         yield output
+        //     }
+        // }
+    // exists-encoding
+        function *encodeExamples(examples) {
+            for (const [before, after] of applyHuffmanEncoding(examples)) {
+                // skip encodings that are too small
+                if (before.length < minOneSideEncodedLength || after.length < minOneSideEncodedLength) {
+                    continue
+                }
+                
+                const beforeVector = []
+                const afterVector = []
+                for (const [substringNumber, vector] of Object.entries(numberToVector)) {
+                    beforeVector[substringNumber] = 255 // e.g. far away
+                    afterVector[substringNumber]  = 255 // e.g. far away
+                }
+
+                // what features were present
+                for (const [distance, substringNumber] of [...enumerate(before.reverse())].reverse()) {
+                    beforeVector[substringNumber] = distance
+                }
+                for (const [distance, substringNumber] of [...enumerate(after)].reverse()) {
+                    afterVector[substringNumber] = distance
+                }
+
+                const output = new Uint8Array(beforeVector.concat(afterVector))
+                yield output
             }
-            const featureVectorBefore = before.slice(-minOneSideEncodedLength).map(each=>[...numberToVector[each]]).flat()
-            const featureVectorAfter  = after.slice(0,minOneSideEncodedLength).map(each=>[...numberToVector[each]]).flat()
-            const output = new Uint8Array(featureVectorBefore.concat(featureVectorAfter))
-            yield output
         }
-    }
 
 // 
 // create the feature vector and save it
