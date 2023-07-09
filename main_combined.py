@@ -204,3 +204,12 @@ def predict(X):
 
 print("combined")
 test_accuracy_of(predict)
+
+# 200,000 raw features
+    # Total Accuracy: 0.6795935855061819
+    # confusion_matrix(y_test, y_pred) = [
+    #     [13568  6779]
+    #     [ 6308 14190]
+    # ]
+    # Positive Accuracy: 0.692262659771685
+    # Negative Accuracy: 0.6668304909814715

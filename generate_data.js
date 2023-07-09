@@ -20,21 +20,35 @@ import { loadPositiveExamples } from "./specific_tools/load_positive_examples.js
 import { aminoAcidToFeatureVector } from "./specific_tools/amino_acid_to_feature_vector.js"
 import { pathToHuffmanCoder } from "./config.js"
 import { HuffmanCoder } from "./generic_tools/huffman_code.js"
+import { encode, decode, NotSerializable } from 'https://raw.githubusercontent.com/jeff-hykin/es-codec/0523dfcff5c95ef52cc12f5eb6eeb8d2b07b4839/es-codec.js'
 
 const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
 
-const windowPadding = 10 // + or - 10 amino acids
-const aminoMatchPattern = /S/
-const huffmanEncoderCap = 30
-const minOneSideEncodedLength = 5
+const parameters = {
+    windowPadding: 10, // + or - 10 amino acids
+    aminoMatchPattern: /S/,
+    useHuffmanEncoding: true,
+    huffmanEncoderCap: 30,
+    minOneSideEncodedLength: 5,
+    datasetSize: 200_000,
+}
+// record most recent parameters 
+    await FileSystem.write({
+        data: JSON.stringify(
+            parameters,
+            (key,value)=>value instanceof RegExp ? value.toString() : value,
+            4,
+        ),
+        path: "prev_parameters.json",
+    })
 
 // 
 // human genome
 // 
     let { mixedExamples, summaryData, geneIds, geneData } = await loadMixedExamples({
         filePath: `${FileSystem.thisFolder}/data/human_genome.fasta.txt`,
-        aminoMatchPattern: aminoMatchPattern,
-        windowPadding,
+        aminoMatchPattern: parameters.aminoMatchPattern,
+        windowPadding: parameters.windowPadding,
         skipEntryIf: ({ uniprotGeneId, aminoAcidsString, ...otherData })=>false, // false=keep
     })
     console.debug(`mixedExamples[0] is:`,mixedExamples[0])
@@ -49,8 +63,8 @@ const minOneSideEncodedLength = 5
         filePath: /.\/data\/phosphorylation@0\d+.tsv/,
         skipEntryIf: ({ uniprotGeneId, aminoAcidsString, })=>(
             !geneIds.has(uniprotGeneId)
-            || !aminoAcidsString[windowPadding].match(aminoMatchPattern)
-            || aminoAcidsString.match(/SSS+/)
+            || !aminoAcidsString[parameters.windowPadding].match(parameters.aminoMatchPattern)
+            || aminoAcidsString.match(/SSS+/) // done to improve huffman code, eliminates a few outliers
         ),
         geneData,
     })
@@ -82,13 +96,12 @@ const minOneSideEncodedLength = 5
 // shrink
 // 
 // 
-    // const commonSize = Math.min(positiveExamples.length, negativeExamples.length)
-    const commonSize = 200_000
-    positiveExamples = positiveExamples.slice(-commonSize)
-    negativeExamples = negativeExamples.slice(-commonSize)
+    // const maxCommonSize = Math.min(positiveExamples.length, negativeExamples.length)
+    positiveExamples = positiveExamples.slice(-parameters.datasetSize)
+    negativeExamples = negativeExamples.slice(-parameters.datasetSize)
     if (negativeExamples.length != positiveExamples.length) {
         let max = Math.min(positiveExamples.length, negativeExamples.length)
-        console.error(`commonSize was too big needs to be: ${max}`)
+        console.error(`parameters.datasetSize was too big needs to be: ${max}`)
         positiveExamples = positiveExamples.slice(0, max)
         negativeExamples = negativeExamples.slice(0, max)
     }
@@ -98,108 +111,116 @@ const minOneSideEncodedLength = 5
 // 
 // "train" HuffmanCoder and save it
 // 
-    // // 
-    // // build
-    // // 
-    // const coder = new HuffmanCoder({ softCap: huffmanEncoderCap })
-    // console.debug(`building huffman coder`)
-    // let count = 0
-    // // edgecase of uracil only existing in negative_examples (causing encoding to fail altogether)
-    // coder.addData("UGKTEVNYT".slice(0,windowPadding))
-    // for (const {aminoAcids, ...otherData} of positiveExamples) {
-    //     count += 1
-    //     if (count % 2000 == 0) {
-    //         console.log(`    on ${count}/${commonSize*2}: ${Math.round(count/(commonSize*2)*100)}%`)
-    //     }
-    //     // text before
-    //     coder.addData(aminoAcids.slice(0,windowPadding))
-    //     // text after
-    //     coder.addData(aminoAcids.slice(windowPadding+1,))
-    // }
-    // coder.freeze()
-    // const numberToVector = createOneHot(coder.numberToSubstring)
-    // console.debug(`numberToVector is:`,numberToVector)
-    // function* applyHuffmanEncoding(examples) {
-    //     let count = 0
-    //     for (const { aminoAcids } of examples) {
-    //         const [ before, after ] = [ aminoAcids.slice(0,windowPadding), aminoAcids.slice(windowPadding+1,) ]
-    //         yield [ coder.encode(before), coder.encode(after) ]
-    //     }
-    // }
+    if (parameters.useHuffmanEncoding) {
+        // 
+        // build
+        // 
+        const coder = new HuffmanCoder({ softCap: parameters.huffmanEncoderCap })
+        console.debug(`building huffman coder`)
+        let count = 0
+        // edgecase of uracil only existing in negative_examples (causing encoding to fail altogether)
+        coder.addData("UGKTEVNYT".slice(0,parameters.windowPadding))
+        for (const {aminoAcids, ...otherData} of positiveExamples) {
+            count += 1
+            if (count % 2000 == 0) {
+                console.log(`    on ${count}/${parameters.datasetSize*2}: ${Math.round(count/(parameters.datasetSize*2)*100)}%`)
+            }
+            // text before
+            coder.addData(aminoAcids.slice(0,parameters.windowPadding))
+            // text after
+            coder.addData(aminoAcids.slice(parameters.windowPadding+1,))
+        }
+        coder.freeze()
+        const numberToVector = createOneHot(coder.numberToSubstring)
+        console.debug(`numberToVector is:`,numberToVector)
+        function* applyHuffmanEncoding(examples) {
+            let count = 0
+            for (const { aminoAcids } of examples) {
+                const [ before, after ] = [ aminoAcids.slice(0,parameters.windowPadding), aminoAcids.slice(parameters.windowPadding+1,) ]
+                yield [ coder.encode(before), coder.encode(after) ]
+            }
+        }
 
-    // // 
-    // // analyze encoded lengths
-    // // 
-    //     // count = 0
-    //     // console.debug(`building frequency count`)
-    //     // const encodedLengths = frequencyCount(
-    //     //     Iterable(
-    //     //         applyHuffmanEncoding(positiveExamples.concat(negativeExamples))
-    //     //     ).map(
-    //     //         ([before, after])=>[before.length, after.length]
-    //     //     ).flattened
-    //     // )
-    //     // const smallestEncodingLength = Math.min(...Object.keys(encodedLengths).map(each=>each-0))
-    //     // coder.encodedLengths = encodedLengths
-    //     // coder.smallestEncodingLength = smallestEncodingLength
+        // 
+        // analyze encoded lengths
+        // 
+            // count = 0
+            // console.debug(`building frequency count`)
+            // const encodedLengths = frequencyCount(
+            //     Iterable(
+            //         applyHuffmanEncoding(positiveExamples.concat(negativeExamples))
+            //     ).map(
+            //         ([before, after])=>[before.length, after.length]
+            //     ).flattened
+            // )
+            // const smallestEncodingLength = Math.min(...Object.keys(encodedLengths).map(each=>each-0))
+            // coder.encodedLengths = encodedLengths
+            // coder.smallestEncodingLength = smallestEncodingLength
 
-    // // 
-    // // save
-    // // 
-    // console.debug(`saving huffman coder`)
-    // await FileSystem.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder,0,2) })
-    // console.debug(`saved huffman coder`)
+        // 
+        // save
+        // 
+        console.debug(`saving huffman coder`)
+        await FileSystem.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder,0,2) })
+        console.debug(`saved huffman coder`)
 
-    // // 
-    // // apply 
-    // // 
-    
-    // // direct encoding
-    //     // function *encodeExamples(examples) {
-    //     //     for (const [before, after] of applyHuffmanEncoding(examples)) {
-    //     //         // skip encodings that are too small
-    //     //         if (before.length < minOneSideEncodedLength || after.length < minOneSideEncodedLength) {
-    //     //             continue
-    //     //         }
-    //     //         const featureVectorBefore = before.slice(-minOneSideEncodedLength).map(each=>[...numberToVector[each]]).flat()
-    //     //         const featureVectorAfter  = after.slice(0,minOneSideEncodedLength).map(each=>[...numberToVector[each]]).flat()
-    //     //         const output = new Uint8Array(featureVectorBefore.concat(featureVectorAfter))
-    //     //         yield output
-    //     //     }
-    //     // }
-    // // exists-encoding
-    //     function *encodeExamples(examples) {
-    //         for (const [before, after] of applyHuffmanEncoding(examples)) {
-    //             // skip encodings that are too small
-    //             if (before.length < minOneSideEncodedLength || after.length < minOneSideEncodedLength) {
-    //                 continue
-    //             }
-                
-    //             const beforeVector = []
-    //             const afterVector = []
-    //             for (const [substringNumber, vector] of Object.entries(numberToVector)) {
-    //                 beforeVector[substringNumber] = 255 // e.g. far away
-    //                 afterVector[substringNumber]  = 255 // e.g. far away
-    //             }
-
-    //             // what features were present
-    //             for (const [distance, substringNumber] of [...enumerate(before.reverse())].reverse()) {
-    //                 beforeVector[substringNumber] = distance
-    //             }
-    //             for (const [distance, substringNumber] of [...enumerate(after)].reverse()) {
-    //                 afterVector[substringNumber] = distance
-    //             }
-
-    //             const output = new Uint8Array(beforeVector.concat(afterVector))
-    //             yield output
-    //         }
-    //     }
+        // 
+        // apply 
+        // 
         
+        // direct encoding
+            // function *encodeExamples(examples) {
+            //     for (const [before, after] of applyHuffmanEncoding(examples)) {
+            //         // skip encodings that are too small
+            //         if (before.length < parameters.minOneSideEncodedLength || after.length < parameters.minOneSideEncodedLength) {
+            //             continue
+            //         }
+            //         const featureVectorBefore = before.slice(-parameters.minOneSideEncodedLength).map(each=>[...numberToVector[each]]).flat()
+            //         const featureVectorAfter  = after.slice(0,parameters.minOneSideEncodedLength).map(each=>[...numberToVector[each]]).flat()
+            //         const output = new Uint8Array(featureVectorBefore.concat(featureVectorAfter))
+            //         yield output
+            //     }
+            // }
+        // exists-encoding
+            function *encodeExamples(examples) {
+                for (const [before, after] of applyHuffmanEncoding(examples)) {
+                    // skip encodings that are too small
+                    if (before.length < parameters.minOneSideEncodedLength || after.length < parameters.minOneSideEncodedLength) {
+                        continue
+                    }
+                    
+                    const beforeVector = []
+                    const afterVector = []
+                    for (const [substringNumber, vector] of Object.entries(numberToVector)) {
+                        beforeVector[substringNumber] = 255 // e.g. far away
+                        afterVector[substringNumber]  = 255 // e.g. far away
+                    }
+
+                    // what features were present
+                    for (const [distance, substringNumber] of [...enumerate(before.reverse())].reverse()) {
+                        beforeVector[substringNumber] = distance
+                    }
+                    for (const [distance, substringNumber] of [...enumerate(after)].reverse()) {
+                        afterVector[substringNumber] = distance
+                    }
+
+                    const output = new Uint8Array(beforeVector.concat(afterVector))
+                    yield output
+                }
+            }
+        
+        // 
+        // save examples
+        // 
+        await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(   encodeExamples(positiveExamples)   ), })
+        await FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(   encodeExamples(negativeExamples)   ), })
+    }
+    
 
 // 
 // create the feature vector and save it
 // 
-    // await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(   encodeExamples(positiveExamples)   ), })
-    // await FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(   encodeExamples(negativeExamples)   ), })
-    await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(    positiveExamples.map(  ({aminoAcids})=>aminoAcidToFeatureVector({ aminoAcidString: aminoAcids })  )    ), })
-    await FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(    negativeExamples.map(  ({aminoAcids})=>aminoAcidToFeatureVector({ aminoAcidString: aminoAcids })  )    ), })
+    if (!parameters.useHuffmanEncoding) {
+        await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(    positiveExamples.map(  ({aminoAcids})=>aminoAcidToFeatureVector({ aminoAcidString: aminoAcids })  )    ), })
+        await FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(    negativeExamples.map(  ({aminoAcids})=>aminoAcidToFeatureVector({ aminoAcidString: aminoAcids })  )    ), })
+    }
