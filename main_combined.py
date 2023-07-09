@@ -160,17 +160,36 @@ if True:
 
 
 # 
+# Auto Neural
+# 
+if True:
+    # create an autoencoder for sequences near phos sites
+    
+    
+    # Create a Random Forest Classifier object
+    mlp_classifier = MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=1000)
+
+    # Train the svm_classifier using the training data
+    print("training mlp_classifier")
+    mlp_classifier.fit(X_train, y_train)
+
+    print("mlp_classifier_predictions")
+    test_accuracy_of(mlp_classifier.predict)
+    print("\n\n")
+
+# 
 # combined
 # 
 real_naive_bayes_predict = naive_bayes_classifier.predict_proba
 real_rf_classifier_predict = rf_classifier.predict_proba
 
 def predict(X):
-    naive_bayes_predictions = real_naive_bayes_predict(X)
+    # naive_bayes_predictions = real_naive_bayes_predict(X)
     rf_predictions = real_rf_classifier_predict(X)
-    svm_predictions = svm_classifier.predict_proba(X)
+    # svm_predictions = svm_classifier.predict_proba(X)
+    mlp_predictions = mlp_classifier.predict_proba(X)
     predictions = [0]*len(rf_predictions)
-    for index, probs in enumerate(zip( rf_predictions, svm_predictions, mlp_classifier )):
+    for index, probs in enumerate(zip( rf_predictions, mlp_predictions )):
         combined_probabilites = [ sum(each)/2.0 for each in zip(*probs)]
         best_label = None
         max_probability = -1
