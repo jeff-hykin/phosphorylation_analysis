@@ -24,8 +24,9 @@ with open(join(__dirname__, './positive_examples.json'), 'r') as in_file:
     positive_outputs = tuple(1 for each in positive_inputs)
     print("loaded positive_examples")
 
-X = negative_inputs + positive_inputs
-y = negative_outputs + positive_outputs
+truncate_size = 50_000
+X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
+y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
 
 print(f'''len(y) = {len(y)}''')
 print(f'''sum(y) = {sum(y)}''')
@@ -33,7 +34,7 @@ print(f'''sum(y) = {sum(y)}''')
 # Assuming you have your data and labels ready, let's call them X and y respectively
 # Split the data into training and testing sets
 print("splitting up the data")
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=45)
 
 
 # 
@@ -62,18 +63,18 @@ def test_accuracy_of(predict):
 # 
 # naive_bayes_classifier
 # 
-if True:
-    positive_truncate = 10_000
-    X = negative_inputs + positive_inputs[0:positive_truncate]
-    y = negative_outputs + positive_outputs[0:positive_truncate]
+if 0:
+    # positive_truncate = 10_000
+    # X = negative_inputs + positive_inputs[0:positive_truncate]
+    # y = negative_outputs + positive_outputs[0:positive_truncate]
 
-    print(f'''len(y) = {len(y)}''')
-    print(f'''sum(y) = {sum(y)}''')
+    # print(f'''len(y) = {len(y)}''')
+    # print(f'''sum(y) = {sum(y)}''')
 
-    # Assuming you have your data and labels ready, let's call them X and y respectively
-    # Split the data into training and testing sets
-    print("splitting up the data")
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # # Assuming you have your data and labels ready, let's call them X and y respectively
+    # # Split the data into training and testing sets
+    # print("splitting up the data")
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
     # Create a Random Forest Classifier object
     naive_bayes_classifier = GaussianNB(priors=[0.5, 0.5])
@@ -89,15 +90,7 @@ if True:
 # 
 # SVM
 # 
-if True:
-    X = negative_inputs + positive_inputs
-    y = negative_outputs + positive_outputs
-
-    # Assuming you have your data and labels ready, let's call them X and y respectively
-    # Split the data into training and testing sets
-    print("splitting up the data")
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
+if 0:
     # Create a Random Forest Classifier object
     svm_classifier = SVC()
 
@@ -112,14 +105,6 @@ if True:
 # Neural
 # 
 if True:
-    X = negative_inputs + positive_inputs
-    y = negative_outputs + positive_outputs
-
-    # Assuming you have your data and labels ready, let's call them X and y respectively
-    # Split the data into training and testing sets
-    print("splitting up the data")
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
     # Create a Random Forest Classifier object
     mlp_classifier = MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=1000)
 
@@ -135,18 +120,6 @@ if True:
 # random_forest
 # 
 if True:
-    
-    X = negative_inputs + positive_inputs
-    y = negative_outputs + positive_outputs
-
-    print(f'''len(y) = {len(y)}''')
-    print(f'''sum(y) = {sum(y)}''')
-
-    # Assuming you have your data and labels ready, let's call them X and y respectively
-    # Split the data into training and testing sets
-    print("splitting up the data")
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
     # Create a Random Forest Classifier object
     rf_classifier = RandomForestClassifier(n_estimators=500,max_depth=20)
 
@@ -163,30 +136,17 @@ if True:
 # Auto Neural
 # 
 if True:
+    # maybe use a transformer like https://www.nature.com/articles/s41592-021-01252-x
+    pass
     # create an autoencoder for sequences near phos sites
-    
-    
-    # Create a Random Forest Classifier object
-    mlp_classifier = MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=1000)
-
-    # Train the svm_classifier using the training data
-    print("training mlp_classifier")
-    mlp_classifier.fit(X_train, y_train)
-
-    print("mlp_classifier_predictions")
-    test_accuracy_of(mlp_classifier.predict)
-    print("\n\n")
+    # use prev 3 amino acids to predict next amino acid
 
 # 
 # combined
 # 
-real_naive_bayes_predict = naive_bayes_classifier.predict_proba
-real_rf_classifier_predict = rf_classifier.predict_proba
 
 def predict(X):
-    # naive_bayes_predictions = real_naive_bayes_predict(X)
     rf_predictions = real_rf_classifier_predict(X)
-    # svm_predictions = svm_classifier.predict_proba(X)
     mlp_predictions = mlp_classifier.predict_proba(X)
     predictions = [0]*len(rf_predictions)
     for index, probs in enumerate(zip( rf_predictions, mlp_predictions )):
@@ -201,6 +161,33 @@ def predict(X):
         predictions[index] = best_label
             
     return predictions
+
+def predict(X):
+    rf_predictions = rf_classifier.predict(X)
+    mlp_predictions = mlp_classifier.predict(X)
+    predictions = [0]*len(rf_predictions)
+    for index, (rf_prediction, mlp_prediction) in enumerate(zip( rf_predictions, mlp_predictions )):
+        if mlp_prediction == 0: # negative prediction
+            predictions[index] = rf_prediction
+        else:
+            predictions[index] = mlp_prediction
+            
+    return predictions
+
+def predict(X):
+    rf_predictions = rf_classifier.predict(X)
+    mlp_predictions = mlp_classifier.predict(X)
+    predictions = [0]*len(rf_predictions)
+    for index, (rf_prediction, mlp_prediction) in enumerate(zip( rf_predictions, mlp_predictions )):
+        if mlp_prediction == 1: # negative prediction
+            predictions[index] = rf_prediction
+        else:
+            predictions[index] = mlp_prediction
+            
+    return predictions
+
+
+
 
 print("combined")
 test_accuracy_of(predict)
