@@ -58,29 +58,19 @@ export function crossValidation({inputs, outputs, numberOfFolds, shouldRandomize
         throw Error(`crossValidation({ numberOfFolds: }), numberOfFolds needs to be a number, instead I got: ${toRepresentation(numberOfFolds)}`)
     }
 
+    const indicies = shouldRandomize ? _.shuffle([...Array(numberOfSamples)].map((e,i)=>i)) : [...Array(numberOfSamples)].map((e,i)=>i)
+
     for (let i = 0; i < numberOfFolds; i++) {
         const start = i * foldSize
         const end = i === numberOfFolds - 1 ? numberOfSamples : (i + 1) * foldSize
         const trainIndices = []
         const testIndices = []
         
-        if (shouldRandomize) {
-            const indicies = _.shuffle([...Array(numberOfSamples)].map((e,i)=>i))
-
-            for (let j = 0; j < numberOfSamples; j++) {
-                if (j >= start && j < end) {
-                    testIndices.push(indicies.pop())
-                } else {
-                    trainIndices.push(indicies.pop())
-                }
-            }
-        } else {
-            for (let j = 0; j < numberOfSamples; j++) {
-                if (j >= start && j < end) {
-                    testIndices.push(j)
-                } else {
-                    trainIndices.push(j)
-                }
+        for (let j = 0; j < numberOfSamples; j++) {
+            if (j >= start && j < end) {
+                testIndices.push(indicies.pop())
+            } else {
+                trainIndices.push(indicies.pop())
             }
         }
         
