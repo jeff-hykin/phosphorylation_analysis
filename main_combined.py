@@ -70,7 +70,7 @@ with open(join(__dirname__, './positive_examples.json'), 'r') as in_file:
     positive_outputs = tuple(1 for each in positive_inputs)
     print("loaded positive_examples")
 
-truncate_size = 50_000
+truncate_size = 1_000_000
 X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
 y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
 

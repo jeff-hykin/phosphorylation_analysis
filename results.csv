@@ -1,0 +1,21 @@
+sample_size, feature_set, model, fold_number, accuracy, positive_accuracy, negative_accuracy
+50000      , huffman_mixed, neural          , 1, 0.65608, 0.7132400257400258, 0.5995385105028644
+50000      , huffman_mixed, random_forest   , 1, 0.66672, 0.7058397683397684, 0.6280235518777848
+50000      , huffman_mixed, average_ensemble, 1, 0.6658 , 0.7240990990990991, 0.6081317632081477
+50000      , huffman_mixed, nn_0_fallback   , 1, 0.66436, 0.7989060489060489, 0.5312698917886697
+50000      , huffman_mixed, nn_1_fallback   , 1, 0.65844, 0.6201737451737451, 0.6962921705919797
+50000      , huffman_mixed, neural          , 2, 0.65252, 0.7242012779552716, 0.5806089743589744
+50000      , huffman_mixed, random_forest   , 2, 0.664  , 0.6888977635782748, 0.6390224358974359
+50000      , huffman_mixed, average_ensemble, 2, 0.66788, 0.7252396166134185, 0.6103365384615385
+50000      , huffman_mixed, nn_0_fallback   , 2, 0.65776, 0.7935303514376997, 0.5215544871794872
+50000      , huffman_mixed, nn_1_fallback   , 2, 0.65876, 0.6195686900958467, 0.698076923076923
+50000      , huffman_mixed, neural          , 3, 0.65416, 0.7274628065942903, 0.5816155988857938
+50000      , huffman_mixed, random_forest   , 3, 0.66368, 0.7026940088459992, 0.6250696378830084
+50000      , huffman_mixed, average_ensemble, 3, 0.66748, 0.7141133896260555, 0.6213290887385595
+50000      , huffman_mixed, nn_0_fallback   , 3, 0.65608, 0.797426618415762 , 0.5161957819339434
+50000      , huffman_mixed, nn_1_fallback   , 3, 0.66176, 0.6327301970245276, 0.6904894548348587
+50000      , huffman_mixed, neural          , 4, 0.64692, 0.6186474272575914, 0.675708403971906
+50000      , huffman_mixed, random_forest   , 4, 0.66696, 0.7021327202093078, 0.6311455558246549
+50000      , huffman_mixed, average_ensemble, 4, 0.66472, 0.662887497026877 , 0.6665859368692985
+50000      , huffman_mixed, nn_0_fallback   , 4, 0.66408, 0.7578688654562753, 0.5685799628642932
+50000      , huffman_mixed, nn_1_fallback   , 4, 0.6498 , 0.562911282010624 , 0.7382739969322677
