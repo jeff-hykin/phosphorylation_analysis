@@ -14,6 +14,7 @@ import math
 from random import random, sample, choices, shuffle
 
 from __dependencies__.quik_config import find_and_load
+from generic_tools.cross_validation import cross_validation
 
 info = find_and_load(
     "config.yaml", # walks up folders until it finds a file with this name
@@ -21,48 +22,6 @@ info = find_and_load(
     fully_parse_args=True, # if you already have argparse, use parse_args=True instead
     show_help_for_no_args=False, # change if you want
 )
-
-# 
-# cross-validation
-# 
-def cross_validation(inputs, outputs, number_of_folds, should_randomize=True):
-    number_of_samples = len(inputs)
-    fold_size = math.floor(number_of_samples / number_of_folds)
-    folds = []
-    
-    indicies = list(range(number_of_samples))
-    if should_randomize: shuffle(indicies)
-    
-    for index in range(number_of_folds):
-        start = index * fold_size
-        end = number_of_samples if index == number_of_folds - 1 else (index + 1) * fold_size
-        train_indices = []
-        test_indices = []
-        
-        copy_of_indicies = list(indicies)
-        
-        for j in range(number_of_samples):
-            if j >= start and j < end:
-                test_indices.append(copy_of_indicies.pop())
-            else:
-                train_indices.append(copy_of_indicies.pop())
-        
-        # 
-        # uses iterators to avoid memory usage and up-front computation
-        # 
-        folds.append({
-            "train": {
-                "inputs": tuple(inputs[each] for each in train_indices),
-                "outputs": tuple(outputs[each] for each in train_indices),
-            },
-            "test": {
-                "inputs": tuple(inputs[each] for each in test_indices),
-                "outputs": tuple(outputs[each] for each in test_indices),
-            },
-        })
-
-    return folds
-
 
 # 
 # read data
