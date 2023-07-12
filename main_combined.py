@@ -269,11 +269,11 @@ for index, each in enumerate(folds):
         y_test=each["test"]["outputs"],
     )
     
-    print("|" + ", ".join(["neural",           index+1, neural_accuracy          , neural_positive_accuracy          , neural_negative_accuracy          ,]))
-    print("|" + ", ".join(["random_forest",    index+1, random_forest_accuracy   , random_forest_positive_accuracy   , random_forest_negative_accuracy   ,]))
-    print("|" + ", ".join(["average_ensemble", index+1, average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,]))
-    print("|" + ", ".join(["nn_0_fallback",    index+1, nn_0_fallback_accuracy   , nn_0_fallback_positive_accuracy   , nn_0_fallback_negative_accuracy   ,]))
-    print("|" + ", ".join(["nn_1_fallback",    index+1, nn_1_fallback_accuracy   , nn_1_fallback_positive_accuracy   , nn_1_fallback_negative_accuracy   ,]))
+    print("|" + ", ".join(str(each) for each in ["neural",           index+1, neural_accuracy          , neural_positive_accuracy          , neural_negative_accuracy          ,]))
+    print("|" + ", ".join(str(each) for each in ["random_forest",    index+1, random_forest_accuracy   , random_forest_positive_accuracy   , random_forest_negative_accuracy   ,]))
+    print("|" + ", ".join(str(each) for each in ["average_ensemble", index+1, average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,]))
+    print("|" + ", ".join(str(each) for each in ["nn_0_fallback",    index+1, nn_0_fallback_accuracy   , nn_0_fallback_positive_accuracy   , nn_0_fallback_negative_accuracy   ,]))
+    print("|" + ", ".join(str(each) for each in ["nn_1_fallback",    index+1, nn_1_fallback_accuracy   , nn_1_fallback_positive_accuracy   , nn_1_fallback_negative_accuracy   ,]))
 
 # 200,000 raw features
     # Total Accuracy: 0.6795935855061819
