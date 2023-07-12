@@ -13,6 +13,14 @@ from sklearn.neural_network import MLPClassifier
 import math
 from random import random, sample, choices, shuffle
 
+from __dependencies__.quik_config import find_and_load
+
+info = find_and_load(
+    "config.yaml", # walks up folders until it finds a file with this name
+    cd_to_filepath=True, # helpful if using relative paths
+    fully_parse_args=True, # if you already have argparse, use parse_args=True instead
+    show_help_for_no_args=False, # change if you want
+)
 
 # 
 # cross-validation
@@ -59,13 +67,11 @@ def cross_validation(inputs, outputs, number_of_folds, should_randomize=True):
 # 
 # read data
 # 
-import os
-__dirname__ = os.path.dirname(__file__)
-with open(join(__dirname__, './negative_examples.json'), 'r') as in_file:
+with open(info.absolute_path_to.negative_examples, 'r') as in_file:
     negative_inputs = json.load(in_file)
     negative_outputs = tuple(0 for each in negative_inputs)
     print("loaded negative_examples")
-with open(join(__dirname__, './positive_examples.json'), 'r') as in_file:
+with open(info.absolute_path_to.positive_examples, 'r') as in_file:
     positive_inputs = json.load(in_file)
     positive_outputs = tuple(1 for each in positive_inputs)
     print("loaded positive_examples")

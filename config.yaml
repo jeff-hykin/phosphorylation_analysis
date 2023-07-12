@@ -1,0 +1,25 @@
+# names in parentheses are special, all other names are not!
+# (e.g. add/extend this with any custom fields)
+(project):
+    # the local_data file will be auto-generated
+    # (its for machine-specific data)
+    # so probably git-ignore whatever path you pick
+    (local_data): ./local_data.ignore.yaml
+    
+    (path_to):
+        huffman_coder: "./huffman_code.ignore.json"
+        negative_examples: ./negative_examples.json
+        positive_examples: ./positive_examples.json
+    
+    # example profiles
+    (profiles):
+        (default):
+            generate_data:
+                windowPadding: 10 # + or - 10 amino acids
+                aminoMatchPattern: "S"
+                useHuffmanEncoding: true
+                huffmanEncoderCap: 30
+                minOneSideEncodedLength: 5
+                datasetSize: 200_000
+        
+
