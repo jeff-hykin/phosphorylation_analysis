@@ -65,12 +65,14 @@ export function crossValidation({inputs, outputs, numberOfFolds, shouldRandomize
         const end = i === numberOfFolds - 1 ? numberOfSamples : (i + 1) * foldSize
         const trainIndices = []
         const testIndices = []
+
+        const indiciesCopy = [...indicies]
         
         for (let j = 0; j < numberOfSamples; j++) {
             if (j >= start && j < end) {
-                testIndices.push(indicies.pop())
+                testIndices.push(indiciesCopy.pop())
             } else {
-                trainIndices.push(indicies.pop())
+                trainIndices.push(indiciesCopy.pop())
             }
         }
         
