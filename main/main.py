@@ -253,7 +253,7 @@ for index, each in enumerate(folds):
     # Negative Accuracy: 0.6668304909814715
 
 Csv.write(
-    path=config.path_to.recent_results,
+    path=info.path_to.recent_results,
     rows=rows_of_output,
     column_names=[ "sample_size", "feature_set", "model", "fold_number", "accuracy", "positive_accuracy", "negative_accuracy"],
 )

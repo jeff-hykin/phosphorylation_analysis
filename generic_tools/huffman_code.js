@@ -105,11 +105,8 @@ export class HuffmanCoder {
 
     freeze() {
         this.isFrozen = true
-        console.log(`_buildHuffmanTree`)
         this.tree = this._buildHuffmanTree()
-        console.log(`_buildCodeMap`)
         this.codeMap = this._buildCodeMap(this.tree)
-        console.log(`_buildEnumerationMapping`)
         const { encodingToNumber, substringToNumber, numberToSubstring } = this._buildEnumerationMapping(this.codeMap, this.cap)
         this.encodingToNumber = encodingToNumber
         this.numberToSubstring = numberToSubstring
