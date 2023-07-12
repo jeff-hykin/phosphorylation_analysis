@@ -120,7 +120,7 @@ const parameters = {
         let count = 0
         // edgecase of uracil only existing in negative_examples (causing encoding to fail altogether)
         coder.addData("UGKTEVNYT".slice(0,parameters.windowPadding))
-        for (const {aminoAcids, ...otherData} of positiveExamples) {
+        for (const {aminoAcids, ...otherData} of positiveExamples.concat(negativeExamples)) {
             count += 1
             if (count % 2000 == 0) {
                 console.log(`    on ${count}/${parameters.datasetSize*2}: ${Math.round(count/(parameters.datasetSize*2)*100)}%`)
@@ -132,7 +132,6 @@ const parameters = {
         }
         coder.freeze()
         const numberToVector = createOneHot(coder.numberToSubstring)
-        console.debug(`numberToVector is:`,numberToVector)
         function* applyHuffmanEncoding(examples) {
             let count = 0
             for (const { aminoAcids } of examples) {
@@ -161,8 +160,8 @@ const parameters = {
         // save
         // 
         console.debug(`saving huffman coder`)
-        await FileSystem.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder,0,2) })
-        console.debug(`saved huffman coder`)
+        FileSystem.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder,0,2) }).then(()=>console.debug(`saved huffman coder`))
+        
 
         // 
         // apply 
@@ -212,8 +211,10 @@ const parameters = {
         // 
         // save examples
         // 
-        await FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(   encodeExamples(positiveExamples)   ), })
-        await FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(   encodeExamples(negativeExamples)   ), })
+        await Promise.all([
+            FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(   encodeExamples(positiveExamples)   ), }),
+            FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(   encodeExamples(negativeExamples)   ), }),
+        ])
     }
     
 

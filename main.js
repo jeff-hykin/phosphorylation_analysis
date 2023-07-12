@@ -7,6 +7,9 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
 
 
 // todo:
+    // huffman
+        // positive and negative (independently trained)
+        // 
     // PARTIALLY DONE: try ensemble
         // more clever ensemble: sticking to random forest, then only using others when confidence is low
     // get importance from python for random forest
