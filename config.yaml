@@ -7,6 +7,7 @@
     (local_data): ./local_data.ignore.yaml
     
     (path_to):
+        recent_results: "./recent_results.csv"
         huffman_coder: "./huffman_code.ignore.json"
         negative_examples: ./negative_examples.json
         positive_examples: ./positive_examples.json
@@ -14,6 +15,7 @@
     # example profiles
     (profiles):
         (default):
+            feature_set: "huffman_negative"
             generate_data:
                 windowPadding: 10 # + or - 10 amino acids
                 aminoMatchPattern: "S"

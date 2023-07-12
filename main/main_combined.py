@@ -14,6 +14,7 @@ import math
 from random import random, sample, choices, shuffle
 
 from __dependencies__.quik_config import find_and_load
+from __dependencies__.blissful_basics import Csv
 from generic_tools.cross_validation import cross_validation
 
 info = find_and_load(
@@ -39,6 +40,7 @@ truncate_size = 1_000_000
 X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
 y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
 
+sample_size = len(X)
 print(f'''len(y) = {len(y)}''')
 print(f'''sum(y) = {sum(y)}''')
 
@@ -219,7 +221,8 @@ folds = cross_validation(
     outputs=y,
     number_of_folds=number_of_folds,
 )
-print("|model, fold_number, accuracy, positive_accuracy, negative_accuracy")
+
+rows_of_output = []
 for index, each in enumerate(folds):
     (
         neural_accuracy, neural_positive_accuracy, neural_negative_accuracy,
@@ -234,11 +237,11 @@ for index, each in enumerate(folds):
         y_test=each["test"]["outputs"],
     )
     
-    print("|" + ", ".join(str(each) for each in ["neural",           index+1, neural_accuracy          , neural_positive_accuracy          , neural_negative_accuracy          ,]))
-    print("|" + ", ".join(str(each) for each in ["random_forest",    index+1, random_forest_accuracy   , random_forest_positive_accuracy   , random_forest_negative_accuracy   ,]))
-    print("|" + ", ".join(str(each) for each in ["average_ensemble", index+1, average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,]))
-    print("|" + ", ".join(str(each) for each in ["nn_0_fallback",    index+1, nn_0_fallback_accuracy   , nn_0_fallback_positive_accuracy   , nn_0_fallback_negative_accuracy   ,]))
-    print("|" + ", ".join(str(each) for each in ["nn_1_fallback",    index+1, nn_1_fallback_accuracy   , nn_1_fallback_positive_accuracy   , nn_1_fallback_negative_accuracy   ,]))
+    rows_of_output.append([sample_size, info.config.feature_set, "neural",           index+1, neural_accuracy          , neural_positive_accuracy          , neural_negative_accuracy          ,])
+    rows_of_output.append([sample_size, info.config.feature_set, "random_forest",    index+1, random_forest_accuracy   , random_forest_positive_accuracy   , random_forest_negative_accuracy   ,])
+    rows_of_output.append([sample_size, info.config.feature_set, "average_ensemble", index+1, average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,])
+    rows_of_output.append([sample_size, info.config.feature_set, "nn_0_fallback",    index+1, nn_0_fallback_accuracy   , nn_0_fallback_positive_accuracy   , nn_0_fallback_negative_accuracy   ,])
+    rows_of_output.append([sample_size, info.config.feature_set, "nn_1_fallback",    index+1, nn_1_fallback_accuracy   , nn_1_fallback_positive_accuracy   , nn_1_fallback_negative_accuracy   ,])
 
 # 200,000 raw features
     # Total Accuracy: 0.6795935855061819
@@ -248,3 +251,9 @@ for index, each in enumerate(folds):
     # ]
     # Positive Accuracy: 0.692262659771685
     # Negative Accuracy: 0.6668304909814715
+
+Csv.write(
+    path=config.path_to.recent_results,
+    rows=rows_of_output,
+    column_names=[ "sample_size", "feature_set", "model", "fold_number", "accuracy", "positive_accuracy", "negative_accuracy"],
+)

@@ -119,9 +119,9 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
         const coder = new HuffmanCoder({ softCap: parameters.huffmanEncoderCap })
         console.debug(`building huffman coder`)
         let count = 0
-        // edgecase of uracil only existing in negative_examples (causing encoding to fail altogether)
-        coder.addData("UGKTEVNYT".slice(0,parameters.windowPadding))
-        for (const {aminoAcids, ...otherData} of positiveExamples.concat(negativeExamples)) {
+        // edgecase making sure both "U" and "B" are seen at least once
+        coder.addData("UGBTEVNYT".slice(0,parameters.windowPadding))
+        for (const {aminoAcids, ...otherData} of negativeExamples) {
             count += 1
             if (count % 2000 == 0) {
                 console.log(`    on ${count}/${parameters.datasetSize*2}: ${Math.round(count/(parameters.datasetSize*2)*100)}%`)
