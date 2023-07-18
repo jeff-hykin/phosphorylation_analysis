@@ -209,16 +209,6 @@ class Network:
         
         return loss_function
 
-def from_one_hot_batch(tensor_batch):
-    device = None
-    if isinstance(tensor_batch, torch.Tensor):
-        device = tensor_batch.device
-    # make sure its a tensor
-    tensor_batch = to_tensor(tensor_batch)
-    output = tensor_batch.max(1, keepdim=True).indices.squeeze()
-    # send to same device
-    return output.to(device) if device else output
-
 class SimpleSerial:
     """
     Uses:
@@ -414,6 +404,15 @@ coder.fit(
     batch_size=64,
     shuffle=True,
 )
+
+# TODO:
+    # come up with a validation function that returns a validation and training accuracy
+    # auto-try different parameters (loss function, activations, number of layers, learning rate, momentum)
+    # save the one with the best validation accuracy
+    
+    # train it on more sequences first (not just phos sequences), then "over" train it on phos sequences (high number of epochs)
+    
+    # use the encoder in a regular NN 
 
 # large_pickle_save(coder.to_serial_form())
 
