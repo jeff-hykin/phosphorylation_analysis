@@ -1,6 +1,7 @@
 import json
+import math
 from os.path import join
-from random import shuffle
+from random import random, sample, choices, shuffle
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -13,12 +14,13 @@ from sklearn.tree import DecisionTreeClassifier
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy
-
-import math
-from random import random, sample, choices, shuffle
+import torch
+import torch.nn.functional as F
+from torch import nn
+import torch.optim as optim
 
 from __dependencies__.quik_config import find_and_load
-from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load
+from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure
 from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes
 from generic_tools.cross_validation import cross_validation
 
@@ -29,10 +31,7 @@ info = find_and_load(
     show_help_for_no_args=False, # change if you want
 )
 
-import torch
-import torch.nn.functional as F
-from torch import nn
-import torch.optim as optim
+
 default_seed = 10275023948
 torch.manual_seed(default_seed)
 
@@ -146,6 +145,14 @@ class Network:
         """
         # TODO: test input_output_pairs
         if input_output_pairs is not None:
+            if shuffle:
+                try:
+                    len(input_output_pairs)
+                    input_output_pairs = list(input_output_pairs)
+                    from random import random, sample, choices, shuffle
+                    shuffle(input_output_pairs)
+                except Exception as error:
+                    pass
             # creates batches
             def bundle(iterable, bundle_size):
                 next_bundle = []
@@ -172,28 +179,23 @@ class Network:
                     shuffle=shuffle,
                 )
         
-        if hasattr(self, "_is_lightning_module"):
-            self.prev_trainer = self.new_trainer(**kwargs)
-            output = self.prev_trainer.fit(self, loader)
-            # go back to the hardware to unto the changes made by pytorch lightning
-            self.to(self.hardware)
-            return output
-        else:
-            train_losses = []
-            for epoch_index in range(kwargs.get("max_epochs", 1)):
-                self.train()
-                for batch_index, (batch_of_inputs, batch_of_ideal_outputs) in enumerate(loader):
-                    loss = self.update_weights(batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
-                    from tools.basics import to_pure
-                    if batch_index % self.log_interval == 0:
-                        count = batch_index * len(batch_of_inputs)
-                        total = len(loader.dataset)
-                        pure_loss = to_pure(loss)
-                        self.show(f"\r[Train]: epoch: {epoch_index:>4}, batch: {count:>10}/{total}", sep='', end='', flush=True)
-                        train_losses.append(loss)
-                        # TODO: add/allow checkpoints
-            self.show()
-            return train_losses
+        train_losses = []
+        for epoch_index in range(kwargs.get("max_epochs", 1)):
+            self.train()
+            for batch_index, (batch_of_inputs, batch_of_ideal_outputs) in enumerate(loader):
+                loss = self.update_weights(batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
+                if batch_index % self.log_interval == 0:
+                    count = batch_index * len(batch_of_inputs)
+                    try:
+                        total = len(loader)
+                    except Exception as error:
+                        total = "?"
+                    pure_loss = to_pure(loss)
+                    self.show(f"\r[Train]: epoch: {epoch_index:>4}, batch: {count:>10}/{total}", sep='', end='', flush=True)
+                    train_losses.append(loss)
+                    # TODO: add/allow checkpoints
+        self.show()
+        return train_losses
     
     @staticmethod
     def wrap_loss_function(self, loss_func):
@@ -203,7 +205,7 @@ class Network:
         """
         def loss_function(model_output, ideal_output):
             # convert from one-hot into number, and send tensor to device
-            return loss_func(model_output, from_one_hot_batch(ideal_output).to(self.hardware))
+            return loss_func(model_output, to_tensor(ideal_output).to(self.hardware))
         
         return loss_function
 
@@ -259,9 +261,12 @@ class Encoder(nn.Module, SimpleSerial):
         # layers
         # 
         self.add_module('flatten', nn.Flatten(1)) # 1 => skip the first dimension because thats the batch dimension
-        for layer_index in range(self.number_of_layers):
+        for layer_index in range(self.number_of_layers-1):
             self.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, int(self.size_of_last_layer*(2/3))))
             self.add_module(f'fc{layer_index}_activation', self.activation_function)
+        # final layer
+        self.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, product(self.output_shape)))
+        self.add_module(f'fc{layer_index+1}_activation', self.activation_function)
         
         self.to(self.hardware)
     
@@ -269,11 +274,6 @@ class Encoder(nn.Module, SimpleSerial):
     def size_of_last_layer(self):
         return product(self.input_shape if len(self._modules) == 0 else layer_output_shapes(self._modules.values(), self.input_shape)[-1])
         
-    def loss_function(self, model_output, ideal_output):
-        # convert from one-hot into number, and send tensor to device
-        ideal_output = from_one_hot_batch(ideal_output).to(self.hardware)
-        return F.nll_loss(model_output, ideal_output)
-
     def forward(self, input_data):
         return Network.default_forward(self, input_data)
     
@@ -291,7 +291,7 @@ class Decoder(nn.Module, SimpleSerial):
         # 
         Network.default_setup(self, config)
         self.input_shape      = config.get("input_shape"      , (10,))
-        self.output_shape     = config.get("output_shape"     , (400))
+        self.output_shape     = config.get("output_shape"     , (400, ))
         self.number_of_layers = config.get("number_of_layers" , 3)
         self.activation_function_eval = config.get('activation_function_eval', "nn.ReLU()")
         self.loss_function_eval       = config.get('loss_function_eval', "F.mse_loss")
@@ -303,9 +303,11 @@ class Decoder(nn.Module, SimpleSerial):
         # 
         # layers
         # 
-        for layer_index in range(self.number_of_layers):
+        for layer_index in range(self.number_of_layers-1):
             self.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, int(self.size_of_last_layer*(2/3))))
             self.add_module(f'fc{layer_index}_activation', self.activation_function)
+        self.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, product(self.output_shape)))
+        self.add_module(f'fc{layer_index+1}_activation', self.activation_function)
         
         # 
         # support (optimizer, loss)
@@ -334,11 +336,12 @@ class AutoEncoder(nn.Module, SimpleSerial):
         # options
         # 
         Network.default_setup(self, config)
-        self.input_shape              = config.get('input_shape'    , (400, ))
-        self.latent_shape             = config.get('latent_shape'   , (30,))
-        self.output_shape             = config.get('output_shape'   , self.input_shape)
-        self.learning_rate            = config.get('learning_rate'  , 0.01)
-        self.momentum                 = config.get('momentum'       , 0.5 )
+        self.input_shape              = config.get('input_shape'        , (400, ))
+        self.latent_shape             = config.get('latent_shape'       , (30,))
+        self.output_shape             = config.get('output_shape'       , self.input_shape)
+        self.learning_rate            = config.get('learning_rate'      , 0.01)
+        self.momentum                 = config.get('momentum'           , 0.5 )
+        self.log_interval             = config.get('log_interval'       , 0.5 )
         self.number_of_layers         = config.get('number_of_layers'   , 3)
         self.activation_function_eval = config.get('activation_function_eval', "nn.ReLU()")
         self.loss_function_eval       = config.get('loss_function_eval', "F.mse_loss")
@@ -377,13 +380,10 @@ class AutoEncoder(nn.Module, SimpleSerial):
     def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
         return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
 
-coder = AutoEncoder()
-AutoEncoder.from_serial_form(coder.to_serial_form())
-
 # 
 # read data
 # 
-if 0:
+if True:
     with open(info.absolute_path_to.negative_examples, 'r') as in_file:
         negative_inputs = json.load(in_file)
         negative_outputs = tuple(-1 for each in negative_inputs)
@@ -401,6 +401,21 @@ if 0:
     print(f'''len(y) = {len(y)}''')
     print(f'''sum(y) = {sum(y)}''')
 
+
+coder = AutoEncoder(
+    input_shape=(len(X[0]), ),
+    latent_shape=(30, ),
+    number_of_layers=3,
+)
+AutoEncoder.from_serial_form(coder.to_serial_form())
+coder.fit(
+    input_output_pairs=list(zip(X, y)),
+    max_epochs=20,
+    batch_size=64,
+    shuffle=True,
+)
+
+# large_pickle_save(coder.to_serial_form())
 
 # def train_and_test(X_train, X_test, y_train, y_test):
 #     # 
