@@ -215,9 +215,9 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
                 
                 const beforeVector = []
                 const afterVector = []
-                for (const [substringNumber, vector] of Object.entries(numberToVector)) {
-                    beforeVector[substringNumber] = 255 // e.g. far away
-                    afterVector[substringNumber]  = 255 // e.g. far away
+                for (const [substringNumber, vector] of Object.entries(coder.numberToVector)) {
+                    beforeVector[substringNumber] = 30 // e.g. far away
+                    afterVector[substringNumber]  = 30 // e.g. far away
                 }
 
                 // what features were present
