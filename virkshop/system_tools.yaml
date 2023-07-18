@@ -464,6 +464,18 @@
     asBuildInput: true
 
 - (package):
+    load: [ "python38Packages", "matplotlib" ]
+    asBuildInput: true
+
+- (package):
+    load: [ "python38Packages", "pandas" ]
+    asBuildInput: true
+
+- (package):
+    load: [ "python38Packages", "numpy" ]
+    asBuildInput: true
+
+- (package):
     load: [ "cmake" ]
     asBuildInput: true
 

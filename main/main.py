@@ -9,12 +9,15 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy
 
 import math
 from random import random, sample, choices, shuffle
 
 from __dependencies__.quik_config import find_and_load
-from __dependencies__.blissful_basics import Csv
+from __dependencies__.blissful_basics import Csv, FS
 from generic_tools.cross_validation import cross_validation
 
 info = find_and_load(
@@ -36,7 +39,7 @@ with open(info.absolute_path_to.positive_examples, 'r') as in_file:
     positive_outputs = tuple(1 for each in positive_inputs)
     print("loaded positive_examples")
 
-truncate_size = 1_000_000
+truncate_size = 50_000
 X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
 y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
 
@@ -68,8 +71,8 @@ def train_and_test(X_train, X_test, y_train, y_test):
         positive_accuracy = accuracy_score(positive_test_outputs, predict(positive_test_inputs))
         print("Positive Accuracy:", positive_accuracy)
         
-        negative_test_inputs  = tuple(each_input   for each_input, each_output in zip(X_test, y_test) if each_output == 0)
-        negative_test_outputs = tuple(each_output  for each_input, each_output in zip(X_test, y_test) if each_output == 0)
+        negative_test_inputs  = tuple(each_input   for each_input, each_output in zip(X_test, y_test) if each_output == -1)
+        negative_test_outputs = tuple(each_output  for each_input, each_output in zip(X_test, y_test) if each_output == -1)
         negative_accuracy = accuracy_score(negative_test_outputs, predict(negative_test_inputs))
         print("Negative Accuracy:", negative_accuracy)
         return accuracy, positive_accuracy, negative_accuracy
@@ -116,21 +119,7 @@ def train_and_test(X_train, X_test, y_train, y_test):
         print("svm_predictions")
         test_accuracy_of(svm_classifier.predict)
         print("\n\n")
-    # 
-    # Neural
-    # 
-    if True:
-        # Create a Random Forest Classifier object
-        mlp_classifier = MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=1000)
-
-        # Train the svm_classifier using the training data
-        print("training mlp_classifier")
-        mlp_classifier.fit(X_train, y_train)
-
-        print("mlp_classifier_predictions")
-        neural_accuracy, neural_positive_accuracy, neural_negative_accuracy = test_accuracy_of(mlp_classifier.predict)
-        print("\n\n")
-
+    
     # 
     # random_forest
     # 
@@ -145,7 +134,36 @@ def train_and_test(X_train, X_test, y_train, y_test):
         print("random_forest_predictions")
         random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy = test_accuracy_of(rf_classifier.predict)
         print("\n\n")
+        
+        importances = rf_classifier.feature_importances_
+        feature_names = [ str(index) for index in range(len(X[0]))]
+        forest_importances = pd.Series(importances, index=feature_names)
+        
+        fig, ax = plt.subplots()
+        std = numpy.std([tree.feature_importances_ for tree in rf_classifier.estimators_], axis=0)
+        forest_importances.plot.bar(yerr=std, ax=ax)
+        ax.set_title("Feature importances using MDI")
+        ax.set_ylabel("Mean decrease in impurity")
+        fig.tight_layout()
+        FS.ensure_is_folder(FS.dirname(info.absolute_path_to.important_features_image))
+        dpi = 400
+        fig.set_size_inches(16, 14)  # Adjust the figure size as desired
+        plt.savefig(info.absolute_path_to.important_features_image, dpi=400)
+    
+    # 
+    # Neural
+    # 
+    if True:
+        # Create a Random Forest Classifier object
+        mlp_classifier = MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=1000)
 
+        # Train the svm_classifier using the training data
+        print("training mlp_classifier")
+        mlp_classifier.fit(X_train, y_train)
+
+        print("mlp_classifier_predictions")
+        neural_accuracy, neural_positive_accuracy, neural_negative_accuracy = test_accuracy_of(mlp_classifier.predict)
+        print("\n\n")
 
     # 
     # Auto Neural
