@@ -121,7 +121,7 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
         let count = 0
         // edgecase making sure both "U" and "B" are seen at least once
         coder.addData("UGBTEVNYT".slice(0,parameters.windowPadding))
-        for (const {aminoAcids, ...otherData} of negativeExamples) {
+        for (const {aminoAcids, ...otherData} of positiveExamples) {
             count += 1
             if (count % 2000 == 0) {
                 console.log(`    on ${count}/${parameters.datasetSize*2}: ${Math.round(count/(parameters.datasetSize*2)*100)}%`)
@@ -137,7 +137,7 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
             let count = 0
             for (const { aminoAcids } of examples) {
                 const [ before, after ] = [ aminoAcids.slice(0,parameters.windowPadding), aminoAcids.slice(parameters.windowPadding+1,) ]
-                yield [ coder.encode(before), coder.encode(after) ]
+                yield [ coder.encode(before), coder.encode(after), aminoAcids ]
             }
         }
 
@@ -183,7 +183,7 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
             // }
         // exists-encoding
             function *encodeExamples(examples) {
-                for (const [before, after] of applyHuffmanEncoding(examples)) {
+                for (const [before, after, aminoAcids] of applyHuffmanEncoding(examples)) {
                     // skip encodings that are too small
                     if (before.length < parameters.minOneSideEncodedLength || after.length < parameters.minOneSideEncodedLength) {
                         continue
@@ -204,7 +204,9 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
                         afterVector[substringNumber] = distance
                     }
 
-                    const output = new Uint8Array(beforeVector.concat(afterVector))
+                    const output = new Uint8Array(
+                        beforeVector.concat(afterVector).concat(aminoAcidToFeatureVector({aminoAcidString: aminoAcids}))
+                    )
                     yield output
                 }
             }
