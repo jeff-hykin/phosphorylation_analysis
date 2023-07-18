@@ -24,6 +24,10 @@
             "git_url": "git@github.com:jeff-hykin/ez_yaml.git",
             "path": "__sources__/ez_yaml/main/ez_yaml"
         },
+        "trivial_torch_tools": {
+            "git_url": "git@github.com:jeff-hykin/trivial-torch-tools.git",
+            "path": "__sources__/trivial_torch_tools/main/trivial_torch_tools"
+        },
         "websockets": {
             "path": "__sources__/websockets/src/websockets"
         },

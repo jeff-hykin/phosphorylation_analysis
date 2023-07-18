@@ -11,6 +11,7 @@
         config:
             allowUnfree: true
             cudaSupport: true
+            allowUnsupportedSystem: true
             # permittedInsecurePackages: [ "openssl-1.0.2u" ]
 
 # Examples of extra warehouses:
@@ -440,43 +441,43 @@
     asBuildInput: true
 
 - (package):
-    load: [ "python38Packages", "setuptools" ]
+    load: [ "python39Packages", "setuptools" ]
     asBuildInput: true
 
 - (package):
-    load: [ "python38Packages", "pip" ]
+    load: [ "python39Packages", "pip" ]
     asBuildInput: true
 
 - (package):
-    load: [ "python38Packages", "virtualenv" ]
+    load: [ "python39Packages", "virtualenv" ]
     asBuildInput: true
 
 - (package):
-    load: [ "python38Packages", "wheel" ]
+    load: [ "python39Packages", "wheel" ]
     asBuildInput: true
 
 - (package):
-    load: [ "python38Packages", "wxPython_4_1" ]
+    load: [ "python39Packages", "wxPython_4_1" ]
     asBuildInput: true
 
 - (package):
-    load: [ "python38Packages", "scikit-learn" ]
+    load: [ "python39Packages", "scikit-learn" ]
     asBuildInput: true
 
 - (package):
-    load: [ "python38Packages", "matplotlib" ]
+    load: [ "python39Packages", "matplotlib" ]
     asBuildInput: true
 
 - (package):
-    load: [ "python38Packages", "pandas" ]
+    load: [ "python39Packages", "pandas" ]
     asBuildInput: true
 
 - (package):
-    load: [ "python38Packages", "numpy" ]
+    load: [ "python39Packages", "numpy" ]
     asBuildInput: true
 
 - (package):
-    load: [ "python38Packages", "torch" ]
+    load: [ "python39Packages", "torchWithoutCuda" ]
     asBuildInput: true
 
 - (package):
