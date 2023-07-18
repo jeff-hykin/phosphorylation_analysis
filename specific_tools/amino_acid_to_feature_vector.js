@@ -53,7 +53,8 @@ const shouldIncludePhysicochemicalCategories = true
         "D": "B",
         "N": "B",
     }
-    export const aminoToOneHot = createOneHot(amnioEncoding)
+    const { objToOneHot: aminoToOneHot, oneHotToObject: oneHotToAmino } = createOneHot(amnioEncoding)
+    export { aminoToOneHot, oneHotToAmino }
 
 // 
 // additional features

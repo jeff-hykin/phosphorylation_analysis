@@ -16,7 +16,7 @@ import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno
 import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.35/main/file_system.js"
 import { loadMixedExamples } from "../specific_tools/load_mixed_examples.js"
 import { loadPositiveExamples } from "../specific_tools/load_positive_examples.js"
-import { amnioEncoding, aminoAcidSimplifier, aminoToOneHot,physicochemicalCategories } from "../specific_tools/amino_acid_to_feature_vector.js"
+import { amnioEncoding, aminoAcidSimplifier, aminoToOneHot, oneHotToAmino, physicochemicalCategories } from "../specific_tools/amino_acid_to_feature_vector.js"
 import { HuffmanCoder } from "../generic_tools/huffman_code.js"
 import { encode, decode, NotSerializable } from 'https://raw.githubusercontent.com/jeff-hykin/es-codec/0523dfcff5c95ef52cc12f5eb6eeb8d2b07b4839/es-codec.js'
 const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
@@ -196,8 +196,10 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
 // 
 // select features
 // 
+    const featureNames = []
     function *encodeExamples(examples) {
         for (const [acidsBefore, acidsAfter, aminoAcidString] of preprocess(examples)) {
+            featureNames.length = 0 // very inefficient: TODO: fix
             let featureVector = []
             
             // 
@@ -225,6 +227,9 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
                 }
 
                 featureVector = featureVector.concat(beforeVector, afterVector)
+                for (const [index, each] of enumerate(concat(beforeVector, afterVector))) {
+                    featureNames.push(`huffman:${index}`)
+                }
             }
 
             // 
@@ -238,9 +243,11 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
                         continue
                     }
                     for (const eachBool of aminoToOneHot[eachAminoChar]) {
+                        featureNames.push(`index:${index}==${eachAminoChar}`)
                         featureVector.push(eachBool)
                     }
                 }
+                
             }
 
             // 
@@ -260,9 +267,21 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
                         afterFeatureMagnitude += 1
                     }
                     featureVector.push(featureMagnitude)
+                    featureNames.push(`physicochemical:${key}`)
                     featureVector.push(beforeFeatureMagnitude)
+                    featureNames.push(`physicochemicalBefore:${key}`)
                     featureVector.push(afterFeatureMagnitude)
+                    featureNames.push(`physicochemicalAfter:${key}`)
                 }
+            }
+
+            if (parameters.featureToInclude.handCodedMotifs) {
+                
+                featureNames.push(`handCodedMotifs:1`)
+                featureVector.push(
+                    aminoAcidString.match(/..........S........../) ? 1 : 0
+                )
+                
             }
 
             yield new Uint8Array(featureVector)
@@ -276,12 +295,14 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
         FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(   encodeExamples(positiveExamples)   ), }),
         FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(   encodeExamples(negativeExamples)   ), }),
     ])
-    
 
     // record most recent parameters 
     await FileSystem.write({
         data: JSON.stringify(
-            parameters,
+            {
+                featureNames,
+                parameters
+            },
             (key,value)=>value instanceof RegExp ? value.toString() : value,
             4,
         ),

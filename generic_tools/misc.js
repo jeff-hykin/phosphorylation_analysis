@@ -3,12 +3,13 @@ import { flatten, asyncIteratorToList, enumerate } from "https://deno.land/x/goo
  * create onehot encoding
  *
  * @example
- *     const encodeing = createOneHot({ "A": { blah:1 }, "B": { blah: "stuff" } })
- *     encoding["A"] == [ 1, 0 ]
- *     encoding["B"] == [ 0, 1 ]
+ *     const {objToOneHot, oneHotToObject} = createOneHot({ "A": { blah:1 }, "B": { blah: "stuff" } })
+ *     objToOneHot["A"] == [ 1, 0 ]
+ *     objToOneHot["B"] == [ 0, 1 ]
  */
 export const createOneHot = (object)=>{
     const newObject = {}
+    const oneHotToObject = new Map()
     const numberOfPossibleValues = Object.keys(object).length
     const zerosArray = [...Array(numberOfPossibleValues)].map(each=>0)
     for (const [index, key] of enumerate(Object.keys(object))) {
@@ -16,8 +17,9 @@ export const createOneHot = (object)=>{
         newObject[key][index] = 1
         // convert to more efficient data type
         newObject[key] = new Uint8Array(newObject[key])
+        oneHotToObject.set(newObject[key], key)
     }
-    return newObject
+    return {objToOneHot: newObject, oneHotToObject: (key)=>oneHotToObject.get(key)}
 }
 
 

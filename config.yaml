@@ -29,5 +29,6 @@
                 featureToInclude:
                     normalPositionalData: true
                     positionInvariantPhysicochemicalCategories: true
+                    handCodedMotifs: true
         
 
