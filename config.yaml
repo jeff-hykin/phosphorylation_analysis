@@ -28,7 +28,9 @@
                     shouldUseSimplifier: false
                 featureToInclude:
                     normalPositionalData: true
-                    positionInvariantPhysicochemicalCategories: true
+                    positionInvariantHuffman: true
+                    positionInvariantPhysicochemicalCategories: false
+                    physicochemicalCategories: true
                     handCodedMotifs: true
         
 

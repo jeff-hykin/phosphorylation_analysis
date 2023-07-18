@@ -70,4 +70,13 @@ const shouldIncludePhysicochemicalCategories = true
         small: [..."PNDTCAGSV"],
         tiny: [..."ASGC"],
     }
+    export const aminoToPhysicochemical = (amino)=>{
+        const output = {}
+        for (const [key, value] of Object.entries(physicochemicalCategories)) {
+            output[key] = value.includes(amino)
+        }
+        return output
+    }
+    const { objToOneHot: physicochemicalToOneHot, oneHotToObject: oneHotToPhysicochemical } = createOneHot(amnioEncoding)
+    export { physicochemicalToOneHot, oneHotToPhysicochemical }
     // what is the charge amount (negatives and postives)
