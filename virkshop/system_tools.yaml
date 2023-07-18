@@ -476,6 +476,10 @@
     asBuildInput: true
 
 - (package):
+    load: [ "python38Packages", "torch" ]
+    asBuildInput: true
+
+- (package):
     load: [ "cmake" ]
     asBuildInput: true
 

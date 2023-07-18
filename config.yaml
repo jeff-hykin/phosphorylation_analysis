@@ -13,6 +13,16 @@
         positive_examples: ./positive_examples.json
         important_features_image: ./figures/recent_feature_importance.png
     
+    todo:
+        - dont add plant features
+        - do autoencoder:
+            - how many layers? 50 units, 20 units
+            - latent space: 2 latent, 5, 10,
+            - Relu
+        - maybe switch to protien level prediction
+            - maybe evaluate if 
+            - maybe use HMM's
+            - LSTM
     # example profiles
     (profiles):
         (default):
@@ -21,16 +31,17 @@
                 windowPadding: 10 # + or - 10 amino acids
                 aminoMatchPattern: "S"
                 useHuffmanEncoding: true
+                positionInvariantFarAwayValue: 30
                 huffmanEncoderCap: 30
                 minOneSideEncodedLength: 5
-                datasetSize: 200_000
+                datasetSize: 20_000
                 preprocessing:
                     shouldUseSimplifier: false
                 featureToInclude:
                     normalPositionalData: true
                     positionInvariantHuffman: true
                     positionInvariantPhysicochemicalCategories: false
-                    physicochemicalCategories: true
-                    handCodedMotifs: true
+                    physicochemicalCategories: false
+                    handCodedMotifs: false
         
 

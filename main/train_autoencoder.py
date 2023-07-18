@@ -53,6 +53,136 @@ print(f'''sum(y) = {sum(y)}''')
 print("splitting up the data")
 # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=45)
 
+import torch
+from torch import nn
+default_seed = 10275023948
+torch.manual_seed(default_seed)
+
+class Network:
+    @staticmethod
+    def default_setup(self, config):
+        self.setup_config    = config
+        self.seed            = config.get("seed"           , default_seed)
+        self.suppress_output = config.get("suppress_output", False)
+        self.hardware        = config.get("device"         , torch.device("cuda" if torch.cuda.is_available() else "cpu"))
+        self.show = lambda *args, **kwargs: print(*args, **kwargs) if not self.suppress_output else None
+        self.to(self.hardware)
+    
+    @staticmethod
+    def default_forward(self, input_data):
+        """
+        Uses:
+            self.hardware
+            self.input_shape
+            self.output_shape
+        Arguments:
+            input_data:
+                either an input tensor or batch of tensors
+        Ouptut:
+            ether an output tensor or a batch of outputs
+        Examples:
+            obj.forward(torch.tensor([
+                # first image in batch
+                [
+                    # red layer
+                    [
+                        [ 1, 2, 3 ],
+                        [ 4, 5, 6] 
+                    ], 
+                    # blue layer
+                    [
+                        [ 1, 2, 3 ],
+                        [ 4, 5, 6] 
+                    ], 
+                    # green layer
+                    [
+                        [ 1, 2, 3 ],
+                        [ 4, 5, 6] 
+                    ],
+                ] 
+            ]))
+        
+        """
+        # converts to torch if needed
+        input_data = to_tensor(input_data).type(torch.float).to(self.hardware)
+        
+        # 
+        # batch or not?
+        # 
+        is_a_batch = len(input_data.shape) > len(self.input_shape)
+        if not is_a_batch: 
+            batch_size = 1
+            # convert images into batches
+            input_data = torch.reshape(input_data, (1, *input_data.shape))
+            output_shape = self.output_shape
+        else:
+            batch_size = tuple(input_data.shape)[0]
+            output_shape = (batch_size, *self.output_shape)
+        
+        # 
+        # forward pass
+        # 
+        neuron_activations = input_data
+        for each_layer in self.children():
+            # if its not a loss function
+            if not isinstance(each_layer, torch.nn.modules.loss._Loss):
+                neuron_activations = each_layer.forward(neuron_activations)
+        
+        # force the output to be the correct shape
+        return torch.reshape(neuron_activations, output_shape)
+def from_one_hot_batch(tensor_batch):
+    device = None
+    if isinstance(tensor_batch, torch.Tensor):
+        device = tensor_batch.device
+    # make sure its a tensor
+    tensor_batch = to_tensor(tensor_batch)
+    output = tensor_batch.max(1, keepdim=True).indices.squeeze()
+    # send to same device
+    return output.to(device) if device else output
+
+class Encoder(nn.Module):
+    def __init__(self, **config):
+        super(Encoder, self).__init__()
+        # 
+        # options
+        # 
+        Network.default_setup(self, config)
+        self.input_shape     = config.get('input_shape'    , (1, 28, 28))
+        self.output_shape    = config.get('output_shape'   , (10,))
+        self.batch_size      = config.get('batch_size'     , 64  )
+        
+        # 
+        # layers
+        # 
+        self.add_module('conv1', nn.Conv2d(1, 10, kernel_size=5))
+        self.add_module('conv1_pool', nn.MaxPool2d(2))
+        self.add_module('conv1_activation', nn.ReLU())
+        self.add_module('conv2', nn.Conv2d(10, 10, kernel_size=5))
+        self.add_module('conv2_drop', nn.Dropout2d())
+        self.add_module('conv2_pool', nn.MaxPool2d(2))
+        self.add_module('conv2_activation', nn.ReLU())
+        self.add_module('flatten', nn.Flatten(1)) # 1 => skip the first dimension because thats the batch dimension
+        self.add_module('fc1', nn.Linear(self.size_of_last_layer, product(self.output_shape)))
+        self.add_module('fc1_activation', nn.ReLU())
+        
+    @property
+    def size_of_last_layer(self):
+        return product(self.input_shape if len(self._modules) == 0 else layer_output_shapes(self._modules.values(), self.input_shape)[-1])
+        
+    def loss_function(self, model_output, ideal_output):
+        # convert from one-hot into number, and send tensor to device
+        ideal_output = from_one_hot_batch(ideal_output).to(self.hardware)
+        return F.nll_loss(model_output, ideal_output)
+
+    def forward(self, input_data):
+        return Network.default_forward(self, input_data)
+    
+    def update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index):
+        return Network.default_update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
+        
+    def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
+        return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
+
 def train_and_test(X_train, X_test, y_train, y_test):
     # 
     # helper

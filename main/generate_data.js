@@ -150,7 +150,7 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
             coder.addData(end)
         }
         coder.freeze()
-        const numberToVector = createOneHot(coder.numberToSubstring)
+        coder.numberToVector = createOneHot(coder.numberToSubstring).objToOneHot
 
         // 
         // analyze encoded lengths
@@ -185,8 +185,8 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
             //         if (before.length < parameters.minOneSideEncodedLength || after.length < parameters.minOneSideEncodedLength) {
             //             continue
             //         }
-            //         const featureVectorBefore = before.slice(-parameters.minOneSideEncodedLength).map(each=>[...numberToVector[each]]).flat()
-            //         const featureVectorAfter  = after.slice(0,parameters.minOneSideEncodedLength).map(each=>[...numberToVector[each]]).flat()
+            //         const featureVectorBefore = before.slice(-parameters.minOneSideEncodedLength).map(each=>[...coder.numberToVector[each]]).flat()
+            //         const featureVectorAfter  = after.slice(0,parameters.minOneSideEncodedLength).map(each=>[...coder.numberToVector[each]]).flat()
             //         const output = new Uint8Array(featureVectorBefore.concat(featureVectorAfter))
             //         yield output
             //     }
@@ -206,8 +206,8 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
             // huffman position-invariant
             // 
             if (parameters.useHuffmanEncoding && parameters.featureToInclude.positionInvariantHuffman) {
-                const encodedBefore = coder.encode(acidsBefore)
-                const encodedAfter = coder.encode(acidsAfter)
+                const encodedBefore = coder.encode(acidsBefore).slice(-parameters.minOneSideEncodedLength, acidsBefore.length)
+                const encodedAfter = coder.encode(acidsAfter).slice(0, parameters.minOneSideEncodedLength)
                 // skip encodings that are too small
                 if (encodedBefore.length < parameters.minOneSideEncodedLength || encodedAfter.length < parameters.minOneSideEncodedLength) {
                     continue
@@ -216,8 +216,8 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
                 const beforeVector = []
                 const afterVector = []
                 for (const [substringNumber, vector] of Object.entries(coder.numberToVector)) {
-                    beforeVector[substringNumber] = 30 // e.g. far away
-                    afterVector[substringNumber]  = 30 // e.g. far away
+                    beforeVector[substringNumber] = parameters.positionInvariantFarAwayValue
+                    afterVector[substringNumber]  = parameters.positionInvariantFarAwayValue
                 }
 
                 // what features were present
@@ -290,7 +290,7 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
                         continue
                     }
                     for (const [key, eachBool] of Object.entries(aminoToPhysicochemical(eachAminoChar))) {
-                        featureNames.push(`index:is_${key}`)
+                        featureNames.push(`index:${index}:is_${key}`)
                         featureVector.push(eachBool)
                     }
                 }
@@ -304,6 +304,7 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
                 )
                 
             }
+            console.debug(`featureVector.length is:`,featureVector.length)
 
             yield new Uint8Array(featureVector)
         }
@@ -316,6 +317,7 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
         FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(   encodeExamples(positiveExamples)   ), }),
         FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(   encodeExamples(negativeExamples)   ), }),
     ])
+    console.log("done writing data")
 
     // record most recent parameters 
     await FileSystem.write({
