@@ -16,7 +16,7 @@ import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno
 import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.35/main/file_system.js"
 import { loadMixedExamples } from "../specific_tools/load_mixed_examples.js"
 import { loadPositiveExamples } from "../specific_tools/load_positive_examples.js"
-import { aminoAcidToFeatureVector } from "../specific_tools/amino_acid_to_feature_vector.js"
+import { amnioEncoding, aminoAcidSimplifier, aminoToOneHot,physicochemicalCategories } from "../specific_tools/amino_acid_to_feature_vector.js"
 import { HuffmanCoder } from "../generic_tools/huffman_code.js"
 import { encode, decode, NotSerializable } from 'https://raw.githubusercontent.com/jeff-hykin/es-codec/0523dfcff5c95ef52cc12f5eb6eeb8d2b07b4839/es-codec.js'
 const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
@@ -32,16 +32,6 @@ const config = project["(profiles)"]["(default)"]
 const parameters = config["generate_data"]
 const pathToHuffmanCoder = pathTo["huffman_coder"]
 parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
-
-// record most recent parameters 
-    await FileSystem.write({
-        data: JSON.stringify(
-            parameters,
-            (key,value)=>value instanceof RegExp ? value.toString() : value,
-            4,
-        ),
-        path: "prev_parameters.json",
-    })
 
 // 
 // human genome
@@ -110,6 +100,34 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
     console.debug(`positiveExamples.length is:`,positiveExamples.length)
 
 // 
+// preprocessing
+// 
+    if (parameters.preprocessing.shouldUseSimplifier) {
+        // remove the ones that will get simplified
+        for (const [key, value] of Object.entries(aminoAcidSimplifier)) {
+            delete amnioEncoding[key]
+        }
+    }
+    function* preprocess(examples) {
+        let count = 0
+        for (let { aminoAcids } of examples) {
+            // 
+            // simplify amino encodings
+            // 
+            if (parameters.preprocessing.shouldUseSimplifier) {
+                for (const [key, value] of Object.entries(aminoAcidSimplifier)) {
+                    aminoAcids = aminoAcids.replace(new RegExp(key, "g"), value)
+                }
+            }
+            // 
+            // get 
+            // 
+            const [ before, after ] = [ aminoAcids.slice(0,parameters.windowPadding), aminoAcids.slice(parameters.windowPadding+1,) ]
+            yield [ coder.encode(before), coder.encode(after), aminoAcids ]
+        }
+    }
+
+// 
 // "train" HuffmanCoder and save it
 // 
     if (parameters.useHuffmanEncoding) {
@@ -121,25 +139,18 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
         let count = 0
         // edgecase making sure both "U" and "B" are seen at least once
         coder.addData("UGBTEVNYT".slice(0,parameters.windowPadding))
-        for (const {aminoAcids, ...otherData} of positiveExamples) {
+        for (const [ start, end, aminoAcidString ] of preprocess(positiveExamples)) {
             count += 1
             if (count % 2000 == 0) {
                 console.log(`    on ${count}/${parameters.datasetSize*2}: ${Math.round(count/(parameters.datasetSize*2)*100)}%`)
             }
             // text before
-            coder.addData(aminoAcids.slice(0,parameters.windowPadding))
+            coder.addData(start)
             // text after
-            coder.addData(aminoAcids.slice(parameters.windowPadding+1,))
+            coder.addData(end)
         }
         coder.freeze()
         const numberToVector = createOneHot(coder.numberToSubstring)
-        function* applyHuffmanEncoding(examples) {
-            let count = 0
-            for (const { aminoAcids } of examples) {
-                const [ before, after ] = [ aminoAcids.slice(0,parameters.windowPadding), aminoAcids.slice(parameters.windowPadding+1,) ]
-                yield [ coder.encode(before), coder.encode(after), aminoAcids ]
-            }
-        }
 
         // 
         // analyze encoded lengths
@@ -148,7 +159,7 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
             // console.debug(`building frequency count`)
             // const encodedLengths = frequencyCount(
             //     Iterable(
-            //         applyHuffmanEncoding(positiveExamples.concat(negativeExamples))
+            //         preprocess(positiveExamples.concat(negativeExamples))
             //     ).map(
             //         ([before, after])=>[before.length, after.length]
             //     ).flattened
@@ -162,7 +173,6 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
         // 
         console.debug(`saving huffman coder`)
         FileSystem.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder,0,2) }).then(()=>console.debug(`saved huffman coder`))
-        
 
         // 
         // apply 
@@ -170,7 +180,7 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
         
         // direct encoding
             // function *encodeExamples(examples) {
-            //     for (const [before, after] of applyHuffmanEncoding(examples)) {
+            //     for (const [before, after] of preprocess(examples)) {
             //         // skip encodings that are too small
             //         if (before.length < parameters.minOneSideEncodedLength || after.length < parameters.minOneSideEncodedLength) {
             //             continue
@@ -181,44 +191,102 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
             //         yield output
             //     }
             // }
-        // exists-encoding
-            function *encodeExamples(examples) {
-                for (const [before, after, aminoAcids] of applyHuffmanEncoding(examples)) {
-                    // skip encodings that are too small
-                    if (before.length < parameters.minOneSideEncodedLength || after.length < parameters.minOneSideEncodedLength) {
+    }
+
+// 
+// select features
+// 
+    function *encodeExamples(examples) {
+        for (const [acidsBefore, acidsAfter, aminoAcidString] of preprocess(examples)) {
+            let featureVector = []
+            
+            // 
+            // huffman position-invariant
+            // 
+            if (parameters.useHuffmanEncoding) {
+                // skip encodings that are too small
+                if (acidsBefore.length < parameters.minOneSideEncodedLength || acidsAfter.length < parameters.minOneSideEncodedLength) {
+                    continue
+                }
+                
+                const beforeVector = []
+                const afterVector = []
+                for (const [substringNumber, vector] of Object.entries(numberToVector)) {
+                    beforeVector[substringNumber] = 255 // e.g. far away
+                    afterVector[substringNumber]  = 255 // e.g. far away
+                }
+
+                // what features were present
+                for (const [distance, substringNumber] of [...enumerate(acidsBefore.reverse())].reverse()) {
+                    beforeVector[substringNumber] = distance
+                }
+                for (const [distance, substringNumber] of [...enumerate(acidsAfter)].reverse()) {
+                    afterVector[substringNumber] = distance
+                }
+
+                featureVector = featureVector.concat(beforeVector, afterVector)
+            }
+
+            // 
+            // normal positional data (20x20)
+            // 
+            if (parameters.featureToInclude.normalPositionalData) {
+                const centerIndex = (aminoAcidString.length-1)/2
+                for (const [index, eachAminoChar] of enumerate(aminoAcidString)) {
+                    // skip the one we are trying to predict
+                    if (index == centerIndex) {
                         continue
                     }
-                    
-                    const beforeVector = []
-                    const afterVector = []
-                    for (const [substringNumber, vector] of Object.entries(numberToVector)) {
-                        beforeVector[substringNumber] = 255 // e.g. far away
-                        afterVector[substringNumber]  = 255 // e.g. far away
+                    for (const eachBool of aminoToOneHot[eachAminoChar]) {
+                        featureVector.push(eachBool)
                     }
-
-                    // what features were present
-                    for (const [distance, substringNumber] of [...enumerate(before.reverse())].reverse()) {
-                        beforeVector[substringNumber] = distance
-                    }
-                    for (const [distance, substringNumber] of [...enumerate(after)].reverse()) {
-                        afterVector[substringNumber] = distance
-                    }
-
-                    const output = new Uint8Array(
-                        beforeVector.concat(afterVector).concat(aminoAcidToFeatureVector({aminoAcidString: aminoAcids}))
-                    )
-                    yield output
                 }
             }
-        
-        // 
-        // save examples
-        // 
-        await Promise.all([
-            FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(   encodeExamples(positiveExamples)   ), }),
-            FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(   encodeExamples(negativeExamples)   ), }),
-        ])
+
+            // 
+            // positionInvariantPhysicochemicalCategories
+            // 
+            if (parameters.featureToInclude.positionInvariantPhysicochemicalCategories) {
+                for (const [key, qualities] of Object.entries(physicochemicalCategories)) {
+                    let featureMagnitude = 0
+                    let beforeFeatureMagnitude = 0
+                    let afterFeatureMagnitude = 0
+                    for (const eachAcid of acidsBefore) {
+                        featureMagnitude += 1
+                        beforeFeatureMagnitude += 1
+                    }
+                    for (const eachAcid of acidsAfter) {
+                        featureMagnitude += 1
+                        afterFeatureMagnitude += 1
+                    }
+                    featureVector.push(featureMagnitude)
+                    featureVector.push(beforeFeatureMagnitude)
+                    featureVector.push(afterFeatureMagnitude)
+                }
+            }
+
+            yield new Uint8Array(featureVector)
+        }
     }
+    
+    // 
+    // save examples
+    // 
+    await Promise.all([
+        FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(   encodeExamples(positiveExamples)   ), }),
+        FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(   encodeExamples(negativeExamples)   ), }),
+    ])
+    
+
+    // record most recent parameters 
+    await FileSystem.write({
+        data: JSON.stringify(
+            parameters,
+            (key,value)=>value instanceof RegExp ? value.toString() : value,
+            4,
+        ),
+        path: "prev_parameters.json",
+    })
     
 
 // 

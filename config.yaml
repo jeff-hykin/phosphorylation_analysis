@@ -11,6 +11,7 @@
         huffman_coder: "./huffman_code.ignore.json"
         negative_examples: ./negative_examples.json
         positive_examples: ./positive_examples.json
+        important_features_image: ./figures/recent_feature_importance.png
     
     # example profiles
     (profiles):
@@ -23,5 +24,10 @@
                 huffmanEncoderCap: 30
                 minOneSideEncodedLength: 5
                 datasetSize: 200_000
+                preprocessing:
+                    shouldUseSimplifier: false
+                featureToInclude:
+                    normalPositionalData: true
+                    positionInvariantPhysicochemicalCategories: true
         
 
