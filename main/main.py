@@ -29,7 +29,7 @@ info = find_and_load(
 # 
 with open(info.absolute_path_to.negative_examples, 'r') as in_file:
     negative_inputs = json.load(in_file)
-    negative_outputs = tuple(0 for each in negative_inputs)
+    negative_outputs = tuple(-1 for each in negative_inputs)
     print("loaded negative_examples")
 with open(info.absolute_path_to.positive_examples, 'r') as in_file:
     positive_inputs = json.load(in_file)
@@ -184,7 +184,7 @@ def train_and_test(X_train, X_test, y_train, y_test):
         mlp_predictions = mlp_classifier.predict(X)
         predictions = [0]*len(rf_predictions)
         for index, (rf_prediction, mlp_prediction) in enumerate(zip( rf_predictions, mlp_predictions )):
-            if mlp_prediction == 0: # negative prediction
+            if mlp_prediction == -1: # negative prediction
                 predictions[index] = rf_prediction
             else:
                 predictions[index] = mlp_prediction
