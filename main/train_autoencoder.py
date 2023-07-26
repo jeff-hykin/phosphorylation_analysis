@@ -20,7 +20,7 @@ from torch import nn
 import torch.optim as optim
 
 from __dependencies__.quik_config import find_and_load
-from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure, print
+from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure, print, LazyDict
 from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes
 from generic_tools.cross_validation import cross_validation
 
@@ -366,9 +366,10 @@ class AutoEncoder(nn.Module, SimpleSerial):
     def update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index):
         return Network.default_update_weights(self, batch_of_inputs, batch_of_inputs, epoch_index, batch_index)
     
-    def average_loss_for(batch_of_inputs, batch_of_ideal_outputs):
+    def average_loss_for(self, batch_of_inputs, batch_of_ideal_outputs):
+        batch_of_inputs = to_tensor(batch_of_inputs)
         batch_of_actual_outputs = self.forward(batch_of_inputs)
-        return torch.mean(self.loss_function(batch_of_actual_outputs, batch_of_ideal_outputs))
+        return self.loss_function(batch_of_actual_outputs, batch_of_ideal_outputs)
         
     def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
         return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
@@ -424,9 +425,10 @@ def get_score(hyperparameters):
     number_of_folds = 4
     folds = cross_validation(
         inputs=X,
-        outputs=y,
+        outputs=X,
         number_of_folds=number_of_folds,
     )
+    aggregate_average_validation_loss = 0
     
     with print.indent:
         for fold_index, each_fold in enumerate(folds):
@@ -442,22 +444,25 @@ def get_score(hyperparameters):
             )
             training_loss_count = 0
             training_loss_sum = 0
+            validation_loss_count = 0
+            validation_loss_sum = 0
             with print.indent:
-                for batch_index, each_loss_batch in enumerate(coder.fit(
+                for batch_index, each_loss in enumerate(coder.fit(
                     input_output_pairs=list(zip(each_fold["train"]["inputs"], each_fold["train"]["outputs"])),
                     max_epochs=hyperparameters.max_epochs,
                     batch_size=hyperparameters.batch_size,
                     shuffle=True,
                 )):
-                    for each_loss in each_loss_batch:
-                        training_loss_sum += each_loss
-                        training_loss_count += 1
-                    
-                    average_training_loss = training_loss_sum/training_loss_count
-                    average_validation_loss = coder.average_loss_for(
+                    training_loss_sum += each_loss
+                    training_loss_count += 1
+                    validation_loss_count += 1
+                    validation_loss_sum += coder.average_loss_for(
                         batch_of_inputs=each_fold["test"]["inputs"],
                         batch_of_ideal_outputs=each_fold["test"]["outputs"],
                     )
+                    
+                    average_training_loss = training_loss_sum/training_loss_count
+                    average_validation_loss = validation_loss_sum/validation_loss_count
                     
                     print(f'''average_training_loss = {average_training_loss}''')
                     print(f'''average_validation_loss = {average_validation_loss}''')
@@ -465,34 +470,20 @@ def get_score(hyperparameters):
                     if average_validation_loss > average_training_loss:
                         print(f'''stopping training early: batch_index:{batch_index}''')
                         break
-        
+            
+            aggregate_average_validation_loss += average_validation_loss
+    return aggregate_average_validation_loss/number_of_folds
 
-    rows_of_output = []
-    for index, each in enumerate(folds):
-        (
-            neural_accuracy, neural_positive_accuracy, neural_negative_accuracy,
-            random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy,
-            average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,
-            tree_accuracy, tree_positive_accuracy, tree_negative_accuracy,
-            nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy,
-            nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy,
-        ) = train_and_test(
-            X_train=each["train"]["inputs"],
-            X_test=each["test"]["inputs"],
-            y_train=each["train"]["outputs"],
-            y_test=each["test"]["outputs"],
-        )
-        
-        rows_of_output.append([sample_size, info.config.feature_set, "neural",           index+1, neural_accuracy          , neural_positive_accuracy          , neural_negative_accuracy          ,])
-        rows_of_output.append([sample_size, info.config.feature_set, "random_forest",    index+1, random_forest_accuracy   , random_forest_positive_accuracy   , random_forest_negative_accuracy   ,])
-        rows_of_output.append([sample_size, info.config.feature_set, "tree",             index+1, tree_accuracy            , tree_positive_accuracy            , tree_negative_accuracy            ,])
-        rows_of_output.append([sample_size, info.config.feature_set, "average_ensemble", index+1, average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,])
-        rows_of_output.append([sample_size, info.config.feature_set, "nn_0_fallback",    index+1, nn_0_fallback_accuracy   , nn_0_fallback_positive_accuracy   , nn_0_fallback_negative_accuracy   ,])
-        rows_of_output.append([sample_size, info.config.feature_set, "nn_1_fallback",    index+1, nn_1_fallback_accuracy   , nn_1_fallback_positive_accuracy   , nn_1_fallback_negative_accuracy   ,])
-
-
-
-
+get_score(LazyDict(
+    max_epochs=20,
+    batch_size=64,
+    latent_size=30,
+    number_of_layers=3,
+    learning_rate=0.01,
+    momentum=0.5,
+    activation_function_eval="nn.ReLU()",
+    loss_function_eval="F.mse_loss",
+))
 
 # 
     # TODO:
