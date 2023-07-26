@@ -387,7 +387,7 @@ if True:
         positive_outputs = tuple(1 for each in positive_inputs)
         print("loaded positive_examples")
 
-    truncate_size = 50_000
+    truncate_size = 5_000_000
     X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
     y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
 
@@ -410,7 +410,7 @@ coder.fit(
 )
 
 
-def get_score(hyperparameters):
+def get_score(hyperparameters, validation_threshold=0.03):
     """
         Arguments:
             hyperparameters.max_epochs
@@ -432,9 +432,9 @@ def get_score(hyperparameters):
     
     with print.indent:
         for fold_index, each_fold in enumerate(folds):
-            print(f'''fold: {fold_index}''')
+            print(f'''fold: {fold_index}, sample_size: {len(each_fold["train"]["inputs"])}''')
             coder = AutoEncoder(
-                input_shape=(len(X[0]), ),
+                input_shape=(len(each_fold["train"]["inputs"][0]), ),
                 latent_shape=(hyperparameters.latent_size, ),
                 number_of_layers=hyperparameters.number_of_layers,
                 learning_rate=hyperparameters.learning_rate,
@@ -444,8 +444,7 @@ def get_score(hyperparameters):
             )
             training_loss_count = 0
             training_loss_sum = 0
-            validation_loss_count = 0
-            validation_loss_sum = 0
+            fold_validation_losses = []
             with print.indent:
                 for batch_index, each_loss in enumerate(coder.fit(
                     input_output_pairs=list(zip(each_fold["train"]["inputs"], each_fold["train"]["outputs"])),
@@ -455,26 +454,24 @@ def get_score(hyperparameters):
                 )):
                     training_loss_sum += each_loss
                     training_loss_count += 1
-                    validation_loss_count += 1
-                    validation_loss_sum += coder.average_loss_for(
+                    average_validation_loss = coder.average_loss_for(
                         batch_of_inputs=each_fold["test"]["inputs"],
                         batch_of_ideal_outputs=each_fold["test"]["outputs"],
                     )
-                    
+                    fold_validation_losses.append(average_validation_loss)
                     average_training_loss = training_loss_sum/training_loss_count
-                    average_validation_loss = validation_loss_sum/validation_loss_count
                     
                     print(f'''average_training_loss = {average_training_loss}''')
                     print(f'''average_validation_loss = {average_validation_loss}''')
                     
-                    if average_validation_loss > average_training_loss:
+                    if average_validation_loss*(1 - validation_threshold) > average_training_loss:
                         print(f'''stopping training early: batch_index:{batch_index}''')
                         break
             
-            aggregate_average_validation_loss += average_validation_loss
-    return aggregate_average_validation_loss/number_of_folds
+            aggregate_average_validation_loss += min(fold_validation_losses)
+    return -(aggregate_average_validation_loss/number_of_folds)
 
-get_score(LazyDict(
+parameter_score = get_score(LazyDict(
     max_epochs=20,
     batch_size=64,
     latent_size=30,
@@ -484,6 +481,7 @@ get_score(LazyDict(
     activation_function_eval="nn.ReLU()",
     loss_function_eval="F.mse_loss",
 ))
+print(f'''parameter_score = {parameter_score}''')
 
 # 
     # TODO:
