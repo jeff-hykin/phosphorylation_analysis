@@ -20,7 +20,7 @@ from torch import nn
 import torch.optim as optim
 
 from __dependencies__.quik_config import find_and_load
-from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure
+from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure, print
 from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes
 from generic_tools.cross_validation import cross_validation
 
@@ -180,22 +180,21 @@ class Network:
                 )
         
         train_losses = []
+        self.train()
         for epoch_index in range(kwargs.get("max_epochs", 1)):
-            self.train()
             for batch_index, (batch_of_inputs, batch_of_ideal_outputs) in enumerate(loader):
                 loss = self.update_weights(batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
+                yield to_pure(loss)
                 if batch_index % self.log_interval == 0:
                     count = batch_index * len(batch_of_inputs)
                     try:
                         total = len(loader)
                     except Exception as error:
                         total = "?"
-                    pure_loss = to_pure(loss)
                     self.show(f"\r[Train]: epoch: {epoch_index:>4}, batch: {count:>10}/{total}", sep='', end='', flush=True)
-                    train_losses.append(loss)
+                
                     # TODO: add/allow checkpoints
         self.show()
-        return train_losses
     
     @staticmethod
     def wrap_loss_function(self, loss_func):
@@ -331,7 +330,7 @@ class AutoEncoder(nn.Module, SimpleSerial):
         self.output_shape             = config.get('output_shape'       , self.input_shape)
         self.learning_rate            = config.get('learning_rate'      , 0.01)
         self.momentum                 = config.get('momentum'           , 0.5 )
-        self.log_interval             = config.get('log_interval'       , 0.5 )
+        self.log_interval             = config.get('log_interval'       , 100 )
         self.number_of_layers         = config.get('number_of_layers'   , 3)
         self.activation_function_eval = config.get('activation_function_eval', "nn.ReLU()")
         self.loss_function_eval       = config.get('loss_function_eval', "F.mse_loss")
@@ -366,6 +365,10 @@ class AutoEncoder(nn.Module, SimpleSerial):
     
     def update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index):
         return Network.default_update_weights(self, batch_of_inputs, batch_of_inputs, epoch_index, batch_index)
+    
+    def average_loss_for(batch_of_inputs, batch_of_ideal_outputs):
+        batch_of_actual_outputs = self.forward(batch_of_inputs)
+        return torch.mean(self.loss_function(batch_of_actual_outputs, batch_of_ideal_outputs))
         
     def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
         return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
@@ -405,254 +408,341 @@ coder.fit(
     shuffle=True,
 )
 
-# TODO:
-    # come up with a validation function that returns a validation and training accuracy
-    # auto-try different parameters (loss function, activations, number of layers, learning rate, momentum)
-    # save the one with the best validation accuracy
+
+def get_score(hyperparameters):
+    """
+        Arguments:
+            hyperparameters.max_epochs
+            hyperparameters.batch_size
+            hyperparameters.latent_size
+            hyperparameters.number_of_layers
+            hyperparameters.learning_rate
+            hyperparameters.activation_function_eval
+            hyperparameters.loss_function_eval
+            hyperparameters.momentum
+    """
+    number_of_folds = 4
+    folds = cross_validation(
+        inputs=X,
+        outputs=y,
+        number_of_folds=number_of_folds,
+    )
     
-    # train it on more sequences first (not just phos sequences), then "over" train it on phos sequences (high number of epochs)
-    
-    # use the encoder in a regular NN 
-
-# large_pickle_save(coder.to_serial_form())
-
-# def train_and_test(X_train, X_test, y_train, y_test):
-#     # 
-#     # helper
-#     # 
-#     def test_accuracy_of(predict):
-#         print("getting accuracy scores\n")
-#         # 
-#         # total
-#         # 
-#         y_pred = predict(X_test)
-#         accuracy = accuracy_score(y_test, predict(X_test))
-#         print("Total Accuracy:", accuracy)
-#         print(f'''confusion_matrix(y_test, y_pred) = {confusion_matrix(y_test, y_pred)}''')
-        
-#         positive_test_inputs  = tuple(each_input   for each_input, each_output in zip(X_test, y_test) if each_output == 1)
-#         positive_test_outputs = tuple(each_output  for each_input, each_output in zip(X_test, y_test) if each_output == 1)
-#         positive_accuracy = accuracy_score(positive_test_outputs, predict(positive_test_inputs))
-#         print("Positive Accuracy:", positive_accuracy)
-        
-#         negative_test_inputs  = tuple(each_input   for each_input, each_output in zip(X_test, y_test) if each_output == -1)
-#         negative_test_outputs = tuple(each_output  for each_input, each_output in zip(X_test, y_test) if each_output == -1)
-#         negative_accuracy = accuracy_score(negative_test_outputs, predict(negative_test_inputs))
-#         print("Negative Accuracy:", negative_accuracy)
-#         return accuracy, positive_accuracy, negative_accuracy
-
-
-#     # 
-#     # naive_bayes_classifier
-#     # 
-#     if 0:
-#         # positive_truncate = 10_000
-#         # X = negative_inputs + positive_inputs[0:positive_truncate]
-#         # y = negative_outputs + positive_outputs[0:positive_truncate]
-
-#         # print(f'''len(y) = {len(y)}''')
-#         # print(f'''sum(y) = {sum(y)}''')
-
-#         # # Assuming you have your data and labels ready, let's call them X and y respectively
-#         # # Split the data into training and testing sets
-#         # print("splitting up the data")
-#         # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        
-#         # Create a Random Forest Classifier object
-#         naive_bayes_classifier = GaussianNB(priors=[0.5, 0.5])
-
-#         # Train the naive_bayes_classifier using the training data
-#         print("training naive_bayes")
-#         naive_bayes_classifier.fit(X_train, y_train)
-
-#         print("naive_bayes_predictions")
-#         test_accuracy_of(naive_bayes_classifier.predict)
-#         print("\n\n")
-
-#     # 
-#     # SVM
-#     # 
-#     if 0:
-#         # Create a Random Forest Classifier object
-#         svm_classifier = SVC()
-
-#         # Train the svm_classifier using the training data
-#         print("training svm")
-#         svm_classifier.fit(X_train, y_train)
-
-#         print("svm_predictions")
-#         test_accuracy_of(svm_classifier.predict)
-#         print("\n\n")
-    
-#     # 
-#     # random_forest
-#     # 
-#     if True:
-#         # Create a Random Forest Classifier object
-#         rf_classifier = RandomForestClassifier(n_estimators=500,max_depth=20)
-
-#         # Train the classifier using the training data
-#         print("training random_forest")
-#         rf_classifier.fit(X_train, y_train)
-        
-#         print("random_forest_predictions")
-#         random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy = test_accuracy_of(rf_classifier.predict)
-#         print("\n\n")
-        
-#         importances = rf_classifier.feature_importances_
-#         feature_names = [ str(index) for index in range(len(X[0]))]
-#         forest_importances = pd.Series(importances, index=feature_names)
-        
-#         fig, ax = plt.subplots()
-#         std = numpy.std([tree.feature_importances_ for tree in rf_classifier.estimators_], axis=0)
-#         forest_importances.plot.bar(yerr=std, ax=ax)
-#         ax.set_title("Feature importances using MDI")
-#         ax.set_ylabel("Mean decrease in impurity")
-#         fig.tight_layout()
-#         FS.ensure_is_folder(FS.dirname(info.absolute_path_to.important_features_image))
-#         dpi = 400
-#         fig.set_size_inches(16, 14)  # Adjust the figure size as desired
-#         plt.savefig(info.absolute_path_to.important_features_image, dpi=400)
-    
-#     # 
-#     # Neural
-#     # 
-#     if True:
-#         # Create a Random Forest Classifier object
-#         mlp_classifier = MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=1000)
-
-#         # Train the svm_classifier using the training data
-#         print("training mlp_classifier")
-#         mlp_classifier.fit(X_train, y_train)
-
-#         print("mlp_classifier_predictions")
-#         neural_accuracy, neural_positive_accuracy, neural_negative_accuracy = test_accuracy_of(mlp_classifier.predict)
-#         print("\n\n")
-#     # 
-#     # DecisionTreeClassifier
-#     # 
-#     if True:
-#         # Create a Random Forest Classifier object
-#         tree_classifier = DecisionTreeClassifier()
-
-#         # Train the svm_classifier using the training data
-#         print("training tree_classifier")
-#         tree_classifier.fit(X_train, y_train)
-
-#         print("tree_classifier_predictions")
-#         tree_accuracy, tree_positive_accuracy, tree_negative_accuracy = test_accuracy_of(tree_classifier.predict)
-#         print("\n\n")
-
-#     # 
-#     # Auto Neural
-#     # 
-#     if True:
-#         # maybe use a transformer like https://www.nature.com/articles/s41592-021-01252-x
-#         pass
-#         # create an autoencoder for sequences near phos sites
-#         # use prev 3 amino acids to predict next amino acid
-
-#     # 
-#     # combined
-#     # 
-
-#     def predict(X):
-#         rf_predictions = rf_classifier.predict_proba(X)
-#         mlp_predictions = mlp_classifier.predict_proba(X)
-#         predictions = [0]*len(rf_predictions)
-#         for index, probs in enumerate(zip( rf_predictions, mlp_predictions )):
-#             combined_probabilites = [ sum(each)/2.0 for each in zip(*probs)]
-#             best_label = None
-#             max_probability = -1
-#             for label_index, probability in enumerate(combined_probabilites):
-#                 if probability > max_probability:
-#                     max_probability = probability
-#                     best_label = label_index
+    with print.indent:
+        for fold_index, each_fold in enumerate(folds):
+            print(f'''fold: {fold_index}''')
+            coder = AutoEncoder(
+                input_shape=(len(X[0]), ),
+                latent_shape=(hyperparameters.latent_size, ),
+                number_of_layers=hyperparameters.number_of_layers,
+                learning_rate=hyperparameters.learning_rate,
+                momentum=hyperparameters.momentum,
+                activation_function_eval=hyperparameters.activation_function_eval,
+                loss_function_eval=hyperparameters.loss_function_eval,
+            )
+            training_loss_count = 0
+            training_loss_sum = 0
+            with print.indent:
+                for batch_index, each_loss_batch in enumerate(coder.fit(
+                    input_output_pairs=list(zip(each_fold["train"]["inputs"], each_fold["train"]["outputs"])),
+                    max_epochs=hyperparameters.max_epochs,
+                    batch_size=hyperparameters.batch_size,
+                    shuffle=True,
+                )):
+                    for each_loss in each_loss_batch:
+                        training_loss_sum += each_loss
+                        training_loss_count += 1
                     
-#             predictions[index] = best_label
-                
-#         return predictions
-    
-#     average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy = test_accuracy_of(predict)
-    
-#     def predict(X):
-#         rf_predictions = rf_classifier.predict(X)
-#         mlp_predictions = mlp_classifier.predict(X)
-#         predictions = [0]*len(rf_predictions)
-#         for index, (rf_prediction, mlp_prediction) in enumerate(zip( rf_predictions, mlp_predictions )):
-#             if mlp_prediction == -1: # negative prediction
-#                 predictions[index] = rf_prediction
-#             else:
-#                 predictions[index] = mlp_prediction
-                
-#         return predictions
-    
-#     nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy = test_accuracy_of(predict)
-    
-#     def predict(X):
-#         rf_predictions = rf_classifier.predict(X)
-#         mlp_predictions = mlp_classifier.predict(X)
-#         predictions = [0]*len(rf_predictions)
-#         for index, (rf_prediction, mlp_prediction) in enumerate(zip( rf_predictions, mlp_predictions )):
-#             if mlp_prediction == 1: # negative prediction
-#                 predictions[index] = rf_prediction
-#             else:
-#                 predictions[index] = mlp_prediction
-                
-#         return predictions
+                    average_training_loss = training_loss_sum/training_loss_count
+                    average_validation_loss = coder.average_loss_for(
+                        batch_of_inputs=each_fold["test"]["inputs"],
+                        batch_of_ideal_outputs=each_fold["test"]["outputs"],
+                    )
+                    
+                    print(f'''average_training_loss = {average_training_loss}''')
+                    print(f'''average_validation_loss = {average_validation_loss}''')
+                    
+                    if average_validation_loss > average_training_loss:
+                        print(f'''stopping training early: batch_index:{batch_index}''')
+                        break
+        
 
-#     nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy = test_accuracy_of(predict)
-    
-#     return (
-#         neural_accuracy, neural_positive_accuracy, neural_negative_accuracy,
-#         random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy,
-#         average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,
-#         tree_accuracy, tree_positive_accuracy, tree_negative_accuracy,
-#         nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy,
-#         nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy,
-#     )
+    rows_of_output = []
+    for index, each in enumerate(folds):
+        (
+            neural_accuracy, neural_positive_accuracy, neural_negative_accuracy,
+            random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy,
+            average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,
+            tree_accuracy, tree_positive_accuracy, tree_negative_accuracy,
+            nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy,
+            nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy,
+        ) = train_and_test(
+            X_train=each["train"]["inputs"],
+            X_test=each["test"]["inputs"],
+            y_train=each["train"]["outputs"],
+            y_test=each["test"]["outputs"],
+        )
+        
+        rows_of_output.append([sample_size, info.config.feature_set, "neural",           index+1, neural_accuracy          , neural_positive_accuracy          , neural_negative_accuracy          ,])
+        rows_of_output.append([sample_size, info.config.feature_set, "random_forest",    index+1, random_forest_accuracy   , random_forest_positive_accuracy   , random_forest_negative_accuracy   ,])
+        rows_of_output.append([sample_size, info.config.feature_set, "tree",             index+1, tree_accuracy            , tree_positive_accuracy            , tree_negative_accuracy            ,])
+        rows_of_output.append([sample_size, info.config.feature_set, "average_ensemble", index+1, average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,])
+        rows_of_output.append([sample_size, info.config.feature_set, "nn_0_fallback",    index+1, nn_0_fallback_accuracy   , nn_0_fallback_positive_accuracy   , nn_0_fallback_negative_accuracy   ,])
+        rows_of_output.append([sample_size, info.config.feature_set, "nn_1_fallback",    index+1, nn_1_fallback_accuracy   , nn_1_fallback_positive_accuracy   , nn_1_fallback_negative_accuracy   ,])
 
-# number_of_folds = 4
-# folds = cross_validation(
-#     inputs=X,
-#     outputs=y,
-#     number_of_folds=number_of_folds,
-# )
 
-# rows_of_output = []
-# for index, each in enumerate(folds):
-#     (
-#         neural_accuracy, neural_positive_accuracy, neural_negative_accuracy,
-#         random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy,
-#         average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,
-#         tree_accuracy, tree_positive_accuracy, tree_negative_accuracy,
-#         nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy,
-#         nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy,
-#     ) = train_and_test(
-#         X_train=each["train"]["inputs"],
-#         X_test=each["test"]["inputs"],
-#         y_train=each["train"]["outputs"],
-#         y_test=each["test"]["outputs"],
-#     )
-    
-#     rows_of_output.append([sample_size, info.config.feature_set, "neural",           index+1, neural_accuracy          , neural_positive_accuracy          , neural_negative_accuracy          ,])
-#     rows_of_output.append([sample_size, info.config.feature_set, "random_forest",    index+1, random_forest_accuracy   , random_forest_positive_accuracy   , random_forest_negative_accuracy   ,])
-#     rows_of_output.append([sample_size, info.config.feature_set, "tree",             index+1, tree_accuracy            , tree_positive_accuracy            , tree_negative_accuracy            ,])
-#     rows_of_output.append([sample_size, info.config.feature_set, "average_ensemble", index+1, average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,])
-#     rows_of_output.append([sample_size, info.config.feature_set, "nn_0_fallback",    index+1, nn_0_fallback_accuracy   , nn_0_fallback_positive_accuracy   , nn_0_fallback_negative_accuracy   ,])
-#     rows_of_output.append([sample_size, info.config.feature_set, "nn_1_fallback",    index+1, nn_1_fallback_accuracy   , nn_1_fallback_positive_accuracy   , nn_1_fallback_negative_accuracy   ,])
 
-# # 200,000 raw features
-#     # Total Accuracy: 0.6795935855061819
-#     # confusion_matrix(y_test, y_pred) = [
-#     #     [13568  6779]
-#     #     [ 6308 14190]
-#     # ]
-#     # Positive Accuracy: 0.692262659771685
-#     # Negative Accuracy: 0.6668304909814715
 
-# Csv.write(
-#     path=info.path_to.recent_results,
-#     rows=rows_of_output,
-#     column_names=[ "sample_size", "feature_set", "model", "fold_number", "accuracy", "positive_accuracy", "negative_accuracy"],
-# )
+
+# 
+    # TODO:
+        # come up with a validation function that returns a validation and training accuracy
+        # auto-try different parameters (loss function, activations, number of layers, learning rate, momentum)
+        # save the one with the best validation accuracy
+        
+        # train it on more sequences first (not just phos sequences), then "over" train it on phos sequences (high number of epochs)
+        
+        # use the encoder in a regular NN 
+
+    # large_pickle_save(coder.to_serial_form())
+
+    # def train_and_test(X_train, X_test, y_train, y_test):
+    #     # 
+    #     # helper
+    #     # 
+    #     def test_accuracy_of(predict):
+    #         print("getting accuracy scores\n")
+    #         # 
+    #         # total
+    #         # 
+    #         y_pred = predict(X_test)
+    #         accuracy = accuracy_score(y_test, predict(X_test))
+    #         print("Total Accuracy:", accuracy)
+    #         print(f'''confusion_matrix(y_test, y_pred) = {confusion_matrix(y_test, y_pred)}''')
+            
+    #         positive_test_inputs  = tuple(each_input   for each_input, each_output in zip(X_test, y_test) if each_output == 1)
+    #         positive_test_outputs = tuple(each_output  for each_input, each_output in zip(X_test, y_test) if each_output == 1)
+    #         positive_accuracy = accuracy_score(positive_test_outputs, predict(positive_test_inputs))
+    #         print("Positive Accuracy:", positive_accuracy)
+            
+    #         negative_test_inputs  = tuple(each_input   for each_input, each_output in zip(X_test, y_test) if each_output == -1)
+    #         negative_test_outputs = tuple(each_output  for each_input, each_output in zip(X_test, y_test) if each_output == -1)
+    #         negative_accuracy = accuracy_score(negative_test_outputs, predict(negative_test_inputs))
+    #         print("Negative Accuracy:", negative_accuracy)
+    #         return accuracy, positive_accuracy, negative_accuracy
+
+
+    #     # 
+    #     # naive_bayes_classifier
+    #     # 
+    #     if 0:
+    #         # positive_truncate = 10_000
+    #         # X = negative_inputs + positive_inputs[0:positive_truncate]
+    #         # y = negative_outputs + positive_outputs[0:positive_truncate]
+
+    #         # print(f'''len(y) = {len(y)}''')
+    #         # print(f'''sum(y) = {sum(y)}''')
+
+    #         # # Assuming you have your data and labels ready, let's call them X and y respectively
+    #         # # Split the data into training and testing sets
+    #         # print("splitting up the data")
+    #         # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+            
+    #         # Create a Random Forest Classifier object
+    #         naive_bayes_classifier = GaussianNB(priors=[0.5, 0.5])
+
+    #         # Train the naive_bayes_classifier using the training data
+    #         print("training naive_bayes")
+    #         naive_bayes_classifier.fit(X_train, y_train)
+
+    #         print("naive_bayes_predictions")
+    #         test_accuracy_of(naive_bayes_classifier.predict)
+    #         print("\n\n")
+
+    #     # 
+    #     # SVM
+    #     # 
+    #     if 0:
+    #         # Create a Random Forest Classifier object
+    #         svm_classifier = SVC()
+
+    #         # Train the svm_classifier using the training data
+    #         print("training svm")
+    #         svm_classifier.fit(X_train, y_train)
+
+    #         print("svm_predictions")
+    #         test_accuracy_of(svm_classifier.predict)
+    #         print("\n\n")
+        
+    #     # 
+    #     # random_forest
+    #     # 
+    #     if True:
+    #         # Create a Random Forest Classifier object
+    #         rf_classifier = RandomForestClassifier(n_estimators=500,max_depth=20)
+
+    #         # Train the classifier using the training data
+    #         print("training random_forest")
+    #         rf_classifier.fit(X_train, y_train)
+            
+    #         print("random_forest_predictions")
+    #         random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy = test_accuracy_of(rf_classifier.predict)
+    #         print("\n\n")
+            
+    #         importances = rf_classifier.feature_importances_
+    #         feature_names = [ str(index) for index in range(len(X[0]))]
+    #         forest_importances = pd.Series(importances, index=feature_names)
+            
+    #         fig, ax = plt.subplots()
+    #         std = numpy.std([tree.feature_importances_ for tree in rf_classifier.estimators_], axis=0)
+    #         forest_importances.plot.bar(yerr=std, ax=ax)
+    #         ax.set_title("Feature importances using MDI")
+    #         ax.set_ylabel("Mean decrease in impurity")
+    #         fig.tight_layout()
+    #         FS.ensure_is_folder(FS.dirname(info.absolute_path_to.important_features_image))
+    #         dpi = 400
+    #         fig.set_size_inches(16, 14)  # Adjust the figure size as desired
+    #         plt.savefig(info.absolute_path_to.important_features_image, dpi=400)
+        
+    #     # 
+    #     # Neural
+    #     # 
+    #     if True:
+    #         # Create a Random Forest Classifier object
+    #         mlp_classifier = MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=1000)
+
+    #         # Train the svm_classifier using the training data
+    #         print("training mlp_classifier")
+    #         mlp_classifier.fit(X_train, y_train)
+
+    #         print("mlp_classifier_predictions")
+    #         neural_accuracy, neural_positive_accuracy, neural_negative_accuracy = test_accuracy_of(mlp_classifier.predict)
+    #         print("\n\n")
+    #     # 
+    #     # DecisionTreeClassifier
+    #     # 
+    #     if True:
+    #         # Create a Random Forest Classifier object
+    #         tree_classifier = DecisionTreeClassifier()
+
+    #         # Train the svm_classifier using the training data
+    #         print("training tree_classifier")
+    #         tree_classifier.fit(X_train, y_train)
+
+    #         print("tree_classifier_predictions")
+    #         tree_accuracy, tree_positive_accuracy, tree_negative_accuracy = test_accuracy_of(tree_classifier.predict)
+    #         print("\n\n")
+
+    #     # 
+    #     # Auto Neural
+    #     # 
+    #     if True:
+    #         # maybe use a transformer like https://www.nature.com/articles/s41592-021-01252-x
+    #         pass
+    #         # create an autoencoder for sequences near phos sites
+    #         # use prev 3 amino acids to predict next amino acid
+
+    #     # 
+    #     # combined
+    #     # 
+
+    #     def predict(X):
+    #         rf_predictions = rf_classifier.predict_proba(X)
+    #         mlp_predictions = mlp_classifier.predict_proba(X)
+    #         predictions = [0]*len(rf_predictions)
+    #         for index, probs in enumerate(zip( rf_predictions, mlp_predictions )):
+    #             combined_probabilites = [ sum(each)/2.0 for each in zip(*probs)]
+    #             best_label = None
+    #             max_probability = -1
+    #             for label_index, probability in enumerate(combined_probabilites):
+    #                 if probability > max_probability:
+    #                     max_probability = probability
+    #                     best_label = label_index
+                        
+    #             predictions[index] = best_label
+                    
+    #         return predictions
+        
+    #     average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy = test_accuracy_of(predict)
+        
+    #     def predict(X):
+    #         rf_predictions = rf_classifier.predict(X)
+    #         mlp_predictions = mlp_classifier.predict(X)
+    #         predictions = [0]*len(rf_predictions)
+    #         for index, (rf_prediction, mlp_prediction) in enumerate(zip( rf_predictions, mlp_predictions )):
+    #             if mlp_prediction == -1: # negative prediction
+    #                 predictions[index] = rf_prediction
+    #             else:
+    #                 predictions[index] = mlp_prediction
+                    
+    #         return predictions
+        
+    #     nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy = test_accuracy_of(predict)
+        
+    #     def predict(X):
+    #         rf_predictions = rf_classifier.predict(X)
+    #         mlp_predictions = mlp_classifier.predict(X)
+    #         predictions = [0]*len(rf_predictions)
+    #         for index, (rf_prediction, mlp_prediction) in enumerate(zip( rf_predictions, mlp_predictions )):
+    #             if mlp_prediction == 1: # negative prediction
+    #                 predictions[index] = rf_prediction
+    #             else:
+    #                 predictions[index] = mlp_prediction
+                    
+    #         return predictions
+
+    #     nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy = test_accuracy_of(predict)
+        
+    #     return (
+    #         neural_accuracy, neural_positive_accuracy, neural_negative_accuracy,
+    #         random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy,
+    #         average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,
+    #         tree_accuracy, tree_positive_accuracy, tree_negative_accuracy,
+    #         nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy,
+    #         nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy,
+    #     )
+
+    # number_of_folds = 4
+    # folds = cross_validation(
+    #     inputs=X,
+    #     outputs=y,
+    #     number_of_folds=number_of_folds,
+    # )
+
+    # rows_of_output = []
+    # for index, each in enumerate(folds):
+    #     (
+    #         neural_accuracy, neural_positive_accuracy, neural_negative_accuracy,
+    #         random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy,
+    #         average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,
+    #         tree_accuracy, tree_positive_accuracy, tree_negative_accuracy,
+    #         nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy,
+    #         nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy,
+    #     ) = train_and_test(
+    #         X_train=each["train"]["inputs"],
+    #         X_test=each["test"]["inputs"],
+    #         y_train=each["train"]["outputs"],
+    #         y_test=each["test"]["outputs"],
+    #     )
+        
+    #     rows_of_output.append([sample_size, info.config.feature_set, "neural",           index+1, neural_accuracy          , neural_positive_accuracy          , neural_negative_accuracy          ,])
+    #     rows_of_output.append([sample_size, info.config.feature_set, "random_forest",    index+1, random_forest_accuracy   , random_forest_positive_accuracy   , random_forest_negative_accuracy   ,])
+    #     rows_of_output.append([sample_size, info.config.feature_set, "tree",             index+1, tree_accuracy            , tree_positive_accuracy            , tree_negative_accuracy            ,])
+    #     rows_of_output.append([sample_size, info.config.feature_set, "average_ensemble", index+1, average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,])
+    #     rows_of_output.append([sample_size, info.config.feature_set, "nn_0_fallback",    index+1, nn_0_fallback_accuracy   , nn_0_fallback_positive_accuracy   , nn_0_fallback_negative_accuracy   ,])
+    #     rows_of_output.append([sample_size, info.config.feature_set, "nn_1_fallback",    index+1, nn_1_fallback_accuracy   , nn_1_fallback_positive_accuracy   , nn_1_fallback_negative_accuracy   ,])
+
+    # # 200,000 raw features
+    #     # Total Accuracy: 0.6795935855061819
+    #     # confusion_matrix(y_test, y_pred) = [
+    #     #     [13568  6779]
+    #     #     [ 6308 14190]
+    #     # ]
+    #     # Positive Accuracy: 0.692262659771685
+    #     # Negative Accuracy: 0.6668304909814715
+
+    # Csv.write(
+    #     path=info.path_to.recent_results,
+    #     rows=rows_of_output,
+    #     column_names=[ "sample_size", "feature_set", "model", "fold_number", "accuracy", "positive_accuracy", "negative_accuracy"],
+    # )
