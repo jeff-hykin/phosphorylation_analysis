@@ -21,7 +21,7 @@ import torch.optim as optim
 
 from __dependencies__.quik_config import find_and_load
 from __dependencies__.cool_cache import cache
-from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure, print, LazyDict, super_hash, drop_end, linear_steps
+from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure, print, LazyDict, super_hash, drop_end, linear_steps, arg_max
 from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes
 from generic_tools.cross_validation import cross_validation
 
@@ -137,16 +137,18 @@ class Network:
                 self.train() # provided by pytorch's `nn.Module`
             
             Examples:
-                model.fit(
+                for epoch_index, batch_index, loss in model.fit(
                     dataset=torchvision.datasets.MNIST(<mnist args>),
                     epochs=4,
                     batch_size=64,
-                )
+                ):
+                    pass
                 
-                model.fit(
+                for epoch_index, batch_index, loss in model.fit(
                     loader=torch.utils.data.DataLoader(<dataloader args>),
                     epochs=4,
-                )
+                ):
+                    pass
         """
         # TODO: test input_output_pairs
         if input_output_pairs is not None:
@@ -196,7 +198,7 @@ class Network:
             for batch_index, (batch_of_inputs, batch_of_ideal_outputs) in enumerate(loader):
                 accumulated_batches += 1
                 loss = self.update_weights(batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
-                yield to_pure(loss)
+                yield epoch_index, batch_index, to_pure(loss)
                 if batch_index+1 == total or batch_index % self.log_interval == 0:
                     self.show(f"\r[Train]: overall: {round(accumulated_batches/(total*max_epochs)*100):>3}%, epoch: {epoch_index:>4}, batch: {batch_index+1:>10}/{total}", sep='', end='', flush=True)
                 
@@ -442,7 +444,7 @@ class PhosTransferClassifier(nn.Module, SimpleSerial):
         # layers
         # 
         self.add_module(f'encoder', coder.encoder)
-        for layer_index, layer_size in enumerate(drop_end(1, linear_steps(start=input_size, end=output_size, quantity=self.number_of_layers-1))):
+        for layer_index, layer_size in enumerate(drop_end(1, linear_steps(start=product(self.input_shape), end=output_size, quantity=self.number_of_layers-1))):
             self.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, layer_size))
             self.add_module(f'fc{layer_index}_activation', self.activation_function)
         self.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, output_size))
@@ -466,6 +468,25 @@ class PhosTransferClassifier(nn.Module, SimpleSerial):
     def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
         return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
     
+    def get_accuracies_and_loss(self, inputs, outputs):
+        model_test_outputs = self.forward(to_tensor(inputs))
+        guesses = torch.round(model_test_outputs)
+        outputs = to_tensor(outputs)
+        
+        flags_for_positive_inputs = inputs == 1
+        positive_guesses, positive_outputs = guesses[flags_for_positive_inputs], outputs[flags_for_positive_inputs]
+        negative_guesses, negative_outputs = guesses[~flags_for_positive_inputs], outputs[~flags_for_positive_inputs]
+        
+        loss                   = self.loss_function(model_test_outputs, outputs)
+        correct_count          = torch.sum(guesses == outputs)
+        accuracy               = torch.mean(guesses == outputs)
+        positive_correct_count = torch.sum(positive_guesses == positive_outputs)
+        positive_accuracy      = torch.mean(positive_guesses == positive_outputs)
+        negative_correct_count = torch.sum(negative_guesses == negative_outputs)
+        negative_accuracy      = torch.mean(negative_guesses == negative_outputs)
+        return loss, correct_count, accuracy, positive_correct_count, positive_accuracy, negative_correct_count, negative_accuracy
+
+from collections import namedtuple
 class AutoEncoderHelpers:
     @staticmethod
     def get_autoencode_score(hyperparameters, validation_threshold=0.05):
@@ -515,7 +536,7 @@ class AutoEncoderHelpers:
                 training_loss_sum = 0
                 fold_validation_losses = []
                 with print.indent:
-                    for batch_index, each_loss in enumerate(coder.fit(
+                    for batch_index, (_, _, each_loss) in enumerate(coder.fit(
                         input_output_pairs=list(zip(each_fold["train"]["inputs"], each_fold["train"]["outputs"])),
                         max_epochs=hyperparameters.max_epochs,
                         batch_size=hyperparameters.batch_size,
@@ -540,6 +561,7 @@ class AutoEncoderHelpers:
                 aggregate_average_validation_loss += min(fold_validation_losses)
         return -(aggregate_average_validation_loss/number_of_folds)
     
+    @staticmethod
     @cache() # this function will only run if the inputs change
     def train_autoencoder(x, hyperparameters):
         """
@@ -566,6 +588,7 @@ class AutoEncoderHelpers:
         
         return coder.to_serial_form()
     
+    @staticmethod
     def transform_phos_data(phos_x, autoencoder_train_x):
         coder = AutoEncoder.from_serial_form(
             AutoEncoderHelpers.train_autoencoder(
@@ -576,9 +599,10 @@ class AutoEncoderHelpers:
         
         return coder.encoder.forward(phos_x).detach().numpy()
 
-    def create_classifier_from_coder(coder):
+    @staticmethod
+    def create_classifier_from_coder(seralized_coder):
         return PhosTransferClassifier(
-            seralized_coder=coder.to_serial_form(),
+            seralized_coder=seralized_coder,
             output_shape=(1, ), # binary classifier
             number_of_layers=info.config.phos_classifier_hyperparameters.number_of_layers,
             activation_function_eval=info.config.phos_classifier_hyperparameters.activation_function_eval,
@@ -586,64 +610,98 @@ class AutoEncoderHelpers:
             loss_function_eval=info.config.phos_classifier_hyperparameters.loss_function_eval,
         )
     
-    def evaluate_phos_classifier(coder, inputs, outputs,):
-        number_of_folds = 4
+    @staticmethod
+    def evaluate_phos_classifier(seralized_coder, inputs, outputs, number_of_folds):
+        """
+            Example:
+                fold_metrics = evaluate_phos_classifier(
+                    inputs=X,
+                    outputs=y,
+                    number_of_folds=4,
+                    seralized_coder=AutoEncoderHelpers.train_autoencoder(
+                        x=autoencoder_train_x,
+                        hyperparameters=LazyDict(info.config.autoencoder_hyperparameters),
+                    ),
+                )
+        """
         folds = cross_validation(
             inputs=inputs,
             outputs=outputs,
             number_of_folds=number_of_folds,
         )
-        aggregate_average_validation_loss = 0
-        
+        aggregate_metrics = LazyDict(
+            average_training_loss=[],
+            average_validation_loss=[],
+            validation_correct_count=[],
+            validation_accuracy=[],
+            positive_correct_count=[],
+            positive_accuracy=[],
+            negative_correct_count=[],
+            negative_accuracy=[],
+        )
         print("evaluating phos classifier")
         with print.indent:
             for fold_index, each_fold in enumerate(folds):
                 print(f'''fold: {fold_index}, sample_size: {len(each_fold["train"]["inputs"])}''')
-                model = create_classifier_from_coder(coder)
+                model = AutoEncoderHelpers.create_classifier_from_coder(seralized_coder)
                 training_loss_count = 0
                 training_loss_sum = 0
-                fold_validation_losses = []
-                fold_accuracies = []
+                metrics = []
                 with print.indent:
-                    for batch_index, each_loss in enumerate(model.fit(
+                    for epoch_index, batch_index, each_loss in model.fit(
                         input_output_pairs=list(zip(each_fold["train"]["inputs"], each_fold["train"]["outputs"])),
                         max_epochs=hyperparameters.max_epochs,
                         batch_size=hyperparameters.batch_size,
                         shuffle=True,
-                    )):
+                    ):
                         training_loss_sum += each_loss
                         training_loss_count += 1
+                        average_training_loss    = training_loss_sum/training_loss_count
                         
-                        model_test_outputs = model.forward(to_tensor(each_fold["test"]["inputs"]))
-                        average_validation_loss = model.loss_function(model_test_outputs, each_fold["test"]["outputs"])
+                        (
+                            average_validation_loss,
+                            validation_correct_count,
+                            validation_accuracy,
+                            positive_correct_count,
+                            positive_accuracy,
+                            negative_correct_count,
+                            negative_accuracy
+                        ) = model.get_accuracies_and_loss(
+                            inputs=each_fold["test"]["inputs"],
+                            outputs=each_fold["test"]["outputs"]
+                        )
+                        
+                        metrics.append(
+                            (
+                                average_training_loss,
+                                average_validation_loss,
+                                validation_correct_count,
+                                validation_accuracy,
+                                positive_correct_count,
+                                positive_accuracy,
+                                negative_correct_count,
+                                negative_accuracy,
+                            )
+                        )
+                        
                         fold_validation_losses.append(average_validation_loss)
-                        average_training_loss = training_loss_sum/training_loss_count
+                        fold_validation_accuracies.append(validation_accuracy)
                         
-                        
-                        print(f'''average_training_loss = {average_training_loss}''')
-                        print(f'''average_validation_loss = {average_validation_loss}''')
+                        print(f'''average_training_loss    = {average_training_loss}''')
+                        print(f'''average_validation_loss  = {average_validation_loss}''')
+                        print(f'''validation_correct_count = {validation_correct_count}''')
+                        print(f'''validation_accuracy      = {validation_accuracy}''')
                         
                         if average_validation_loss*(1 - validation_threshold) > average_training_loss:
-                            print(f'''stopping training early: batch_index:{batch_index}''')
+                            print(f'''    stopping training early: epoch_index:{epoch_index}, batch_index:{batch_index}''')
                             break
-                
-                aggregate_average_validation_loss += min(fold_validation_losses)
-        return -(aggregate_average_validation_loss/number_of_folds)
+                    
+                best_run_within_fold = arg_max(args=metrics, values=( validation_accuracy for (average_training_loss, average_validation_loss, validation_correct_count, validation_accuracy, positive_correct_count, positive_accuracy, negative_correct_count, negative_accuracy) in metrics))
+                # add them to aggregate_metrics
+                for each_key, (each_list, each_new_value) in zip(aggregate_metrics.items(), best_run_within_fold):
+                    each_list.append(each_new_value)
         
-        classifier = AutoEncoderHelpers.create_classifier_from_coder(coder)
-        # train
-        for _ in classifier.fit(
-            input_output_pairs=list(zip(inputs, outputs)),
-            max_epochs=hyperparameters.max_epochs,
-            batch_size=hyperparameters.batch_size,
-            shuffle=True,
-        ):
-            pass
-        
-        predict = lambda features: round(to_pure(classifier.forward(features)))
-        
-        # FIXME: perform cross validation with validation accuracy summary as output
-
+        return aggregate_metrics
 
 # 
 # read data
@@ -666,7 +724,19 @@ if True:
     print(f'''len(y) = {len(y)}''')
     print(f'''sum(y) = {sum(y)}''')
     
-transformed_x = AutoEncoderHelpers.transform_phos_data(phos_x=X, autoencoder_train_x=X)
+# transformed_x = AutoEncoderHelpers.transform_phos_data(phos_x=X, autoencoder_train_x=X)
+
+fold_metrics = AutoEncoderHelpers.evaluate_phos_classifier(
+    inputs=X,
+    outputs=y,
+    number_of_folds=4,
+    seralized_coder=AutoEncoderHelpers.train_autoencoder(
+        x=X,
+        hyperparameters=LazyDict(info.config.autoencoder_hyperparameters),
+    ),
+)
+import pandas
+print(pandas.DataFrame(fold_metrics))
 
 # 
     # TODO:
