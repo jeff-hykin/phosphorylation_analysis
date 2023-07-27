@@ -21,7 +21,7 @@ import torch.optim as optim
 
 from __dependencies__.quik_config import find_and_load
 from __dependencies__.cool_cache import cache
-from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure, print, LazyDict, super_hash
+from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure, print, LazyDict, super_hash, drop_end, linear_steps
 from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes
 from generic_tools.cross_validation import cross_validation
 
@@ -242,7 +242,7 @@ class Encoder(nn.Module, SimpleSerial):
         # options
         # 
         Network.default_setup(self, config)
-        self._config = {
+        self._config = config = {
             **dict(
                 input_shape= (400, ),
                 output_shape= (10,),
@@ -296,7 +296,7 @@ class Decoder(nn.Module, SimpleSerial):
         # options
         # 
         Network.default_setup(self, config)
-        self._config = {
+        self._config = config = {
             **dict(
                 input_shape= (10, ),
                 output_shape= (400,),
@@ -351,7 +351,7 @@ class AutoEncoder(nn.Module, SimpleSerial):
         # options
         # 
         Network.default_setup(self, config)
-        self._config = {
+        self._config = config = {
             **dict(
                 input_shape=(400, ),
                 latent_shape=(30,),
@@ -412,25 +412,6 @@ class AutoEncoder(nn.Module, SimpleSerial):
     def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
         return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
 
-def linear_steps(*, start, end, quantity):
-    """
-    assert [4, 11, 18, 24, 31] == list(linear_steps(start=4, end=31, quantity=5))
-    """
-    import math
-    assert quantity > 0
-    quantity = math.ceil(quantity)
-    if round(start) == round(end):
-        for each in range(quantity):
-            yield start
-    else:
-        x0 = 1
-        x1 = quantity
-        y0 = start
-        y1 = end
-        generator = lambda x: y0 if (x1 - x0) == 0 else y0 + (y1 - y0) / (x1 - x0) * (x - x0)
-        for x in range(quantity):
-            yield round(generator(x+1))
-
 class PhosTransferClassifier(nn.Module, SimpleSerial):
     def __init__(self, **config):
         super(PhosTransferClassifier, self).__init__()
@@ -438,13 +419,8 @@ class PhosTransferClassifier(nn.Module, SimpleSerial):
         # options
         # 
         Network.default_setup(self, config)
-        self._config = {
+        self._config = config = {
             **dict(
-                output_shape=(400, ),
-                number_of_layers=3,
-                activation_function_eval="nn.ReLU()",
-                final_activation_function_eval="nn.ReLU()",
-                loss_function_eval="F.mse_loss",
             ),
             **config,
         }
@@ -466,10 +442,10 @@ class PhosTransferClassifier(nn.Module, SimpleSerial):
         # layers
         # 
         self.add_module(f'encoder', coder.encoder)
-        for layer_index, layer_size in enumerate(linear_steps(start=input_size, end=output_size, quantity=self.number_of_layers-1)):
-            self.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, int(self.size_of_last_layer*(2/3))))
+        for layer_index, layer_size in enumerate(drop_end(1, linear_steps(start=input_size, end=output_size, quantity=self.number_of_layers-1))):
+            self.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, layer_size))
             self.add_module(f'fc{layer_index}_activation', self.activation_function)
-        self.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, product(self.output_shape)))
+        self.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, output_size))
         self.add_module(f'fc{layer_index+1}_activation', self.final_activation_function)
         
         # 
@@ -489,7 +465,7 @@ class PhosTransferClassifier(nn.Module, SimpleSerial):
         
     def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
         return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
-
+    
 class AutoEncoderHelpers:
     @staticmethod
     def get_autoencode_score(hyperparameters, validation_threshold=0.05):
@@ -579,12 +555,13 @@ class AutoEncoderHelpers:
             activation_function_eval=hyperparameters.activation_function_eval,
             loss_function_eval=hyperparameters.loss_function_eval,
         )
-        coder.fit(
+        for _ in coder.fit(
             input_output_pairs=list(zip(x, x)),
             max_epochs=hyperparameters.max_epochs,
             batch_size=hyperparameters.batch_size,
             shuffle=True,
-        )
+        ):
+            pass
         large_pickle_save(coder.to_serial_form(), info.absolute_path_to.prev_autoencoder)
         
         return coder.to_serial_form()
@@ -599,14 +576,74 @@ class AutoEncoderHelpers:
         
         return coder.encoder.forward(phos_x).detach().numpy()
 
-    def create_nn_from_coder():
-        coder = AutoEncoder.from_serial_form(
-            AutoEncoderHelpers.train_autoencoder(
-                x=autoencoder_train_x,
-                hyperparameters=LazyDict(info.config.autoencoder_hyperparameters),
-            )
+    def create_classifier_from_coder(coder):
+        return PhosTransferClassifier(
+            seralized_coder=coder.to_serial_form(),
+            output_shape=(1, ), # binary classifier
+            number_of_layers=info.config.phos_classifier_hyperparameters.number_of_layers,
+            activation_function_eval=info.config.phos_classifier_hyperparameters.activation_function_eval,
+            final_activation_function_eval=info.config.phos_classifier_hyperparameters.final_activation_function_eval,
+            loss_function_eval=info.config.phos_classifier_hyperparameters.loss_function_eval,
         )
+    
+    def evaluate_phos_classifier(coder, inputs, outputs,):
+        number_of_folds = 4
+        folds = cross_validation(
+            inputs=inputs,
+            outputs=outputs,
+            number_of_folds=number_of_folds,
+        )
+        aggregate_average_validation_loss = 0
         
+        print("evaluating phos classifier")
+        with print.indent:
+            for fold_index, each_fold in enumerate(folds):
+                print(f'''fold: {fold_index}, sample_size: {len(each_fold["train"]["inputs"])}''')
+                model = create_classifier_from_coder(coder)
+                training_loss_count = 0
+                training_loss_sum = 0
+                fold_validation_losses = []
+                fold_accuracies = []
+                with print.indent:
+                    for batch_index, each_loss in enumerate(model.fit(
+                        input_output_pairs=list(zip(each_fold["train"]["inputs"], each_fold["train"]["outputs"])),
+                        max_epochs=hyperparameters.max_epochs,
+                        batch_size=hyperparameters.batch_size,
+                        shuffle=True,
+                    )):
+                        training_loss_sum += each_loss
+                        training_loss_count += 1
+                        
+                        model_test_outputs = model.forward(to_tensor(each_fold["test"]["inputs"]))
+                        average_validation_loss = model.loss_function(model_test_outputs, each_fold["test"]["outputs"])
+                        fold_validation_losses.append(average_validation_loss)
+                        average_training_loss = training_loss_sum/training_loss_count
+                        
+                        
+                        print(f'''average_training_loss = {average_training_loss}''')
+                        print(f'''average_validation_loss = {average_validation_loss}''')
+                        
+                        if average_validation_loss*(1 - validation_threshold) > average_training_loss:
+                            print(f'''stopping training early: batch_index:{batch_index}''')
+                            break
+                
+                aggregate_average_validation_loss += min(fold_validation_losses)
+        return -(aggregate_average_validation_loss/number_of_folds)
+        
+        classifier = AutoEncoderHelpers.create_classifier_from_coder(coder)
+        # train
+        for _ in classifier.fit(
+            input_output_pairs=list(zip(inputs, outputs)),
+            max_epochs=hyperparameters.max_epochs,
+            batch_size=hyperparameters.batch_size,
+            shuffle=True,
+        ):
+            pass
+        
+        predict = lambda features: round(to_pure(classifier.forward(features)))
+        
+        # FIXME: perform cross validation with validation accuracy summary as output
+
 
 # 
 # read data
