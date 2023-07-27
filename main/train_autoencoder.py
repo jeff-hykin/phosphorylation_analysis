@@ -18,11 +18,12 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 import torch.optim as optim
+import torch.nn.utils as utils
 
 from __dependencies__.quik_config import find_and_load
 from __dependencies__.cool_cache import cache
 from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure, print, LazyDict, super_hash, drop_end, linear_steps, arg_max
-from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes
+from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential
 from generic_tools.cross_validation import cross_validation
 
 info = find_and_load(
@@ -43,11 +44,22 @@ torch.manual_seed(default_seed)
 class Network:
     @staticmethod
     def default_setup(self, config):
+        self.grad_clip_value = 1000
         self.setup_config    = config
         self.seed            = config.get("seed"           , default_seed)
         self.suppress_output = config.get("suppress_output", False)
         self.hardware        = config.get("device"         , torch.device("cuda" if torch.cuda.is_available() else "cpu"))
         self.show = lambda *args, **kwargs: print(*args, **kwargs) if not self.suppress_output else None
+        self.to(self.hardware)
+    
+    def default_init(self, config):
+        import torch.nn.init as init
+        for each_layer in self.children():
+            # if its not a loss function
+            if not isinstance(each_layer, torch.nn.modules.loss._Loss) and hasattr(each_layer, "weight"):
+                init.xavier_uniform_(each_layer.weight)
+                if each_layer.bias is not None:
+                    init.zeros_(each_layer.bias)
         self.to(self.hardware)
     
     @staticmethod
@@ -105,10 +117,13 @@ class Network:
         # forward pass
         # 
         neuron_activations = input_data
-        for each_layer in self.children():
+        for each_layer in self.layers:
             # if its not a loss function
             if not isinstance(each_layer, torch.nn.modules.loss._Loss):
                 neuron_activations = each_layer.forward(neuron_activations)
+                if torch.isnan(neuron_activations).any():
+                    import code; code.interact(local={**globals(),**locals()})
+                    raise Exception(f'''nan output from neurons.\nComing from:{repr(self)}\n\nSpecifically this layer: {repr(each_layer)}\nCausing this output:{neuron_activations}''', )
         
         # force the output to be the correct shape
         return torch.reshape(neuron_activations, output_shape)
@@ -117,6 +132,7 @@ class Network:
     def default_update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index):
         """
         Uses:
+            self.grad_clip_value
             self.optimizer # pytorch optimizer class
             self.forward(batch_of_inputs)
             self.loss_function(batch_of_actual_outputs, batch_of_ideal_outputs)
@@ -125,6 +141,8 @@ class Network:
         batch_of_actual_outputs = self.forward(batch_of_inputs)
         loss = self.loss_function(batch_of_actual_outputs, batch_of_ideal_outputs)
         loss.backward()
+        if self.grad_clip_value != None:
+            utils.clip_grad_norm_(self.parameters(), self.grad_clip_value)
         self.optimizer.step()
         return loss
     
@@ -133,6 +151,9 @@ class Network:
         """
             Uses:
                 self.update_weights(batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
+                    self.optimizer # pytorch optimizer class
+                    self.forward(batch_of_inputs)
+                    self.loss_function(batch_of_actual_outputs, batch_of_ideal_outputs)
                 self.show(args)
                 self.train() # provided by pytorch's `nn.Module`
             
@@ -212,10 +233,28 @@ class Network:
             self.hardware
         """
         def loss_function(model_output, ideal_output):
-            # convert from one-hot into number, and send tensor to device
-            return loss_func(model_output, to_tensor(ideal_output).to(self.hardware))
+            # try:
+                # convert from one-hot into number, and send tensor to device
+                return loss_func(model_output.squeeze(), to_tensor(ideal_output).squeeze().to(self.hardware))
+            # except Exception as error:
+            #     import code; code.interact(local={**globals(),**locals()})
+            #     exit()
         
         return loss_function
+    
+    @staticmethod
+    def wrap_activation_function(activation_function):
+        """
+        Uses:
+            self.hardware
+        """
+        if isinstance(activation_function, nn.Module):
+            return activation_function
+        else:
+            class ActivationFunction(nn.Module):
+                def forward(self, x):
+                    return activation_function(x)
+            return ActivationFunction()
 
 class SimpleSerial:
     """
@@ -262,21 +301,22 @@ class Encoder(nn.Module, SimpleSerial):
         self.activation_function_eval = config['activation_function_eval']
         self.loss_function_eval       = config['loss_function_eval']
         
-        self.activation_function = eval(self.activation_function_eval, globals(), globals())
+        self.activation_function = Network.wrap_activation_function(eval(self.activation_function_eval, globals(), globals()))
         self.loss_function       = Network.wrap_loss_function(self,eval(self.loss_function_eval, globals(), globals()))
         
         # 
         # layers
         # 
-        self.add_module('flatten', nn.Flatten(1)) # 1 => skip the first dimension because thats the batch dimension
+        self.layers = Sequential()
+        self.layers.add_module('flatten', nn.Flatten(1)) # 1 => skip the first dimension because thats the batch dimension
         for layer_index in range(self.number_of_layers-1):
-            self.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, int(self.size_of_last_layer*(2/3))))
-            self.add_module(f'fc{layer_index}_activation', self.activation_function)
+            self.layers.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, int(self.size_of_last_layer*(2/3))))
+            self.layers.add_module(f'fc{layer_index}_activation', self.activation_function)
         # final layer
-        self.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, product(self.output_shape)))
-        self.add_module(f'fc{layer_index+1}_activation', self.activation_function)
+        self.layers.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, product(self.output_shape)))
+        self.layers.add_module(f'fc{layer_index+1}_activation', self.activation_function)
         
-        self.to(self.hardware)
+        Network.default_init(self, config)
     
     @property
     def size_of_last_layer(self):
@@ -316,22 +356,23 @@ class Decoder(nn.Module, SimpleSerial):
         self.activation_function_eval = config['activation_function_eval']
         self.loss_function_eval       = config['loss_function_eval']
         
-        self.activation_function = eval(self.activation_function_eval, globals(), globals())
+        self.activation_function = Network.wrap_activation_function(eval(self.activation_function_eval, globals(), globals()))
         self.loss_function       = Network.wrap_loss_function(self,eval(self.loss_function_eval, globals(), globals()))
         
         # 
         # layers
         # 
+        self.layers = Sequential()
         for layer_index in range(self.number_of_layers-1):
-            self.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, int(self.size_of_last_layer*(2/3))))
-            self.add_module(f'fc{layer_index}_activation', self.activation_function)
-        self.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, product(self.output_shape)))
-        self.add_module(f'fc{layer_index+1}_activation', self.activation_function)
+            self.layers.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, int(self.size_of_last_layer*(2/3))))
+            self.layers.add_module(f'fc{layer_index}_activation', self.activation_function)
+        self.layers.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, product(self.output_shape)))
+        self.layers.add_module(f'fc{layer_index+1}_activation', self.activation_function)
         
         # 
         # support (optimizer, loss)
         # 
-        self.to(self.hardware)
+        Network.default_init(self, config)
     
     @property
     def size_of_last_layer(self):
@@ -376,19 +417,22 @@ class AutoEncoder(nn.Module, SimpleSerial):
         self.loss_function_eval       = config['loss_function_eval']
         
         self.output_shape             = config['input_shape']
-        self.activation_function = eval(self.activation_function_eval, globals(), globals())
+        self.activation_function = Network.wrap_activation_function(eval(self.activation_function_eval, globals(), globals()))
         self.loss_function       = Network.wrap_loss_function(self,eval(self.loss_function_eval, globals(), globals()))
         
+        self.encoder = Encoder(input_shape=self.input_shape, output_shape=self.latent_shape)
+        self.decoder = Decoder(input_shape=self.latent_shape, output_shape=self.output_shape)
         # 
         # layers
-        # 
-        self.add_module('encoder', Encoder(input_shape=self.input_shape, output_shape=self.latent_shape))
-        self.add_module('decoder', Decoder(input_shape=self.latent_shape, output_shape=self.output_shape))
+        #
+        self.layers = Sequential() 
+        self.layers.add_module('encoder', Encoder(input_shape=self.input_shape, output_shape=self.latent_shape))
+        self.layers.add_module('decoder', Decoder(input_shape=self.latent_shape, output_shape=self.output_shape))
         
         # 
         # support (optimizer, loss)
         # 
-        self.to(self.hardware)
+        Network.default_init(self, config)
         # create an optimizer
         self.optimizer = optim.SGD(self.parameters(), lr=self.learning_rate, momentum=self.momentum)
         
@@ -397,11 +441,11 @@ class AutoEncoder(nn.Module, SimpleSerial):
         return product(self.input_shape if len(self._modules) == 0 else layer_output_shapes(self._modules.values(), self.input_shape)[-1])
     
     def forward(self, input_data):
-        input_data.to(self.hardware)
-        latent_space = self.encoder.forward(input_data)
-        output = self.decoder.forward(latent_space)
-        return output
-        # return Network.default_forward(self, input_data)
+        # input_data.to(self.hardware)
+        # latent_space = self.encoder.forward(input_data)
+        # output = self.decoder.forward(latent_space)
+        # return output
+        return Network.default_forward(self, input_data)
     
     def update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index):
         return Network.default_update_weights(self, batch_of_inputs, batch_of_inputs, epoch_index, batch_index)
@@ -423,6 +467,7 @@ class PhosTransferClassifier(nn.Module, SimpleSerial):
         Network.default_setup(self, config)
         self._config = config = {
             **dict(
+                log_interval=100,
             ),
             **config,
         }
@@ -430,30 +475,36 @@ class PhosTransferClassifier(nn.Module, SimpleSerial):
         
         self.input_shape                    = coder.encoder.input_shape
         self.output_shape                   = config["output_shape"]
+        self.log_interval                   = config["log_interval"]
         self.number_of_layers               = config["number_of_layers"]
         self.activation_function_eval       = config['activation_function_eval']
         self.final_activation_function_eval = config['final_activation_function_eval']
         self.loss_function_eval             = config['loss_function_eval']
+        self.learning_rate                  = config['learning_rate']
+        self.momentum                       = config['momentum']
         
-        self.activation_function       = eval(self.activation_function_eval, globals(), globals())
-        self.final_activation_function = eval(self.final_activation_function_eval, globals(), globals())
+        self.activation_function       = Network.wrap_activation_function(eval(self.activation_function_eval, globals(), globals()))
+        self.final_activation_function = Network.wrap_activation_function(eval(self.final_activation_function_eval, globals(), globals()))
         self.loss_function             = Network.wrap_loss_function(self,eval(self.loss_function_eval, globals(), globals()))
         output_size = product(self.output_shape)
         
         # 
         # layers
         # 
-        self.add_module(f'encoder', coder.encoder)
+        self.layers = Sequential()
+        self.layers.add_module(f'encoder', coder.encoder)
+        layer_index = 0
         for layer_index, layer_size in enumerate(drop_end(1, linear_steps(start=product(self.input_shape), end=output_size, quantity=self.number_of_layers-1))):
-            self.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, layer_size))
-            self.add_module(f'fc{layer_index}_activation', self.activation_function)
-        self.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, output_size))
-        self.add_module(f'fc{layer_index+1}_activation', self.final_activation_function)
+            self.layers.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, layer_size))
+            self.layers.add_module(f'fc{layer_index}_activation', self.activation_function)
+        self.layers.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, output_size))
+        self.layers.add_module(f'fc{layer_index+1}_activation', self.final_activation_function)
         
         # 
         # support (optimizer, loss)
         # 
-        self.to(self.hardware)
+        Network.default_init(self, config)
+        self.optimizer = optim.SGD(self.parameters(), lr=self.learning_rate, momentum=self.momentum)
     
     @property
     def size_of_last_layer(self):
@@ -463,27 +514,30 @@ class PhosTransferClassifier(nn.Module, SimpleSerial):
         return Network.default_forward(self, input_data)
     
     def update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index):
-        return Network.default_update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
+        try:
+            return Network.default_update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
+        except Exception as error:
+            import code; code.interact(local={**globals(),**locals()}); exit()
         
     def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
         return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
     
     def get_accuracies_and_loss(self, inputs, outputs):
         model_test_outputs = self.forward(to_tensor(inputs))
-        guesses = torch.round(model_test_outputs)
+        guesses = (torch.round(model_test_outputs+1/2).squeeze()*2)-1 # converting from (-1 to 1) to (0 to 1) and then back to (-1 to 1)
         outputs = to_tensor(outputs)
         
         flags_for_positive_inputs = inputs == 1
         positive_guesses, positive_outputs = guesses[flags_for_positive_inputs], outputs[flags_for_positive_inputs]
         negative_guesses, negative_outputs = guesses[~flags_for_positive_inputs], outputs[~flags_for_positive_inputs]
         
-        loss                   = self.loss_function(model_test_outputs, outputs)
-        correct_count          = torch.sum(guesses == outputs)
-        accuracy               = torch.mean(guesses == outputs)
-        positive_correct_count = torch.sum(positive_guesses == positive_outputs)
-        positive_accuracy      = torch.mean(positive_guesses == positive_outputs)
-        negative_correct_count = torch.sum(negative_guesses == negative_outputs)
-        negative_accuracy      = torch.mean(negative_guesses == negative_outputs)
+        loss                   = to_pure(self.loss_function(model_test_outputs, outputs))
+        correct_count          = to_pure(torch.sum((guesses == outputs).float()))
+        accuracy               = to_pure(torch.mean((guesses == outputs).float()))
+        positive_correct_count = to_pure(torch.sum((positive_guesses == positive_outputs).float()))
+        positive_accuracy      = to_pure(torch.mean((positive_guesses == positive_outputs).float()))
+        negative_correct_count = to_pure(torch.sum((negative_guesses == negative_outputs).float()))
+        negative_accuracy      = to_pure(torch.mean((negative_guesses == negative_outputs).float()))
         return loss, correct_count, accuracy, positive_correct_count, positive_accuracy, negative_correct_count, negative_accuracy
 
 from collections import namedtuple
@@ -604,6 +658,8 @@ class AutoEncoderHelpers:
         return PhosTransferClassifier(
             seralized_coder=seralized_coder,
             output_shape=(1, ), # binary classifier
+            learning_rate=info.config.phos_classifier_hyperparameters.learning_rate,
+            momentum=info.config.phos_classifier_hyperparameters.momentum,
             number_of_layers=info.config.phos_classifier_hyperparameters.number_of_layers,
             activation_function_eval=info.config.phos_classifier_hyperparameters.activation_function_eval,
             final_activation_function_eval=info.config.phos_classifier_hyperparameters.final_activation_function_eval,
@@ -611,7 +667,7 @@ class AutoEncoderHelpers:
         )
     
     @staticmethod
-    def evaluate_phos_classifier(seralized_coder, inputs, outputs, number_of_folds):
+    def evaluate_phos_classifier(seralized_coder, inputs, outputs, number_of_folds, hyperparameters, validation_threshold=0.05):
         """
             Example:
                 fold_metrics = evaluate_phos_classifier(
@@ -622,6 +678,10 @@ class AutoEncoderHelpers:
                         x=autoencoder_train_x,
                         hyperparameters=LazyDict(info.config.autoencoder_hyperparameters),
                     ),
+                    hyperparameters=LazyDict(
+                        max_epochs=20,
+                        batch_size=64,
+                    ),
                 )
         """
         folds = cross_validation(
@@ -629,6 +689,7 @@ class AutoEncoderHelpers:
             outputs=outputs,
             number_of_folds=number_of_folds,
         )
+        print(f'''len(folds) = {len(folds)}''')
         aggregate_metrics = LazyDict(
             average_training_loss=[],
             average_validation_loss=[],
@@ -684,21 +745,18 @@ class AutoEncoderHelpers:
                             )
                         )
                         
-                        fold_validation_losses.append(average_validation_loss)
-                        fold_validation_accuracies.append(validation_accuracy)
-                        
-                        print(f'''average_training_loss    = {average_training_loss}''')
-                        print(f'''average_validation_loss  = {average_validation_loss}''')
-                        print(f'''validation_correct_count = {validation_correct_count}''')
-                        print(f'''validation_accuracy      = {validation_accuracy}''')
+                        print(f'''fold:{fold_index:>2}, average_training_loss    = {average_training_loss}''')
+                        print(f'''fold:{fold_index:>2}, average_validation_loss  = {average_validation_loss}''')
+                        print(f'''fold:{fold_index:>2}, validation_correct_count = {validation_correct_count}''')
+                        print(f'''fold:{fold_index:>2}, validation_accuracy      = {validation_accuracy}''')
                         
                         if average_validation_loss*(1 - validation_threshold) > average_training_loss:
                             print(f'''    stopping training early: epoch_index:{epoch_index}, batch_index:{batch_index}''')
                             break
                     
-                best_run_within_fold = arg_max(args=metrics, values=( validation_accuracy for (average_training_loss, average_validation_loss, validation_correct_count, validation_accuracy, positive_correct_count, positive_accuracy, negative_correct_count, negative_accuracy) in metrics))
+                best_run_within_fold = arg_max(args=metrics, values=tuple( validation_accuracy for (average_training_loss, average_validation_loss, validation_correct_count, validation_accuracy, positive_correct_count, positive_accuracy, negative_correct_count, negative_accuracy) in metrics))
                 # add them to aggregate_metrics
-                for each_key, (each_list, each_new_value) in zip(aggregate_metrics.items(), best_run_within_fold):
+                for (each_key, each_list), each_new_value in zip(aggregate_metrics.items(), best_run_within_fold):
                     each_list.append(each_new_value)
         
         return aggregate_metrics
@@ -716,7 +774,7 @@ if True:
         positive_outputs = tuple(1 for each in positive_inputs)
         print("loaded positive_examples")
 
-    truncate_size = 5_000_000
+    truncate_size = 5_000
     X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
     y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
 
@@ -733,6 +791,10 @@ fold_metrics = AutoEncoderHelpers.evaluate_phos_classifier(
     seralized_coder=AutoEncoderHelpers.train_autoencoder(
         x=X,
         hyperparameters=LazyDict(info.config.autoencoder_hyperparameters),
+    ),
+    hyperparameters=LazyDict(
+        max_epochs=20,
+        batch_size=64,
     ),
 )
 import pandas

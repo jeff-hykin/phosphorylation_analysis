@@ -46,14 +46,20 @@
                     positionInvariantPhysicochemicalCategories: false
                     physicochemicalCategories: false
                     handCodedMotifs: false
+            
             phos_classifier_hyperparameters:
                 number_of_layers: 1 # layers in additon to the encoder layers
-                final_activation_function_eval: "lambda x: x/(1 + abs(x))" # modified sigmoid
-                activation_function_eval:       "lambda x: x/(1 + abs(x))" # modified sigmoid
+                final_activation_function_eval: "lambda x: x/(1 + torch.abs(x))" # modified sigmoid
+                activation_function_eval:       "lambda x: x/(1 + torch.abs(x))" # modified sigmoid
                 loss_function_eval: "lambda a,b: F.binary_cross_entropy((a+1)/2, (b+1)/2)" # still binary_cross_entropy, just works for 1 to -1 instead of 1 to 0
+                # final_activation_function_eval: "nn.Sigmoid()"
+                # activation_function_eval:       "nn.Sigmoid()"
+                # loss_function_eval: "F.binary_cross_entropy"
+                learning_rate: 0.01
+                momentum: 0.5
                 
             autoencoder_hyperparameters:
-                max_epochs: 20
+                max_epochs: 1
                 batch_size: 64
                 latent_size: 30
                 number_of_layers: 3
