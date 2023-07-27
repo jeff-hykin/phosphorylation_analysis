@@ -12,6 +12,9 @@
         negative_examples: ./negative_examples.json
         positive_examples: ./positive_examples.json
         important_features_image: ./figures/recent_feature_importance.png
+        prev_parameters: ./prev_parameters.json
+        autoencoder_checker_cache: ./cache.ignore/autoencoder_parameter_check.json
+        prev_autoencoder: ./cache.ignore/autoencoder.pickle
     
     todo:
         - dont add plant features
@@ -43,5 +46,13 @@
                     positionInvariantPhysicochemicalCategories: false
                     physicochemicalCategories: false
                     handCodedMotifs: false
-        
+            autoencoder_hyperparameters:
+                max_epochs: 20
+                batch_size: 64
+                latent_size: 30
+                number_of_layers: 3
+                learning_rate: 0.01
+                momentum: 0.5
+                activation_function_eval: "nn.ReLU()"
+                loss_function_eval: "F.mse_loss"
 

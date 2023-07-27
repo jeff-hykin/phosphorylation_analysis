@@ -1,8 +1,0 @@
-{
-    "windowPadding": 10,
-    "aminoMatchPattern": "/S/",
-    "useHuffmanEncoding": true,
-    "huffmanEncoderCap": 30,
-    "minOneSideEncodedLength": 5,
-    "datasetSize": 200000
-}

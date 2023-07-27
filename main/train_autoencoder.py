@@ -20,7 +20,8 @@ from torch import nn
 import torch.optim as optim
 
 from __dependencies__.quik_config import find_and_load
-from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure, print, LazyDict
+from __dependencies__.cool_cache import cache
+from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure, print, LazyDict, super_hash
 from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes
 from generic_tools.cross_validation import cross_validation
 
@@ -31,6 +32,10 @@ info = find_and_load(
     show_help_for_no_args=False, # change if you want
 )
 
+def read_json(path):
+    import json
+    with open(path, 'r') as in_file:
+        return json.load(in_file)
 
 default_seed = 10275023948
 torch.manual_seed(default_seed)
@@ -374,6 +379,121 @@ class AutoEncoder(nn.Module, SimpleSerial):
     def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
         return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
 
+class AutoEncoderHelpers:
+    @staticmethod
+    def get_autoencode_score(hyperparameters, validation_threshold=0.05):
+        """
+            Arguments:
+                hyperparameters.max_epochs
+                hyperparameters.batch_size
+                hyperparameters.latent_size
+                hyperparameters.number_of_layers
+                hyperparameters.learning_rate
+                hyperparameters.activation_function_eval
+                hyperparameters.loss_function_eval
+                hyperparameters.momentum
+            Example:
+                parameter_score = AutoEncoderHelpers.get_autoencode_score(LazyDict(
+                    max_epochs=20,
+                    batch_size=64,
+                    latent_size=30,
+                    number_of_layers=3,
+                    learning_rate=0.01,
+                    momentum=0.5,
+                    activation_function_eval="nn.ReLU()",
+                    loss_function_eval="F.mse_loss",
+                ))
+        """
+        number_of_folds = 4
+        folds = cross_validation(
+            inputs=X,
+            outputs=X,
+            number_of_folds=number_of_folds,
+        )
+        aggregate_average_validation_loss = 0
+        
+        with print.indent:
+            for fold_index, each_fold in enumerate(folds):
+                print(f'''fold: {fold_index}, sample_size: {len(each_fold["train"]["inputs"])}''')
+                coder = AutoEncoder(
+                    input_shape=(len(each_fold["train"]["inputs"][0]), ),
+                    latent_shape=(hyperparameters.latent_size, ),
+                    number_of_layers=hyperparameters.number_of_layers,
+                    learning_rate=hyperparameters.learning_rate,
+                    momentum=hyperparameters.momentum,
+                    activation_function_eval=hyperparameters.activation_function_eval,
+                    loss_function_eval=hyperparameters.loss_function_eval,
+                )
+                training_loss_count = 0
+                training_loss_sum = 0
+                fold_validation_losses = []
+                with print.indent:
+                    for batch_index, each_loss in enumerate(coder.fit(
+                        input_output_pairs=list(zip(each_fold["train"]["inputs"], each_fold["train"]["outputs"])),
+                        max_epochs=hyperparameters.max_epochs,
+                        batch_size=hyperparameters.batch_size,
+                        shuffle=True,
+                    )):
+                        training_loss_sum += each_loss
+                        training_loss_count += 1
+                        average_validation_loss = coder.average_loss_for(
+                            batch_of_inputs=each_fold["test"]["inputs"],
+                            batch_of_ideal_outputs=each_fold["test"]["outputs"],
+                        )
+                        fold_validation_losses.append(average_validation_loss)
+                        average_training_loss = training_loss_sum/training_loss_count
+                        
+                        print(f'''average_training_loss = {average_training_loss}''')
+                        print(f'''average_validation_loss = {average_validation_loss}''')
+                        
+                        if average_validation_loss*(1 - validation_threshold) > average_training_loss:
+                            print(f'''stopping training early: batch_index:{batch_index}''')
+                            break
+                
+                aggregate_average_validation_loss += min(fold_validation_losses)
+        return -(aggregate_average_validation_loss/number_of_folds)
+    
+    @cache() # this function will only run if the inputs change
+    def train_autoencoder(x, hyperparameters):
+        """
+            Summary:
+                will only retrain if the features changed
+        """
+        coder = None
+        if not AutoEncoderHelpers.did_features_change():
+            if FS.exists(info.absolute_path_to.prev_autoencoder):
+                coder = AutoEncoder.from_serial_form(large_pickle_load(info.absolute_path_to.prev_autoencoder))
+        
+        coder = AutoEncoder(
+            input_shape=(len(x[0]), ),
+            latent_shape=(hyperparameters.latent_size, ),
+            number_of_layers=hyperparameters.number_of_layers,
+            learning_rate=hyperparameters.learning_rate,
+            momentum=hyperparameters.momentum,
+            activation_function_eval=hyperparameters.activation_function_eval,
+            loss_function_eval=hyperparameters.loss_function_eval,
+        )
+        coder.fit(
+            input_output_pairs=list(zip(x, x)),
+            max_epochs=hyperparameters.max_epochs,
+            batch_size=hyperparameters.batch_size,
+            shuffle=True,
+        )
+        large_pickle_save(coder.to_serial_form(), info.absolute_path_to.prev_autoencoder)
+        
+        return coder.to_serial_form()
+    
+    def transform_phos_data(phos_x, autoencoder_train_x):
+        coder = AutoEncoder.from_serial_form(
+            AutoEncoderHelpers.train_autoencoder(
+                x=autoencoder_train_x,
+                hyperparameters=LazyDict(info.config.autoencoder_hyperparameters),
+            )
+        )
+        
+        return coder.encoder.forward(phos_x).numpy()
+
+
 # 
 # read data
 # 
@@ -394,94 +514,9 @@ if True:
     sample_size = len(X)
     print(f'''len(y) = {len(y)}''')
     print(f'''sum(y) = {sum(y)}''')
-
-
-coder = AutoEncoder(
-    input_shape=(len(X[0]), ),
-    latent_shape=(30, ),
-    number_of_layers=3,
-)
-AutoEncoder.from_serial_form(coder.to_serial_form())
-coder.fit(
-    input_output_pairs=list(zip(X, y)),
-    max_epochs=20,
-    batch_size=64,
-    shuffle=True,
-)
-
-
-def get_score(hyperparameters, validation_threshold=0.03):
-    """
-        Arguments:
-            hyperparameters.max_epochs
-            hyperparameters.batch_size
-            hyperparameters.latent_size
-            hyperparameters.number_of_layers
-            hyperparameters.learning_rate
-            hyperparameters.activation_function_eval
-            hyperparameters.loss_function_eval
-            hyperparameters.momentum
-    """
-    number_of_folds = 4
-    folds = cross_validation(
-        inputs=X,
-        outputs=X,
-        number_of_folds=number_of_folds,
-    )
-    aggregate_average_validation_loss = 0
     
-    with print.indent:
-        for fold_index, each_fold in enumerate(folds):
-            print(f'''fold: {fold_index}, sample_size: {len(each_fold["train"]["inputs"])}''')
-            coder = AutoEncoder(
-                input_shape=(len(each_fold["train"]["inputs"][0]), ),
-                latent_shape=(hyperparameters.latent_size, ),
-                number_of_layers=hyperparameters.number_of_layers,
-                learning_rate=hyperparameters.learning_rate,
-                momentum=hyperparameters.momentum,
-                activation_function_eval=hyperparameters.activation_function_eval,
-                loss_function_eval=hyperparameters.loss_function_eval,
-            )
-            training_loss_count = 0
-            training_loss_sum = 0
-            fold_validation_losses = []
-            with print.indent:
-                for batch_index, each_loss in enumerate(coder.fit(
-                    input_output_pairs=list(zip(each_fold["train"]["inputs"], each_fold["train"]["outputs"])),
-                    max_epochs=hyperparameters.max_epochs,
-                    batch_size=hyperparameters.batch_size,
-                    shuffle=True,
-                )):
-                    training_loss_sum += each_loss
-                    training_loss_count += 1
-                    average_validation_loss = coder.average_loss_for(
-                        batch_of_inputs=each_fold["test"]["inputs"],
-                        batch_of_ideal_outputs=each_fold["test"]["outputs"],
-                    )
-                    fold_validation_losses.append(average_validation_loss)
-                    average_training_loss = training_loss_sum/training_loss_count
-                    
-                    print(f'''average_training_loss = {average_training_loss}''')
-                    print(f'''average_validation_loss = {average_validation_loss}''')
-                    
-                    if average_validation_loss*(1 - validation_threshold) > average_training_loss:
-                        print(f'''stopping training early: batch_index:{batch_index}''')
-                        break
-            
-            aggregate_average_validation_loss += min(fold_validation_losses)
-    return -(aggregate_average_validation_loss/number_of_folds)
-
-parameter_score = get_score(LazyDict(
-    max_epochs=20,
-    batch_size=64,
-    latent_size=30,
-    number_of_layers=3,
-    learning_rate=0.01,
-    momentum=0.5,
-    activation_function_eval="nn.ReLU()",
-    loss_function_eval="F.mse_loss",
-))
-print(f'''parameter_score = {parameter_score}''')
+transformed_x = AutoEncoderHelpers.transform_phos_data(phos_x=X, autoencoder_train_x=X)
+print(f'''transformed_x = {transformed_x}''')
 
 # 
     # TODO:

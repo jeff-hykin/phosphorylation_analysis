@@ -329,6 +329,6 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
             (key,value)=>value instanceof RegExp ? value.toString() : value,
             4,
         ),
-        path: "prev_parameters.json",
+        path: pathTo.prev_parameters,
     })
     
