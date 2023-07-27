@@ -131,22 +131,22 @@ class Network:
     @staticmethod
     def default_fit(self, *, input_output_pairs=None, dataset=None, loader=None, batch_size=64, shuffle=True, **kwargs):
         """
-        Uses:
-            self.update_weights(batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
-            self.show(args)
-            self.train() # provided by pytorch's `nn.Module`
-        
-        Examples:
-            model.fit(
-                dataset=torchvision.datasets.MNIST(<mnist args>),
-                epochs=4,
-                batch_size=64,
-            )
+            Uses:
+                self.update_weights(batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
+                self.show(args)
+                self.train() # provided by pytorch's `nn.Module`
             
-            model.fit(
-                loader=torch.utils.data.DataLoader(<dataloader args>),
-                epochs=4,
-            )
+            Examples:
+                model.fit(
+                    dataset=torchvision.datasets.MNIST(<mnist args>),
+                    epochs=4,
+                    batch_size=64,
+                )
+                
+                model.fit(
+                    loader=torch.utils.data.DataLoader(<dataloader args>),
+                    epochs=4,
+                )
         """
         # TODO: test input_output_pairs
         if input_output_pairs is not None:
@@ -173,7 +173,7 @@ class Network:
             input_generator        = (each for each, _ in input_output_pairs)
             ideal_output_generator = (each for _   , each in input_output_pairs)
             seperated_batches = zip(bundle(input_generator, batch_size), bundle(ideal_output_generator, batch_size))
-            loader = ((to_tensor(each_input_batch), to_tensor(each_output_batch)) for each_input_batch, each_output_batch in seperated_batches)
+            loader = tuple((to_tensor(each_input_batch), to_tensor(each_output_batch)) for each_input_batch, each_output_batch in seperated_batches)
             # NOTE: shuffling isn't possible when there is no length (and generators don't have lengths). So maybe think of an alternative
         else:
             # convert the dataset into a loader (assumming loader was not given)
@@ -186,17 +186,19 @@ class Network:
         
         train_losses = []
         self.train()
-        for epoch_index in range(kwargs.get("max_epochs", 1)):
+        max_epochs = kwargs.get("max_epochs", 1)
+        accumulated_batches = 0
+        try:
+            total = len(loader)
+        except Exception as error:
+            total = "?"
+        for epoch_index in range(max_epochs):
             for batch_index, (batch_of_inputs, batch_of_ideal_outputs) in enumerate(loader):
+                accumulated_batches += 1
                 loss = self.update_weights(batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
                 yield to_pure(loss)
-                if batch_index % self.log_interval == 0:
-                    count = batch_index * len(batch_of_inputs)
-                    try:
-                        total = len(loader)
-                    except Exception as error:
-                        total = "?"
-                    self.show(f"\r[Train]: epoch: {epoch_index:>4}, batch: {count:>10}/{total}", sep='', end='', flush=True)
+                if batch_index+1 == total or batch_index % self.log_interval == 0:
+                    self.show(f"\r[Train]: overall: {round(accumulated_batches/(total*max_epochs)*100):>3}%, epoch: {epoch_index:>4}, batch: {batch_index+1:>10}/{total}", sep='', end='', flush=True)
                 
                     # TODO: add/allow checkpoints
         self.show()
