@@ -465,7 +465,7 @@ class PhosTransferClassifier(nn.Module, SimpleSerial):
         # 
         self.add_module(f'encoder', coder.encoder)
         for layer_index, layer_size in enumerate(linear_steps(start=input_size, end=output_size, quantity=self.number_of_layers-1)):
-            self.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, layer_size))
+            self.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, int(self.size_of_last_layer*(2/3))))
             self.add_module(f'fc{layer_index}_activation', self.activation_function)
         self.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, product(self.output_shape)))
         self.add_module(f'fc{layer_index+1}_activation', self.final_activation_function)
