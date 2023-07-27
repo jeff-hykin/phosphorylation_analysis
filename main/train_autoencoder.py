@@ -467,7 +467,7 @@ class PhosTransferClassifier(nn.Module, SimpleSerial):
         Network.default_setup(self, config)
         self._config = config = {
             **dict(
-                log_interval=100,
+                log_interval=10,
             ),
             **config,
         }
@@ -745,10 +745,10 @@ class AutoEncoderHelpers:
                             )
                         )
                         
-                        print(f'''fold:{fold_index:>2}, average_training_loss    = {average_training_loss}''')
-                        print(f'''fold:{fold_index:>2}, average_validation_loss  = {average_validation_loss}''')
-                        print(f'''fold:{fold_index:>2}, validation_correct_count = {validation_correct_count}''')
-                        print(f'''fold:{fold_index:>2}, validation_accuracy      = {validation_accuracy}''')
+                        # print(f'''fold:{fold_index:>2}, average_training_loss    = {average_training_loss}''')
+                        # print(f'''fold:{fold_index:>2}, average_validation_loss  = {average_validation_loss}''')
+                        # print(f'''fold:{fold_index:>2}, validation_correct_count = {validation_correct_count}''')
+                        # print(f'''fold:{fold_index:>2}, validation_accuracy      = {validation_accuracy}''')
                         
                         if average_validation_loss*(1 - validation_threshold) > average_training_loss:
                             print(f'''    stopping training early: epoch_index:{epoch_index}, batch_index:{batch_index}''')
@@ -774,7 +774,7 @@ if True:
         positive_outputs = tuple(1 for each in positive_inputs)
         print("loaded positive_examples")
 
-    truncate_size = 5_000
+    truncate_size = 5_000_000
     X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
     y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
 
@@ -799,6 +799,7 @@ fold_metrics = AutoEncoderHelpers.evaluate_phos_classifier(
 )
 import pandas
 print(pandas.DataFrame(fold_metrics))
+pandas.to_csv(info.absolute_path_to.transfer_autoencoder_results)
 
 # 
     # TODO:

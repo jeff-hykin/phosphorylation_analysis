@@ -15,6 +15,7 @@
         prev_parameters: ./prev_parameters.json
         autoencoder_checker_cache: ./cache.ignore/autoencoder_parameter_check.json
         prev_autoencoder: ./cache.ignore/autoencoder.pickle
+        transfer_autoencoder_results: ./transfer_autoencoder_results.csv
     
     todo:
         - dont add plant features
@@ -59,7 +60,7 @@
                 momentum: 0.5
                 
             autoencoder_hyperparameters:
-                max_epochs: 1
+                max_epochs: 10
                 batch_size: 64
                 latent_size: 30
                 number_of_layers: 3
