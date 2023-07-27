@@ -240,13 +240,23 @@ class Encoder(nn.Module, SimpleSerial):
         # options
         # 
         Network.default_setup(self, config)
-        self.input_shape              = config.get('input_shape'        , (400, ))
-        self.output_shape             = config.get('output_shape'       , (10,))
-        self.batch_size               = config.get('batch_size'         , 64  )
-        self.number_of_layers         = config.get('number_of_layers'   , 3)
-        self.activation_function_eval = config.get('activation_function_eval', "nn.ReLU()")
-        self.loss_function_eval       = config.get('loss_function_eval', "F.mse_loss")
-        self._config = config
+        self._config = {
+            **dict(
+                input_shape= (400, ),
+                output_shape= (10,),
+                batch_size= 64  ,
+                number_of_layers= 3,
+                activation_function_eval= "nn.ReLU()",
+                loss_function_eval= "F.mse_loss",
+            ),
+            **config,
+        }
+        self.input_shape              = config['input_shape']
+        self.output_shape             = config['output_shape']
+        self.batch_size               = config['batch_size']
+        self.number_of_layers         = config['number_of_layers']
+        self.activation_function_eval = config['activation_function_eval']
+        self.loss_function_eval       = config['loss_function_eval']
         
         self.activation_function = eval(self.activation_function_eval, globals(), globals())
         self.loss_function       = Network.wrap_loss_function(self,eval(self.loss_function_eval, globals(), globals()))
@@ -284,12 +294,23 @@ class Decoder(nn.Module, SimpleSerial):
         # options
         # 
         Network.default_setup(self, config)
-        self.input_shape      = config.get("input_shape"      , (10,))
-        self.output_shape     = config.get("output_shape"     , (400, ))
-        self.number_of_layers = config.get("number_of_layers" , 3)
-        self.activation_function_eval = config.get('activation_function_eval', "nn.ReLU()")
-        self.loss_function_eval       = config.get('loss_function_eval', "F.mse_loss")
-        self._config = config
+        self._config = {
+            **dict(
+                input_shape= (10, ),
+                output_shape= (400,),
+                batch_size= 64  ,
+                number_of_layers= 3,
+                activation_function_eval= "nn.ReLU()",
+                loss_function_eval= "F.mse_loss",
+            ),
+            **config,
+        }
+        self.input_shape              = config['input_shape']
+        self.output_shape             = config['output_shape']
+        self.batch_size               = config['batch_size']
+        self.number_of_layers         = config['number_of_layers']
+        self.activation_function_eval = config['activation_function_eval']
+        self.loss_function_eval       = config['loss_function_eval']
         
         self.activation_function = eval(self.activation_function_eval, globals(), globals())
         self.loss_function       = Network.wrap_loss_function(self,eval(self.loss_function_eval, globals(), globals()))
@@ -307,8 +328,6 @@ class Decoder(nn.Module, SimpleSerial):
         # support (optimizer, loss)
         # 
         self.to(self.hardware)
-        # create an optimizer
-        self.loss_function = nn.MSELoss()
     
     @property
     def size_of_last_layer(self):
@@ -330,17 +349,29 @@ class AutoEncoder(nn.Module, SimpleSerial):
         # options
         # 
         Network.default_setup(self, config)
-        self.input_shape              = config.get('input_shape'        , (400, ))
-        self.latent_shape             = config.get('latent_shape'       , (30,))
-        self.output_shape             = config.get('output_shape'       , self.input_shape)
-        self.learning_rate            = config.get('learning_rate'      , 0.01)
-        self.momentum                 = config.get('momentum'           , 0.5 )
-        self.log_interval             = config.get('log_interval'       , 100 )
-        self.number_of_layers         = config.get('number_of_layers'   , 3)
-        self.activation_function_eval = config.get('activation_function_eval', "nn.ReLU()")
-        self.loss_function_eval       = config.get('loss_function_eval', "F.mse_loss")
-        self._config = config
+        self._config = {
+            **dict(
+                input_shape=(400, ),
+                latent_shape=(30,),
+                learning_rate=0.01,
+                momentum=0.5,
+                log_interval=100 ,
+                number_of_layers=3,
+                activation_function_eval="nn.ReLU()",
+                loss_function_eval="F.mse_loss",
+            ),
+            **config,
+        }
+        self.input_shape              = config['input_shape']
+        self.latent_shape             = config['latent_shape']
+        self.learning_rate            = config['learning_rate']
+        self.momentum                 = config['momentum']
+        self.log_interval             = config['log_interval']
+        self.number_of_layers         = config['number_of_layers']
+        self.activation_function_eval = config['activation_function_eval']
+        self.loss_function_eval       = config['loss_function_eval']
         
+        self.output_shape             = config['input_shape']
         self.activation_function = eval(self.activation_function_eval, globals(), globals())
         self.loss_function       = Network.wrap_loss_function(self,eval(self.loss_function_eval, globals(), globals()))
         
@@ -375,6 +406,84 @@ class AutoEncoder(nn.Module, SimpleSerial):
         batch_of_inputs = to_tensor(batch_of_inputs)
         batch_of_actual_outputs = self.forward(batch_of_inputs)
         return self.loss_function(batch_of_actual_outputs, batch_of_ideal_outputs)
+        
+    def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
+        return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
+
+def linear_steps(*, start, end, quantity):
+    """
+    assert [4, 11, 18, 24, 31] == list(linear_steps(start=4, end=31, quantity=5))
+    """
+    import math
+    assert quantity > 0
+    quantity = math.ceil(quantity)
+    if round(start) == round(end):
+        for each in range(quantity):
+            yield start
+    else:
+        x0 = 1
+        x1 = quantity
+        y0 = start
+        y1 = end
+        generator = lambda x: y0 if (x1 - x0) == 0 else y0 + (y1 - y0) / (x1 - x0) * (x - x0)
+        for x in range(quantity):
+            yield round(generator(x+1))
+
+class PhosTransferClassifier(nn.Module, SimpleSerial):
+    def __init__(self, **config):
+        super(PhosTransferClassifier, self).__init__()
+        # 
+        # options
+        # 
+        Network.default_setup(self, config)
+        self._config = {
+            **dict(
+                output_shape=(400, ),
+                number_of_layers=3,
+                activation_function_eval="nn.ReLU()",
+                final_activation_function_eval="nn.ReLU()",
+                loss_function_eval="F.mse_loss",
+            ),
+            **config,
+        }
+        coder = AutoEncoder.from_serial_form(config["seralized_coder"])
+        
+        self.input_shape                    = coder.encoder.input_shape
+        self.output_shape                   = config["output_shape"]
+        self.number_of_layers               = config["number_of_layers"]
+        self.activation_function_eval       = config['activation_function_eval']
+        self.final_activation_function_eval = config['final_activation_function_eval']
+        self.loss_function_eval             = config['loss_function_eval']
+        
+        self.activation_function       = eval(self.activation_function_eval, globals(), globals())
+        self.final_activation_function = eval(self.final_activation_function_eval, globals(), globals())
+        self.loss_function             = Network.wrap_loss_function(self,eval(self.loss_function_eval, globals(), globals()))
+        output_size = product(self.output_shape)
+        
+        # 
+        # layers
+        # 
+        self.add_module(f'encoder', coder.encoder)
+        for layer_index, layer_size in enumerate(linear_steps(start=input_size, end=output_size, quantity=self.number_of_layers-1)):
+            self.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, layer_size))
+            self.add_module(f'fc{layer_index}_activation', self.activation_function)
+        self.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, product(self.output_shape)))
+        self.add_module(f'fc{layer_index+1}_activation', self.final_activation_function)
+        
+        # 
+        # support (optimizer, loss)
+        # 
+        self.to(self.hardware)
+    
+    @property
+    def size_of_last_layer(self):
+        return product(self.input_shape if len(self._modules) == 0 else layer_output_shapes(self._modules.values(), self.input_shape)[-1])
+        
+    def forward(self, input_data):
+        return Network.default_forward(self, input_data)
+    
+    def update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index):
+        return Network.default_update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
         
     def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
         return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
@@ -488,6 +597,14 @@ class AutoEncoderHelpers:
         
         return coder.encoder.forward(phos_x).detach().numpy()
 
+    def create_nn_from_coder():
+        coder = AutoEncoder.from_serial_form(
+            AutoEncoderHelpers.train_autoencoder(
+                x=autoencoder_train_x,
+                hyperparameters=LazyDict(info.config.autoencoder_hyperparameters),
+            )
+        )
+        
 
 # 
 # read data
@@ -511,7 +628,6 @@ if True:
     print(f'''sum(y) = {sum(y)}''')
     
 transformed_x = AutoEncoderHelpers.transform_phos_data(phos_x=X, autoencoder_train_x=X)
-print(f'''transformed_x = {transformed_x}''')
 
 # 
     # TODO:
