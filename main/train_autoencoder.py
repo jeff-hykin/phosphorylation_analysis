@@ -459,11 +459,6 @@ class AutoEncoderHelpers:
             Summary:
                 will only retrain if the features changed
         """
-        coder = None
-        if not AutoEncoderHelpers.did_features_change():
-            if FS.exists(info.absolute_path_to.prev_autoencoder):
-                coder = AutoEncoder.from_serial_form(large_pickle_load(info.absolute_path_to.prev_autoencoder))
-        
         coder = AutoEncoder(
             input_shape=(len(x[0]), ),
             latent_shape=(hyperparameters.latent_size, ),
@@ -491,7 +486,7 @@ class AutoEncoderHelpers:
             )
         )
         
-        return coder.encoder.forward(phos_x).numpy()
+        return coder.encoder.forward(phos_x).detach().numpy()
 
 
 # 

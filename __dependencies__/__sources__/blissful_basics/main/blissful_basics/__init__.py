@@ -1228,7 +1228,6 @@ if True:
             so that they can be loaded in later
             ~4Gb max value
             """
-            import file_system_py as FS
             import pickle
             bytes_out = pickle.dumps(variable, protocol=4)
             max_bytes = 2**31 - 1
