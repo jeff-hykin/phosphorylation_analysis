@@ -765,22 +765,26 @@ class AutoEncoderHelpers:
 # read data
 # 
 if True:
-    with open(info.absolute_path_to.negative_examples, 'r') as in_file:
-        negative_inputs = json.load(in_file)
-        negative_outputs = tuple(-1 for each in negative_inputs)
-        print("loaded negative_examples")
-    with open(info.absolute_path_to.positive_examples, 'r') as in_file:
-        positive_inputs = json.load(in_file)
-        positive_outputs = tuple(1 for each in positive_inputs)
-        print("loaded positive_examples")
+    @cache(watch_filepaths=lambda *args: [ info.absolute_path_to.negative_examples, info.absolute_path_to.positive_examples ])
+    def read_data(truncate_size):
+        with open(info.absolute_path_to.negative_examples, 'r') as in_file:
+            negative_inputs = json.load(in_file)
+            negative_outputs = tuple(-1 for each in negative_inputs)
+            print("loaded negative_examples")
+        with open(info.absolute_path_to.positive_examples, 'r') as in_file:
+            positive_inputs = json.load(in_file)
+            positive_outputs = tuple(1 for each in positive_inputs)
+            print("loaded positive_examples")
 
-    truncate_size = 5_000
-    X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
-    y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
+        X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
+        y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
 
-    sample_size = len(X)
-    print(f'''len(y) = {len(y)}''')
-    print(f'''sum(y) = {sum(y)}''')
+        sample_size = len(X)
+        print(f'''len(y) = {len(y)}''')
+        print(f'''sum(y) = {sum(y)}''')
+        return X, y
+    
+    X, y = read_data(5000000)
     
 # transformed_x = AutoEncoderHelpers.transform_phos_data(phos_x=X, autoencoder_train_x=X)
 
@@ -798,8 +802,9 @@ fold_metrics = AutoEncoderHelpers.evaluate_phos_classifier(
     ),
 )
 import pandas
-print(pandas.DataFrame(fold_metrics))
-pandas.to_csv(info.absolute_path_to.transfer_autoencoder_results)
+fold_metrics = pandas.DataFrame(fold_metrics)
+print(fold_metrics)
+fold_metrics.to_csv(info.absolute_path_to.transfer_autoencoder_results)
 
 # 
     # TODO:
