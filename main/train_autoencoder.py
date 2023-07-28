@@ -523,9 +523,9 @@ class PhosTransferClassifier(nn.Module, SimpleSerial):
         return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
     
     def get_accuracies_and_loss(self, inputs, outputs):
-        model_test_outputs = self.forward(to_tensor(inputs))
+        model_test_outputs = self.forward(to_tensor(inputs).to(self.hardware))
         guesses = (torch.round(model_test_outputs+1/2).squeeze()*2)-1 # converting from (-1 to 1) to (0 to 1) and then back to (-1 to 1)
-        outputs = to_tensor(outputs)
+        outputs = to_tensor(outputs).to(self.hardware)
         
         flags_for_positive_inputs = inputs == 1
         positive_guesses, positive_outputs = guesses[flags_for_positive_inputs], outputs[flags_for_positive_inputs]
@@ -774,7 +774,7 @@ if True:
         positive_outputs = tuple(1 for each in positive_inputs)
         print("loaded positive_examples")
 
-    truncate_size = 5_000_000
+    truncate_size = 5_000
     X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
     y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
 
