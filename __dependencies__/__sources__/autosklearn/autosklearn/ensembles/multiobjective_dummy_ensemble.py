@@ -7,18 +7,18 @@ import warnings
 import numpy as np
 from sklearn.exceptions import NotFittedError
 
-from autosklearn.automl_common.common.utils.backend import Backend
-from autosklearn.constants import TASK_TYPES
-from autosklearn.data.validation import SUPPORTED_FEAT_TYPES
-from autosklearn.ensemble_building.run import Run
-from autosklearn.ensembles.abstract_ensemble import (
+from .automl_common.common.utils.backend import Backend
+from .constants import TASK_TYPES
+from .data.validation import SUPPORTED_FEAT_TYPES
+from .ensemble_building.run import Run
+from .ensembles.abstract_ensemble import (
     AbstractEnsemble,
     AbstractMultiObjectiveEnsemble,
 )
-from autosklearn.ensembles.singlebest_ensemble import SingleModelEnsemble
-from autosklearn.metrics import Scorer, calculate_losses
-from autosklearn.pipeline.base import BasePipeline
-from autosklearn.util.multiobjective import pareto_front
+from .ensembles.singlebest_ensemble import SingleModelEnsemble
+from .metrics import Scorer, calculate_losses
+from .pipeline.base import BasePipeline
+from .util.multiobjective import pareto_front
 
 
 class MultiObjectiveDummyEnsemble(AbstractMultiObjectiveEnsemble):

@@ -5,11 +5,11 @@ import scipy.sparse
 from ConfigSpace.configuration_space import ConfigurationSpace
 from sklearn.preprocessing import OneHotEncoder as DenseOneHotEncoder
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.base import DATASET_PROPERTIES_TYPE, PIPELINE_DATA_DTYPE
-from autosklearn.pipeline.components.base import AutoSklearnPreprocessingAlgorithm
-from autosklearn.pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
-from autosklearn.pipeline.implementations.SparseOneHotEncoder import SparseOneHotEncoder
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.base import DATASET_PROPERTIES_TYPE, PIPELINE_DATA_DTYPE
+from .pipeline.components.base import AutoSklearnPreprocessingAlgorithm
+from .pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
+from .pipeline.implementations.SparseOneHotEncoder import SparseOneHotEncoder
 
 
 class OneHotEncoder(AutoSklearnPreprocessingAlgorithm):

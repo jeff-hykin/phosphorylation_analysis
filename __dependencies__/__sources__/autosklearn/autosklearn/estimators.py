@@ -28,20 +28,20 @@ from sklearn.utils.multiclass import type_of_target
 from smac.runhistory.runhistory import RunInfo, RunValue
 from typing_extensions import Literal
 
-from autosklearn.automl import AutoML, AutoMLClassifier, AutoMLRegressor
-from autosklearn.data.validation import (
+from .automl import AutoML, AutoMLClassifier, AutoMLRegressor
+from .data.validation import (
     SUPPORTED_FEAT_TYPES,
     SUPPORTED_TARGET_TYPES,
     convert_if_sparse,
 )
-from autosklearn.ensembles.abstract_ensemble import AbstractEnsemble
-from autosklearn.ensembles.ensemble_selection import EnsembleSelection
-from autosklearn.ensembles.multiobjective_dummy_ensemble import (
+from .ensembles.abstract_ensemble import AbstractEnsemble
+from .ensembles.ensemble_selection import EnsembleSelection
+from .ensembles.multiobjective_dummy_ensemble import (
     MultiObjectiveDummyEnsemble,
 )
-from autosklearn.metrics import Scorer
-from autosklearn.pipeline.base import BasePipeline
-from autosklearn.util.smac_wrap import SMACCallback
+from .metrics import Scorer
+from .pipeline.base import BasePipeline
+from .util.smac_wrap import SMACCallback
 
 
 class AutoSklearnEstimator(BaseEstimator):

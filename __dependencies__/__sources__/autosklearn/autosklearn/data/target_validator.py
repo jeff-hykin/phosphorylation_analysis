@@ -14,7 +14,7 @@ from sklearn.exceptions import NotFittedError
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.utils.multiclass import type_of_target
 
-from autosklearn.util.logging_ import PickableLoggerAdapter
+from .util.logging_ import PickableLoggerAdapter
 
 SUPPORTED_TARGET_TYPES = Union[List, pd.Series, pd.DataFrame, np.ndarray, spmatrix]
 SUPPORTED_XDATA_TYPES = Union[pd.Series, pd.DataFrame, np.ndarray, spmatrix]

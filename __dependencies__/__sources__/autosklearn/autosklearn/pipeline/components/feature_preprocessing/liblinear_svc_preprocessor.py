@@ -8,10 +8,10 @@ from ConfigSpace.hyperparameters import (
     UniformFloatHyperparameter,
 )
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.components.base import AutoSklearnPreprocessingAlgorithm
-from autosklearn.pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
-from autosklearn.util.common import check_for_bool, check_none
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.components.base import AutoSklearnPreprocessingAlgorithm
+from .pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
+from .util.common import check_for_bool, check_none
 
 
 class LibLinear_Preprocessor(AutoSklearnPreprocessingAlgorithm):

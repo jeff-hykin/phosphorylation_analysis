@@ -2,12 +2,12 @@ from typing import Dict, Optional, Tuple, Union
 
 import numpy as np
 
-from autosklearn.pipeline.base import DATASET_PROPERTIES_TYPE
-from autosklearn.pipeline.components.base import AutoSklearnPreprocessingAlgorithm
-from autosklearn.pipeline.components.data_preprocessing.rescaling.abstract_rescaling import (  # noqa: E501
+from .pipeline.base import DATASET_PROPERTIES_TYPE
+from .pipeline.components.base import AutoSklearnPreprocessingAlgorithm
+from .pipeline.components.data_preprocessing.rescaling.abstract_rescaling import (  # noqa: E501
     Rescaling,
 )
-from autosklearn.pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
+from .pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
 
 
 class NormalizerComponent(Rescaling, AutoSklearnPreprocessingAlgorithm):

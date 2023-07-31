@@ -4,18 +4,18 @@ import numpy as np
 from ConfigSpace.configuration_space import Configuration, ConfigurationSpace
 from sklearn.base import BaseEstimator
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.base import DATASET_PROPERTIES_TYPE, BasePipeline
-from autosklearn.pipeline.components.data_preprocessing import (
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.base import DATASET_PROPERTIES_TYPE, BasePipeline
+from .pipeline.components.data_preprocessing import (
     rescaling as rescaling_components,
 )
-from autosklearn.pipeline.components.data_preprocessing.imputation.numerical_imputation import (  # noqa: E501
+from .pipeline.components.data_preprocessing.imputation.numerical_imputation import (  # noqa: E501
     NumericalImputation,
 )
-from autosklearn.pipeline.components.data_preprocessing.variance_threshold.variance_threshold import (  # noqa: E501
+from .pipeline.components.data_preprocessing.variance_threshold.variance_threshold import (  # noqa: E501
     VarianceThreshold,
 )
-from autosklearn.pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
+from .pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
 
 
 class NumericalPreprocessingPipeline(BasePipeline):

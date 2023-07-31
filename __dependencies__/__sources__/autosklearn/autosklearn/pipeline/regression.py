@@ -8,14 +8,14 @@ from ConfigSpace.configuration_space import Configuration, ConfigurationSpace
 from ConfigSpace.forbidden import ForbiddenAndConjunction, ForbiddenEqualsClause
 from sklearn.base import RegressorMixin
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.base import BasePipeline
-from autosklearn.pipeline.components import (
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.base import BasePipeline
+from .pipeline.components import (
     feature_preprocessing as feature_preprocessing_components,
 )
-from autosklearn.pipeline.components import regression as regression_components
-from autosklearn.pipeline.components.data_preprocessing import DataPreprocessorChoice
-from autosklearn.pipeline.constants import SPARSE
+from .pipeline.components import regression as regression_components
+from .pipeline.components.data_preprocessing import DataPreprocessorChoice
+from .pipeline.constants import SPARSE
 
 
 class SimpleRegressionPipeline(RegressorMixin, BasePipeline):

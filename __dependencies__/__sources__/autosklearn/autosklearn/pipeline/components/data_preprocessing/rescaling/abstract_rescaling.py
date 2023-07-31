@@ -5,9 +5,9 @@ from ConfigSpace.configuration_space import ConfigurationSpace
 from sklearn.base import BaseEstimator
 from sklearn.exceptions import NotFittedError
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.base import DATASET_PROPERTIES_TYPE, PIPELINE_DATA_DTYPE
-from autosklearn.pipeline.components.base import AutoSklearnPreprocessingAlgorithm
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.base import DATASET_PROPERTIES_TYPE, PIPELINE_DATA_DTYPE
+from .pipeline.components.base import AutoSklearnPreprocessingAlgorithm
 
 
 class Rescaling(object):

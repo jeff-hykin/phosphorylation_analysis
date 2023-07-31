@@ -5,7 +5,7 @@ from distutils.version import LooseVersion
 
 import pkg_resources
 
-from autosklearn.util import RE_PATTERN
+from ..util import RE_PATTERN
 
 
 def verify_packages(packages: Optional[Union[str, List[str]]]) -> None:

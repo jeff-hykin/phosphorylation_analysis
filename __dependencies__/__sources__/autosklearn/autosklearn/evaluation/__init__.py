@@ -40,11 +40,11 @@ import autosklearn.evaluation.test_evaluator
 import autosklearn.evaluation.train_evaluator
 import autosklearn.evaluation.util
 import autosklearn.pipeline.components
-from autosklearn.automl_common.common.utils.backend import Backend
-from autosklearn.evaluation.train_evaluator import TYPE_ADDITIONAL_INFO
-from autosklearn.metrics import Scorer
-from autosklearn.util.logging_ import PickableLoggerAdapter, get_named_client_logger
-from autosklearn.util.parallel import preload_modules
+from .automl_common.common.utils.backend import Backend
+from .evaluation.train_evaluator import TYPE_ADDITIONAL_INFO
+from .metrics import Scorer
+from .util.logging_ import PickableLoggerAdapter, get_named_client_logger
+from .util.parallel import preload_modules
 
 
 def fit_predict_try_except_decorator(

@@ -4,7 +4,7 @@ from typing import Any, Dict, Union
 import numpy as np
 import scipy.sparse
 
-from autosklearn.pipeline.components.data_preprocessing.feature_type import (
+from .pipeline.components.data_preprocessing.feature_type import (
     FeatTypeSplit,
 )
 

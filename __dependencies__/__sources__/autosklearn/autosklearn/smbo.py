@@ -23,7 +23,7 @@ from smac.tae.dask_runner import DaskParallelRunner
 from smac.tae.serial_runner import SerialRunner
 
 import autosklearn.metalearning
-from autosklearn.constants import (
+from .constants import (
     BINARY_CLASSIFICATION,
     CLASSIFICATION_TASKS,
     MULTICLASS_CLASSIFICATION,
@@ -32,19 +32,19 @@ from autosklearn.constants import (
     REGRESSION,
     TASK_TYPES_TO_STRING,
 )
-from autosklearn.data.abstract_data_manager import AbstractDataManager
-from autosklearn.ensemble_building import EnsembleBuilderManager
-from autosklearn.evaluation import ExecuteTaFuncWithQueue, get_cost_of_crash
-from autosklearn.metalearning.metafeatures.metafeatures import (
+from .data.abstract_data_manager import AbstractDataManager
+from .ensemble_building import EnsembleBuilderManager
+from .evaluation import ExecuteTaFuncWithQueue, get_cost_of_crash
+from .metalearning.metafeatures.metafeatures import (
     calculate_all_metafeatures_encoded_labels,
     calculate_all_metafeatures_with_labels,
 )
-from autosklearn.metalearning.metalearning.meta_base import MetaBase
-from autosklearn.metalearning.mismbo import suggest_via_metalearning
-from autosklearn.metrics import Scorer
-from autosklearn.util.logging_ import get_named_client_logger
-from autosklearn.util.parallel import preload_modules
-from autosklearn.util.stopwatch import StopWatch
+from .metalearning.metalearning.meta_base import MetaBase
+from .metalearning.mismbo import suggest_via_metalearning
+from .metrics import Scorer
+from .util.logging_ import get_named_client_logger
+from .util.parallel import preload_modules
+from .util.stopwatch import StopWatch
 
 EXCLUDE_META_FEATURES_CLASSIFICATION = {
     "Landmark1NN",

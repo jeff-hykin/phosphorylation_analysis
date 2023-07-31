@@ -7,12 +7,12 @@ import os
 import numpy as np
 from smac.runhistory.runhistory import RunHistory
 
-from autosklearn.automl_common.common.utils.backend import Backend
-from autosklearn.data.validation import SUPPORTED_FEAT_TYPES
-from autosklearn.ensemble_building.run import Run
-from autosklearn.ensembles.abstract_ensemble import AbstractEnsemble
-from autosklearn.metrics import Scorer, calculate_losses
-from autosklearn.pipeline.base import BasePipeline
+from .automl_common.common.utils.backend import Backend
+from .data.validation import SUPPORTED_FEAT_TYPES
+from .ensemble_building.run import Run
+from .ensembles.abstract_ensemble import AbstractEnsemble
+from .metrics import Scorer, calculate_losses
+from .pipeline.base import BasePipeline
 
 
 class AbstractSingleModelEnsemble(AbstractEnsemble):

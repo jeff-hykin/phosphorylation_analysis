@@ -5,15 +5,15 @@ import numpy as np
 import pandas as pd
 from scipy import sparse
 
-from autosklearn.constants import (
+from .constants import (
     BINARY_CLASSIFICATION,
     MULTICLASS_CLASSIFICATION,
     MULTILABEL_CLASSIFICATION,
     MULTIOUTPUT_REGRESSION,
     REGRESSION,
 )
-from autosklearn.data.abstract_data_manager import AbstractDataManager
-from autosklearn.data.validation import SUPPORTED_FEAT_TYPES, SUPPORTED_TARGET_TYPES
+from .data.abstract_data_manager import AbstractDataManager
+from .data.validation import SUPPORTED_FEAT_TYPES, SUPPORTED_TARGET_TYPES
 
 
 class XYDataManager(AbstractDataManager):

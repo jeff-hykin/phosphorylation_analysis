@@ -3,7 +3,7 @@ import itertools
 import numpy as np
 from ConfigSpace.forbidden import ForbiddenAndConjunction, ForbiddenEqualsClause
 
-from autosklearn.pipeline.constants import (
+from .pipeline.constants import (
     DENSE,
     INPUT,
     PREDICTIONS,

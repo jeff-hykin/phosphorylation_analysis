@@ -9,9 +9,9 @@ from scipy.sparse import spmatrix
 from sklearn.base import BaseEstimator
 from sklearn.exceptions import NotFittedError
 
-from autosklearn.data.feature_validator import SUPPORTED_FEAT_TYPES, FeatureValidator
-from autosklearn.data.target_validator import SUPPORTED_TARGET_TYPES, TargetValidator
-from autosklearn.util.logging_ import get_named_client_logger
+from .data.feature_validator import SUPPORTED_FEAT_TYPES, FeatureValidator
+from .data.target_validator import SUPPORTED_TARGET_TYPES, TargetValidator
+from .util.logging_ import get_named_client_logger
 
 
 def convert_if_sparse(

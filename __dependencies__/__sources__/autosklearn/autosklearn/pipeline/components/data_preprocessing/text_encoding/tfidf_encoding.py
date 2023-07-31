@@ -10,11 +10,11 @@ from ConfigSpace.configuration_space import ConfigurationSpace
 from scipy.sparse import hstack
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.base import DATASET_PROPERTIES_TYPE, PIPELINE_DATA_DTYPE
-from autosklearn.pipeline.components.base import AutoSklearnPreprocessingAlgorithm
-from autosklearn.pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
-from autosklearn.util.common import check_for_bool
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.base import DATASET_PROPERTIES_TYPE, PIPELINE_DATA_DTYPE
+from .pipeline.components.base import AutoSklearnPreprocessingAlgorithm
+from .pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
+from .util.common import check_for_bool
 
 
 class TfidfEncoder(AutoSklearnPreprocessingAlgorithm):

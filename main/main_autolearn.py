@@ -2,16 +2,10 @@ import json
 from os.path import join
 from random import shuffle
 
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
-from sklearn.svm import SVC
-from sklearn.neural_network import MLPClassifier
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.datasets import make_classification
-from autosklearn.classification import AutoSklearnClassifier
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy
@@ -19,6 +13,7 @@ import numpy
 import math
 from random import random, sample, choices, shuffle
 
+from __dependencies__.autosklearn.classification import AutoSklearnClassifier
 from __dependencies__.quik_config import find_and_load
 from __dependencies__.blissful_basics import Csv, FS
 from generic_tools.cross_validation import cross_validation

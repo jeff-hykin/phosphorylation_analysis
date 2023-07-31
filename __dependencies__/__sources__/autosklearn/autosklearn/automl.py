@@ -56,8 +56,8 @@ from smac.stats.stats import Stats
 from smac.tae import StatusType
 from typing_extensions import Literal
 
-from autosklearn.automl_common.common.utils.backend import Backend, create
-from autosklearn.constants import (
+from .automl_common.common.utils.backend import Backend, create
+from .constants import (
     BINARY_CLASSIFICATION,
     CLASSIFICATION_TASKS,
     MULTICLASS_CLASSIFICATION,
@@ -66,63 +66,63 @@ from autosklearn.constants import (
     REGRESSION,
     REGRESSION_TASKS,
 )
-from autosklearn.data.validation import (
+from .data.validation import (
     SUPPORTED_FEAT_TYPES,
     SUPPORTED_TARGET_TYPES,
     InputValidator,
     convert_if_sparse,
 )
-from autosklearn.data.xy_data_manager import XYDataManager
-from autosklearn.ensemble_building import EnsembleBuilderManager
-from autosklearn.ensembles.abstract_ensemble import (
+from .data.xy_data_manager import XYDataManager
+from .ensemble_building import EnsembleBuilderManager
+from .ensembles.abstract_ensemble import (
     AbstractEnsemble,
     AbstractMultiObjectiveEnsemble,
 )
-from autosklearn.ensembles.ensemble_selection import EnsembleSelection
-from autosklearn.ensembles.singlebest_ensemble import SingleBestFromRunhistory
-from autosklearn.evaluation import ExecuteTaFuncWithQueue, get_cost_of_crash
-from autosklearn.evaluation.abstract_evaluator import _fit_and_suppress_warnings
-from autosklearn.evaluation.train_evaluator import TrainEvaluator, _fit_with_budget
-from autosklearn.metrics import (
+from .ensembles.ensemble_selection import EnsembleSelection
+from .ensembles.singlebest_ensemble import SingleBestFromRunhistory
+from .evaluation import ExecuteTaFuncWithQueue, get_cost_of_crash
+from .evaluation.abstract_evaluator import _fit_and_suppress_warnings
+from .evaluation.train_evaluator import TrainEvaluator, _fit_with_budget
+from .metrics import (
     Scorer,
     _validate_metrics,
     compute_single_metric,
     default_metric_for_task,
 )
-from autosklearn.pipeline.base import BasePipeline
-from autosklearn.pipeline.components.classification import ClassifierChoice
-from autosklearn.pipeline.components.data_preprocessing.categorical_encoding import (
+from .pipeline.base import BasePipeline
+from .pipeline.components.classification import ClassifierChoice
+from .pipeline.components.data_preprocessing.categorical_encoding import (
     OHEChoice,
 )
-from autosklearn.pipeline.components.data_preprocessing.minority_coalescense import (
+from .pipeline.components.data_preprocessing.minority_coalescense import (
     CoalescenseChoice,
 )
-from autosklearn.pipeline.components.data_preprocessing.rescaling import RescalingChoice
-from autosklearn.pipeline.components.feature_preprocessing import (
+from .pipeline.components.data_preprocessing.rescaling import RescalingChoice
+from .pipeline.components.feature_preprocessing import (
     FeaturePreprocessorChoice,
 )
-from autosklearn.pipeline.components.regression import RegressorChoice
-from autosklearn.smbo import AutoMLSMBO
-from autosklearn.util import RE_PATTERN, pipeline
-from autosklearn.util.dask import Dask, LocalDask, UserDask
-from autosklearn.util.data import (
+from .pipeline.components.regression import RegressorChoice
+from .smbo import AutoMLSMBO
+from .util import RE_PATTERN, pipeline
+from .util.dask import Dask, LocalDask, UserDask
+from .util.data import (
     DatasetCompressionSpec,
     default_dataset_compression_arg,
     reduce_dataset_size_if_too_large,
     supported_precision_reductions,
     validate_dataset_compression_arg,
 )
-from autosklearn.util.logging_ import (
+from .util.logging_ import (
     PicklableClientLogger,
     get_named_client_logger,
     setup_logger,
     start_log_server,
     warnings_to,
 )
-from autosklearn.util.parallel import preload_modules
-from autosklearn.util.progress_bar import ProgressBar
-from autosklearn.util.smac_wrap import SMACCallback, SmacRunCallback
-from autosklearn.util.stopwatch import StopWatch
+from .util.parallel import preload_modules
+from .util.progress_bar import ProgressBar
+from .util.smac_wrap import SMACCallback, SmacRunCallback
+from .util.stopwatch import StopWatch
 
 import unittest.mock
 

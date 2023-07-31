@@ -12,11 +12,11 @@ from ConfigSpace.hyperparameters import (
     UnParametrizedHyperparameter,
 )
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.components.base import AutoSklearnClassificationAlgorithm
-from autosklearn.pipeline.constants import DENSE, PREDICTIONS, SPARSE, UNSIGNED_DATA
-from autosklearn.pipeline.implementations.util import softmax
-from autosklearn.util.common import check_for_bool, check_none
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.components.base import AutoSklearnClassificationAlgorithm
+from .pipeline.constants import DENSE, PREDICTIONS, SPARSE, UNSIGNED_DATA
+from .pipeline.implementations.util import softmax
+from .util.common import check_for_bool, check_none
 
 
 class LibSVM_SVC(AutoSklearnClassificationAlgorithm):

@@ -6,8 +6,8 @@ from collections import OrderedDict
 from ConfigSpace.configuration_space import ConfigurationSpace
 from ConfigSpace.hyperparameters import CategoricalHyperparameter
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.base import PIPELINE_DATA_DTYPE
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.base import PIPELINE_DATA_DTYPE
 
 from ..base import (
     AutoSklearnChoice,

@@ -5,11 +5,11 @@ from typing import Any, Dict, List, Sequence, Tuple, Union
 
 import numpy as np
 
-from autosklearn.automl_common.common.utils.backend import Backend
-from autosklearn.data.validation import SUPPORTED_FEAT_TYPES
-from autosklearn.ensemble_building.run import Run
-from autosklearn.metrics import Scorer
-from autosklearn.pipeline.base import BasePipeline
+from .automl_common.common.utils.backend import Backend
+from .data.validation import SUPPORTED_FEAT_TYPES
+from .ensemble_building.run import Run
+from .metrics import Scorer
+from .pipeline.base import BasePipeline
 
 
 class AbstractEnsemble(ABC):

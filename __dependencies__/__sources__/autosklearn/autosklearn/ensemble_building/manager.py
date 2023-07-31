@@ -14,12 +14,12 @@ from smac.optimizer.smbo import SMBO
 from smac.runhistory.runhistory import RunInfo, RunValue
 from smac.tae.base import StatusType
 
-from autosklearn.automl_common.common.utils.backend import Backend
-from autosklearn.ensemble_building.builder import EnsembleBuilder
-from autosklearn.ensembles.abstract_ensemble import AbstractEnsemble
-from autosklearn.ensembles.ensemble_selection import EnsembleSelection
-from autosklearn.metrics import Scorer
-from autosklearn.util.logging_ import get_named_client_logger
+from .automl_common.common.utils.backend import Backend
+from .ensemble_building.builder import EnsembleBuilder
+from .ensembles.abstract_ensemble import AbstractEnsemble
+from .ensembles.ensemble_selection import EnsembleSelection
+from .metrics import Scorer
+from .util.logging_ import get_named_client_logger
 
 
 class EnsembleBuilderManager(IncorporateRunResultCallback):

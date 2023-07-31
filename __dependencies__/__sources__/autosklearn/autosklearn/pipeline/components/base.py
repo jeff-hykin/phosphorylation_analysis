@@ -8,8 +8,8 @@ from collections import OrderedDict
 
 from sklearn.base import BaseEstimator, TransformerMixin
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.constants import SPARSE
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.constants import SPARSE
 
 _addons = dict()  # type: Dict[str, 'ThirdPartyComponents']
 

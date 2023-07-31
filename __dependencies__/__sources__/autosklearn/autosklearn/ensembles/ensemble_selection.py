@@ -9,13 +9,13 @@ from collections import Counter
 import numpy as np
 from sklearn.utils import check_random_state
 
-from autosklearn.automl_common.common.utils.backend import Backend
-from autosklearn.constants import TASK_TYPES
-from autosklearn.data.validation import SUPPORTED_FEAT_TYPES
-from autosklearn.ensemble_building.run import Run
-from autosklearn.ensembles.abstract_ensemble import AbstractEnsemble
-from autosklearn.metrics import Scorer, calculate_losses
-from autosklearn.pipeline.base import BasePipeline
+from .automl_common.common.utils.backend import Backend
+from .constants import TASK_TYPES
+from .data.validation import SUPPORTED_FEAT_TYPES
+from .ensemble_building.run import Run
+from .ensembles.abstract_ensemble import AbstractEnsemble
+from .metrics import Scorer, calculate_losses
+from .pipeline.base import BasePipeline
 
 
 class EnsembleSelection(AbstractEnsemble):

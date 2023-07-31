@@ -7,13 +7,13 @@ import numpy as np
 from ConfigSpace import Configuration
 from smac.tae import StatusType
 
-from autosklearn.automl_common.common.utils.backend import Backend
-from autosklearn.evaluation.abstract_evaluator import (
+from .automl_common.common.utils.backend import Backend
+from .evaluation.abstract_evaluator import (
     AbstractEvaluator,
     _fit_and_suppress_warnings,
 )
-from autosklearn.metrics import Scorer, calculate_losses
-from autosklearn.pipeline.components.base import ThirdPartyComponents
+from .metrics import Scorer, calculate_losses
+from .pipeline.components.base import ThirdPartyComponents
 
 __all__ = ["eval_t", "TestEvaluator"]
 

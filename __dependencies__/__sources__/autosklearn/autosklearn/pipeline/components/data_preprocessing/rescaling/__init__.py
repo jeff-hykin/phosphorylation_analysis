@@ -7,9 +7,9 @@ from ConfigSpace.configuration_space import ConfigurationSpace
 from ConfigSpace.hyperparameters import CategoricalHyperparameter
 from sklearn.base import BaseEstimator
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.base import DATASET_PROPERTIES_TYPE, PIPELINE_DATA_DTYPE
-from autosklearn.pipeline.components.data_preprocessing.rescaling.abstract_rescaling import (  # noqa: E501
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.base import DATASET_PROPERTIES_TYPE, PIPELINE_DATA_DTYPE
+from .pipeline.components.data_preprocessing.rescaling.abstract_rescaling import (  # noqa: E501
     Rescaling,
 )
 

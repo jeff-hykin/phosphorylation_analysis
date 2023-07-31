@@ -19,7 +19,7 @@ import pandas as pd
 from scipy.sparse import spmatrix
 from sklearn.model_selection import train_test_split
 
-from autosklearn.evaluation.splitter import CustomStratifiedShuffleSplit
+from .evaluation.splitter import CustomStratifiedShuffleSplit
 
 # TODO: TypedDict with python 3.8
 #

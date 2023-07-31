@@ -10,7 +10,7 @@ import sklearn.metrics
 from sklearn.utils.multiclass import type_of_target
 from smac.utils.constants import MAXINT
 
-from autosklearn.constants import (
+from .constants import (
     BINARY_CLASSIFICATION,
     MULTICLASS_CLASSIFICATION,
     MULTILABEL_CLASSIFICATION,
@@ -19,7 +19,7 @@ from autosklearn.constants import (
     REGRESSION_TASKS,
     TASK_TYPES,
 )
-from autosklearn.data.target_validator import SUPPORTED_XDATA_TYPES
+from .data.target_validator import SUPPORTED_XDATA_TYPES
 
 from .util import sanitize_array
 

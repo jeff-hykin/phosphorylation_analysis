@@ -12,7 +12,7 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.utils import check_array
 from sklearn.utils.multiclass import type_of_target
 
-from autosklearn.pipeline.components.data_preprocessing.feature_type import (
+from .pipeline.components.data_preprocessing.feature_type import (
     FeatTypeSplit,
 )
 

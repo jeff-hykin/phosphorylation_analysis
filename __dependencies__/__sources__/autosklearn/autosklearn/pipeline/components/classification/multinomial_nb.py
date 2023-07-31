@@ -7,10 +7,10 @@ from ConfigSpace.hyperparameters import (
     UniformFloatHyperparameter,
 )
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.components.base import AutoSklearnClassificationAlgorithm
-from autosklearn.pipeline.constants import DENSE, PREDICTIONS, SIGNED_DATA, SPARSE
-from autosklearn.util.common import check_for_bool
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.components.base import AutoSklearnClassificationAlgorithm
+from .pipeline.constants import DENSE, PREDICTIONS, SIGNED_DATA, SPARSE
+from .util.common import check_for_bool
 
 
 class MultinomialNB(AutoSklearnClassificationAlgorithm):

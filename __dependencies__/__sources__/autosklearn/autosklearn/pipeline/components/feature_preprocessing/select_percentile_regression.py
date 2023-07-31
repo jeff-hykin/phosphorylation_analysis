@@ -8,12 +8,12 @@ from ConfigSpace.hyperparameters import (
     UniformFloatHyperparameter,
 )
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.components.base import AutoSklearnPreprocessingAlgorithm
-from autosklearn.pipeline.components.feature_preprocessing.select_percentile import (
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.components.base import AutoSklearnPreprocessingAlgorithm
+from .pipeline.components.feature_preprocessing.select_percentile import (
     SelectPercentileBase,
 )
-from autosklearn.pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
+from .pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
 
 
 class SelectPercentileRegression(

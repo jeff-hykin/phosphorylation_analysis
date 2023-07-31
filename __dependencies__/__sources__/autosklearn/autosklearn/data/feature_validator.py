@@ -10,7 +10,7 @@ from scipy.sparse import csr_matrix, spmatrix
 from sklearn.base import BaseEstimator
 from sklearn.exceptions import NotFittedError
 
-from autosklearn.util.logging_ import PickableLoggerAdapter
+from .util.logging_ import PickableLoggerAdapter
 
 SUPPORTED_FEAT_TYPES = Union[List, pd.DataFrame, np.ndarray, spmatrix]
 

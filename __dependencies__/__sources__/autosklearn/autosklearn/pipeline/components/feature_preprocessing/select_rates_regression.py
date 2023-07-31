@@ -9,9 +9,9 @@ from ConfigSpace.hyperparameters import (
     UniformFloatHyperparameter,
 )
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.components.base import AutoSklearnPreprocessingAlgorithm
-from autosklearn.pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.components.base import AutoSklearnPreprocessingAlgorithm
+from .pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
 
 
 class SelectRegressionRates(AutoSklearnPreprocessingAlgorithm):

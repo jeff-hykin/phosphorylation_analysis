@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import sklearn.utils
 
-from autosklearn.metalearning.metalearning.kNearestDatasets.kND import KNearestDatasets
+from .metalearning.metalearning.kNearestDatasets.kND import KNearestDatasets
 
 
 def test_function(params):

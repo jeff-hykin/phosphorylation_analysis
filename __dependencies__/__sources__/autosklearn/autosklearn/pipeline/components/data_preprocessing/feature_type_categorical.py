@@ -4,24 +4,24 @@ import numpy as np
 from ConfigSpace.configuration_space import Configuration, ConfigurationSpace
 from sklearn.base import BaseEstimator
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.base import DATASET_PROPERTIES_TYPE, BasePipeline
-from autosklearn.pipeline.components.data_preprocessing.categorical_encoding import (  # noqa: E501
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.base import DATASET_PROPERTIES_TYPE, BasePipeline
+from .pipeline.components.data_preprocessing.categorical_encoding import (  # noqa: E501
     OHEChoice,
 )
-from autosklearn.pipeline.components.data_preprocessing.categorical_encoding.encoding import (  # noqa: E501
+from .pipeline.components.data_preprocessing.categorical_encoding.encoding import (  # noqa: E501
     OrdinalEncoding,
 )
-from autosklearn.pipeline.components.data_preprocessing.category_shift.category_shift import (  # noqa: E501
+from .pipeline.components.data_preprocessing.category_shift.category_shift import (  # noqa: E501
     CategoryShift,
 )
-from autosklearn.pipeline.components.data_preprocessing.imputation.categorical_imputation import (  # noqa: E501
+from .pipeline.components.data_preprocessing.imputation.categorical_imputation import (  # noqa: E501
     CategoricalImputation,
 )
-from autosklearn.pipeline.components.data_preprocessing.minority_coalescense import (
+from .pipeline.components.data_preprocessing.minority_coalescense import (
     CoalescenseChoice,
 )
-from autosklearn.pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
+from .pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
 
 
 class CategoricalPreprocessingPipeline(BasePipeline):

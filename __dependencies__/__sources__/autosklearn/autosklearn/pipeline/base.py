@@ -7,7 +7,7 @@ from ConfigSpace import Configuration
 from sklearn.pipeline import Pipeline
 
 import autosklearn.pipeline.create_searchspace_util
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
+from .askl_typing import FEAT_TYPE_TYPE
 
 from .components.base import AutoSklearnChoice, AutoSklearnComponent
 

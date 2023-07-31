@@ -7,28 +7,28 @@ from ConfigSpace.configuration_space import ConfigurationSpace
 from scipy import sparse
 from sklearn.base import BaseEstimator
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.data.validation import SUPPORTED_FEAT_TYPES, SUPPORTED_TARGET_TYPES
-from autosklearn.pipeline.base import (
+from .askl_typing import FEAT_TYPE_TYPE
+from .data.validation import SUPPORTED_FEAT_TYPES, SUPPORTED_TARGET_TYPES
+from .pipeline.base import (
     DATASET_PROPERTIES_TYPE,
     PIPELINE_DATA_DTYPE,
     BasePipeline,
 )
-from autosklearn.pipeline.components.base import (
+from .pipeline.components.base import (
     AutoSklearnChoice,
     AutoSklearnComponent,
     AutoSklearnPreprocessingAlgorithm,
 )
-from autosklearn.pipeline.components.data_preprocessing.feature_type_categorical import (  # noqa : E501
+from .pipeline.components.data_preprocessing.feature_type_categorical import (  # noqa : E501
     CategoricalPreprocessingPipeline,
 )
-from autosklearn.pipeline.components.data_preprocessing.feature_type_numerical import (
+from .pipeline.components.data_preprocessing.feature_type_numerical import (
     NumericalPreprocessingPipeline,
 )
-from autosklearn.pipeline.components.data_preprocessing.feature_type_text import (
+from .pipeline.components.data_preprocessing.feature_type_text import (
     TextPreprocessingPipeline,
 )
-from autosklearn.pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
+from .pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
 
 
 class FeatTypeSplit(AutoSklearnPreprocessingAlgorithm):

@@ -8,17 +8,17 @@ from ConfigSpace.configuration_space import Configuration, ConfigurationSpace
 from ConfigSpace.forbidden import ForbiddenAndConjunction, ForbiddenEqualsClause
 from sklearn.base import ClassifierMixin
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.base import BasePipeline
-from autosklearn.pipeline.components.classification import ClassifierChoice
-from autosklearn.pipeline.components.data_preprocessing import DataPreprocessorChoice
-from autosklearn.pipeline.components.data_preprocessing.balancing.balancing import (
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.base import BasePipeline
+from .pipeline.components.classification import ClassifierChoice
+from .pipeline.components.data_preprocessing import DataPreprocessorChoice
+from .pipeline.components.data_preprocessing.balancing.balancing import (
     Balancing,
 )
-from autosklearn.pipeline.components.feature_preprocessing import (
+from .pipeline.components.feature_preprocessing import (
     FeaturePreprocessorChoice,
 )
-from autosklearn.pipeline.constants import SPARSE
+from .pipeline.constants import SPARSE
 
 
 class SimpleClassificationPipeline(BasePipeline, ClassifierMixin):

@@ -24,31 +24,31 @@ from sklearn.model_selection import (
 from sklearn.model_selection._split import BaseShuffleSplit, _RepeatedSplits
 from smac.tae import StatusType, TAEAbortException
 
-from autosklearn.automl_common.common.utils.backend import Backend
-from autosklearn.constants import (
+from .automl_common.common.utils.backend import Backend
+from .constants import (
     CLASSIFICATION_TASKS,
     MULTILABEL_CLASSIFICATION,
     MULTIOUTPUT_REGRESSION,
     REGRESSION_TASKS,
 )
-from autosklearn.data.abstract_data_manager import AbstractDataManager
-from autosklearn.data.validation import SUPPORTED_FEAT_TYPES, SUPPORTED_TARGET_TYPES
-from autosklearn.evaluation.abstract_evaluator import (
+from .data.abstract_data_manager import AbstractDataManager
+from .data.validation import SUPPORTED_FEAT_TYPES, SUPPORTED_TARGET_TYPES
+from .evaluation.abstract_evaluator import (
     TYPE_ADDITIONAL_INFO,
     AbstractEvaluator,
     _fit_and_suppress_warnings,
 )
-from autosklearn.evaluation.splitter import (
+from .evaluation.splitter import (
     CustomStratifiedKFold,
     CustomStratifiedShuffleSplit,
 )
-from autosklearn.metrics import Scorer
-from autosklearn.pipeline.base import PIPELINE_DATA_DTYPE
-from autosklearn.pipeline.components.base import (
+from .metrics import Scorer
+from .pipeline.base import PIPELINE_DATA_DTYPE
+from .pipeline.components.base import (
     IterativeComponent,
     ThirdPartyComponents,
 )
-from autosklearn.util.logging_ import PicklableClientLogger
+from .util.logging_ import PicklableClientLogger
 
 __all__ = [
     "TrainEvaluator",

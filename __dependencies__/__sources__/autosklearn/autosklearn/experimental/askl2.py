@@ -17,10 +17,10 @@ from ConfigSpace import Configuration
 
 import autosklearn
 import autosklearn.experimental.selector
-from autosklearn.classification import AutoSklearnClassifier
-from autosklearn.ensembles.abstract_ensemble import AbstractEnsemble
-from autosklearn.ensembles.ensemble_selection import EnsembleSelection
-from autosklearn.metrics import Scorer, accuracy, balanced_accuracy, log_loss, roc_auc
+from .classification import AutoSklearnClassifier
+from .ensembles.abstract_ensemble import AbstractEnsemble
+from .ensembles.ensemble_selection import EnsembleSelection
+from .metrics import Scorer, accuracy, balanced_accuracy, log_loss, roc_auc
 
 selector_metrics = (balanced_accuracy, roc_auc, log_loss)
 

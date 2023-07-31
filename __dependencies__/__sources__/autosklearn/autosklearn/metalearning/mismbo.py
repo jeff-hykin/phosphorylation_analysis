@@ -2,12 +2,12 @@
 
 import time
 
-from autosklearn.constants import (
+from .constants import (
     MULTICLASS_CLASSIFICATION,
     MULTILABEL_CLASSIFICATION,
     TASK_TYPES_TO_STRING,
 )
-from autosklearn.metalearning.optimizers.metalearn_optimizer.metalearner import (
+from .metalearning.optimizers.metalearn_optimizer.metalearner import (
     MetaLearningOptimizer,
 )
 

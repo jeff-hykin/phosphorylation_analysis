@@ -17,25 +17,25 @@ from threadpoolctl import threadpool_limits
 
 import autosklearn.pipeline.classification
 import autosklearn.pipeline.regression
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.automl_common.common.utils.backend import Backend
-from autosklearn.constants import (
+from .askl_typing import FEAT_TYPE_TYPE
+from .automl_common.common.utils.backend import Backend
+from .constants import (
     CLASSIFICATION_TASKS,
     MULTICLASS_CLASSIFICATION,
     MULTILABEL_CLASSIFICATION,
     MULTIOUTPUT_REGRESSION,
     REGRESSION_TASKS,
 )
-from autosklearn.data.target_validator import (
+from .data.target_validator import (
     SUPPORTED_TARGET_TYPES,
     SUPPORTED_XDATA_TYPES,
 )
-from autosklearn.metrics import Scorer, calculate_losses
-from autosklearn.pipeline.components.base import ThirdPartyComponents, _addons
-from autosklearn.pipeline.implementations.util import (
+from .metrics import Scorer, calculate_losses
+from .pipeline.components.base import ThirdPartyComponents, _addons
+from .pipeline.implementations.util import (
     convert_multioutput_multiclass_to_multilabel,
 )
-from autosklearn.util.logging_ import PicklableClientLogger, get_named_client_logger
+from .util.logging_ import PicklableClientLogger, get_named_client_logger
 
 # General TYPE definitions for numpy
 TYPE_ADDITIONAL_INFO = Dict[str, Union[int, float, str, Dict, List, Tuple]]

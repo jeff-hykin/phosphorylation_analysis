@@ -6,13 +6,13 @@ from ConfigSpace.hyperparameters import UniformFloatHyperparameter
 from scipy import sparse
 from sklearn.exceptions import NotFittedError
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.base import DATASET_PROPERTIES_TYPE, PIPELINE_DATA_DTYPE
-from autosklearn.pipeline.components.base import AutoSklearnPreprocessingAlgorithm
-from autosklearn.pipeline.components.data_preprocessing.rescaling.abstract_rescaling import (  # noqa: E501
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.base import DATASET_PROPERTIES_TYPE, PIPELINE_DATA_DTYPE
+from .pipeline.components.base import AutoSklearnPreprocessingAlgorithm
+from .pipeline.components.data_preprocessing.rescaling.abstract_rescaling import (  # noqa: E501
     Rescaling,
 )
-from autosklearn.pipeline.constants import (
+from .pipeline.constants import (
     DENSE,
     INPUT,
     SIGNED_DATA,

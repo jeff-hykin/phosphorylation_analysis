@@ -11,13 +11,13 @@ from ConfigSpace.hyperparameters import (
     UnParametrizedHyperparameter,
 )
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.components.base import (
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.components.base import (
     AutoSklearnRegressionAlgorithm,
     IterativeComponent,
 )
-from autosklearn.pipeline.constants import DENSE, PREDICTIONS, UNSIGNED_DATA
-from autosklearn.util.common import check_none
+from .pipeline.constants import DENSE, PREDICTIONS, UNSIGNED_DATA
+from .util.common import check_none
 
 
 class GradientBoosting(

@@ -37,7 +37,7 @@ import tempfile
 
 from dask.distributed import Client, LocalCluster
 
-from autosklearn.util.single_thread_client import SingleThreadedClient
+from .util.single_thread_client import SingleThreadedClient
 
 
 class Dask(ABC):

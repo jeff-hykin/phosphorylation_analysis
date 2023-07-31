@@ -7,7 +7,7 @@ from pathlib import Path
 
 import numpy as np
 
-from autosklearn.util.disk import sizeof
+from .util.disk import sizeof
 
 RunID = Tuple[int, int, float]
 

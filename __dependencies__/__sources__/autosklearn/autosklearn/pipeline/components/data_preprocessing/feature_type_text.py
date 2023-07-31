@@ -4,15 +4,15 @@ import numpy as np
 from ConfigSpace.configuration_space import Configuration, ConfigurationSpace
 from sklearn.base import BaseEstimator
 
-from autosklearn.askl_typing import FEAT_TYPE_TYPE
-from autosklearn.pipeline.base import DATASET_PROPERTIES_TYPE, BasePipeline
-from autosklearn.pipeline.components.data_preprocessing.text_encoding import (
+from .askl_typing import FEAT_TYPE_TYPE
+from .pipeline.base import DATASET_PROPERTIES_TYPE, BasePipeline
+from .pipeline.components.data_preprocessing.text_encoding import (
     BagOfWordChoice,
 )
-from autosklearn.pipeline.components.data_preprocessing.text_feature_reduction.truncated_svd import (  # noqa: 501
+from .pipeline.components.data_preprocessing.text_feature_reduction.truncated_svd import (  # noqa: 501
     TextFeatureReduction,
 )
-from autosklearn.pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
+from .pipeline.constants import DENSE, INPUT, SPARSE, UNSIGNED_DATA
 
 
 class TextPreprocessingPipeline(BasePipeline):

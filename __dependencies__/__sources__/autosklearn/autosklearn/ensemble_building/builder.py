@@ -17,17 +17,17 @@ import pandas as pd
 import pynisher
 from sklearn.utils.validation import check_random_state
 
-from autosklearn.automl_common.common.utils.backend import Backend
-from autosklearn.data.validation import SUPPORTED_FEAT_TYPES
-from autosklearn.data.xy_data_manager import XYDataManager
-from autosklearn.ensemble_building.run import Run, RunID
-from autosklearn.ensembles.abstract_ensemble import AbstractEnsemble
-from autosklearn.ensembles.ensemble_selection import EnsembleSelection
-from autosklearn.metrics import Scorer, calculate_loss, calculate_scores
-from autosklearn.util.disk import rmtree
-from autosklearn.util.functional import cut, findwhere, roundrobin, split
-from autosklearn.util.logging_ import get_named_client_logger
-from autosklearn.util.parallel import preload_modules
+from .automl_common.common.utils.backend import Backend
+from .data.validation import SUPPORTED_FEAT_TYPES
+from .data.xy_data_manager import XYDataManager
+from .ensemble_building.run import Run, RunID
+from .ensembles.abstract_ensemble import AbstractEnsemble
+from .ensembles.ensemble_selection import EnsembleSelection
+from .metrics import Scorer, calculate_loss, calculate_scores
+from .util.disk import rmtree
+from .util.functional import cut, findwhere, roundrobin, split
+from .util.logging_ import get_named_client_logger
+from .util.parallel import preload_modules
 
 CANDIDATES_FILENAME = "previous_ensemble_building_candidates.pkl"
 

@@ -4,16 +4,16 @@ from typing import Dict, List, Optional, Union
 import numpy as np
 from ConfigSpace.configuration_space import ConfigurationSpace
 
-from autosklearn.constants import (
+from .constants import (
     BINARY_CLASSIFICATION,
     MULTICLASS_CLASSIFICATION,
     MULTILABEL_CLASSIFICATION,
     MULTIOUTPUT_REGRESSION,
     REGRESSION_TASKS,
 )
-from autosklearn.data.abstract_data_manager import AbstractDataManager
-from autosklearn.pipeline.classification import SimpleClassificationPipeline
-from autosklearn.pipeline.regression import SimpleRegressionPipeline
+from .data.abstract_data_manager import AbstractDataManager
+from .pipeline.classification import SimpleClassificationPipeline
+from .pipeline.regression import SimpleRegressionPipeline
 
 __all__ = ["get_configuration_space"]
 
