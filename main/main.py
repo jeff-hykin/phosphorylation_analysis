@@ -10,6 +10,8 @@ from sklearn.metrics import confusion_matrix
 from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import make_classification
+from autosklearn.classification import AutoSklearnClassifier
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy
