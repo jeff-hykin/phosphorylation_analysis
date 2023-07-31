@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:automl/auto-sklearn.git
+	branch = development
+	commit = 673211252ca508b6f5bb92cf5fa87c6455bbad99
+	parent = 073b3bb5087321a217fb1cb6f2460fcc43c841c9
+	method = merge
+	cmdver = 0.4.1
