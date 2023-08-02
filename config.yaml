@@ -40,21 +40,21 @@
             generate_data:
                 windowPadding: 10 # + or - 10 amino acids
                 aminoMatchPattern: "S"
-                useHuffmanEncoding: true
+                useHuffmanEncoding: false
                 positionInvariantFarAwayValue: 30
                 huffmanEncoderCap: 30
                 minOneSideEncodedLength: 5
-                datasetSize: 20_000
+                datasetSize: 50_000
                 preprocessing:
                     shouldUseSimplifier: false
                 featureToInclude:
                     normalPositionalData: true
-                    positionInvariantHuffman: true
+                    positionInvariantHuffman: false
                     positionInvariantPhysicochemicalCategories: false
                     physicochemicalCategories: false
                     handCodedMotifs: false
             
-            classifier_truncate_sample: 20_000
+            classifier_truncate_sample: 50_000
             phos_classifier_hyperparameters:
                 number_of_layers: 1 # layers in additon to the encoder layers
                 final_activation_function_eval: "lambda x: x/(1 + torch.abs(x))" # modified sigmoid
@@ -67,12 +67,12 @@
                 momentum: 0.5
                 
             autoencoder_hyperparameters:
-                max_epochs: 10
+                max_epochs: 30
                 batch_size: 1024
-                latent_size: 100
+                latent_size: 128
                 number_of_layers: 2
                 learning_rate: 0.01
                 momentum: 0.5
-                activation_function_eval: "nn.ReLU()"
-                loss_function_eval: "F.mse_loss"
+                activation_function_eval: "nn.Sigmoid()"
+                loss_function_eval: "F.binary_cross_entropy"
 

@@ -784,7 +784,7 @@ class AutoEncoderHelpers:
 # 
 if True:
     @cache(watch_filepaths=lambda *args: [ info.absolute_path_to.negative_examples, info.absolute_path_to.positive_examples ])
-    def read_data(truncate_size):
+    def read_data():
         with open(info.absolute_path_to.negative_examples, 'r') as in_file:
             negative_inputs = json.load(in_file)
             negative_outputs = tuple(-1 for each in negative_inputs)
@@ -794,15 +794,17 @@ if True:
             positive_outputs = tuple(1 for each in positive_inputs)
             print("loaded positive_examples")
 
-        X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
-        y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
 
         sample_size = len(X)
         print(f'''len(y) = {len(y)}''')
         print(f'''sum(y) = {sum(y)}''')
-        return X, y
+        return negative_inputs, negative_outputs, positive_inputs, positive_outputs
     
-    X, y = read_data(info.config.classifier_truncate_sample)
+    negative_inputs, negative_outputs, positive_inputs, positive_outputs = read_data()
+    full_x = negative_inputs+positive_inputs
+    shuffle(full_x)
+    X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
+    y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
 
 #
 # evaluate 
@@ -814,12 +816,12 @@ if True:
         outputs=y,
         number_of_folds=4,
         seralized_coder=AutoEncoderHelpers.train_autoencoder(
-            x=X,
+            x=full_x,
             hyperparameters=LazyDict(info.config.autoencoder_hyperparameters),
         ),
         hyperparameters=LazyDict(
             max_epochs=20,
-            batch_size=64,
+            batch_size=1024*2,
         ),
     )
     import pandas
