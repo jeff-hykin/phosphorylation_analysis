@@ -28,6 +28,8 @@ from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save
 from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential
 from generic_tools.cross_validation import cross_validation
 
+ProgressBar.layout = [ 'bar', 'title', 'percent', 'spacer', 'fraction', 'spacer', 'remaining_time', 'spacer', 'end_time', 'spacer', 'duration', 'spacer', ]
+
 info = find_and_load(
     "config.yaml", # walks up folders until it finds a file with this name
     cd_to_filepath=True, # helpful if using relative paths
@@ -217,7 +219,6 @@ if True:
             except Exception as error:
                 total = "?"
             for epoch_progress, epoch_index in ProgressBar(max_epochs, title=f"[Train {self.__class__.__name__}]"):
-                self.show()
                 for batch_progress, (batch_of_inputs, batch_of_ideal_outputs) in ProgressBar(loader, title="Batch Progress"):
                     batch_index = batch_progress.index
                     accumulated_batches += 1
@@ -713,7 +714,7 @@ class AutoEncoderHelpers:
         )
         print("evaluating phos classifier")
         with print.indent:
-            for fold_progress, each_fold in ProgressBar(folds, title=f"""Fold progress, sample_size: {len(each_fold["train"]["inputs"])}"""):
+            for fold_progress, each_fold in ProgressBar(folds, title=f"""Fold progress"""):
                 fold_index = fold_progress.index
                 model = AutoEncoderHelpers.create_classifier_from_coder(seralized_coder)
                 training_loss_count = 0
