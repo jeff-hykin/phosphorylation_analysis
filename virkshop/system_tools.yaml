@@ -480,9 +480,9 @@
     load: [ "python39Packages", "numpy" ]
     asBuildInput: true
 
-# - (package):
-#     load: [ "python39Packages", "torchWithoutCuda" ]
-#     asBuildInput: true
+- (package):
+    load: [ "python39Packages", "torchWithoutCuda" ]
+    asBuildInput: true
 
 # - (package):
 #     load: [ "python39Packages", "dask" ]
