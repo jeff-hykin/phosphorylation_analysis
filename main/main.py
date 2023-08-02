@@ -131,13 +131,14 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
         
         total_count = 0
         correct_count = 0
-        for gene_id, info in gene_info.items():
-            gene_is_considered_phos  = info.positive_count > info.config.gene_classification_threshold
-            gene_was_guessed_as_phos = info.positive_guess_count > info.config.gene_classification_threshold
+        for gene_id, each_gene_info in gene_info_for.items():
+            gene_is_considered_phos  = each_gene_info.positive_count > info.config.gene_classification_threshold
+            gene_was_guessed_as_phos = each_gene_info.positive_guess_count > info.config.gene_classification_threshold
             total_count += 1
             if gene_is_considered_phos == gene_was_guessed_as_phos:
                 correct_count += 1
         gene_accuracy = correct_count / total_count
+        print(f'''Gene_accuracy = {gene_accuracy}''')
         
         return accuracy, positive_accuracy, negative_accuracy, gene_info_for, gene_accuracy
 
@@ -211,9 +212,8 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
         ax.set_ylabel("Mean decrease in impurity")
         fig.tight_layout()
         FS.ensure_is_folder(FS.dirname(info.absolute_path_to.important_features_image))
-        dpi = 400
         fig.set_size_inches(16, 14)  # Adjust the figure size as desired
-        plt.savefig(info.absolute_path_to.important_features_image, dpi=400)
+        plt.savefig(info.absolute_path_to.important_features_image, dpi=4000)
     
     # 
     # Neural
@@ -310,12 +310,12 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
     json_write("nn_1_fallback_gene_info.json", nn_1_fallback_gene_info)
     
     return (
-        neural_accuracy, neural_positive_accuracy, neural_negative_accuracy, neural_negative_gene_accuracy
-        random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy, random_forest_negative_gene_accuracy
-        average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy, average_ensemble_negative_gene_accuracy
-        tree_accuracy, tree_positive_accuracy, tree_negative_accuracy, tree_negative_gene_accuracy
-        nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy, nn_0_fallback_negative_gene_accuracy
-        nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy, nn_1_fallback_negative_gene_accuracy
+        neural_accuracy, neural_positive_accuracy, neural_negative_accuracy, neural_negative_gene_accuracy,
+        random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy, random_forest_negative_gene_accuracy,
+        average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy, average_ensemble_negative_gene_accuracy,
+        tree_accuracy, tree_positive_accuracy, tree_negative_accuracy, tree_negative_gene_accuracy,
+        nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy, nn_0_fallback_negative_gene_accuracy,
+        nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy, nn_1_fallback_negative_gene_accuracy,
     )
 
 X, y, genes, sample_size = read_data()
@@ -343,8 +343,10 @@ for progress, each in ProgressBar(folds):
     ) = train_and_test(
         X_train=X_train,
         y_train=y_train,
+        genes_train=genes_train,
         X_test=X_test,
         y_test=y_test,
+        genes_test=genes_test,
     )
     
     rows_of_output.append([sample_size, info.config.feature_set, "neural",           index+1, neural_accuracy          , neural_positive_accuracy          , neural_negative_accuracy          , neural_negative_gene_accuracy           ,])

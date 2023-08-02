@@ -319,9 +319,9 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
     // 
     await Promise.all([
         FileSystem.write({ path: "positive_examples.json"     , data: generateLinesFor(   encodeExamples(positiveExamples)   ), }),
-        FileSystem.write({ path: "positive_example_genes.json", data: generateLinesFor(   getGenes(positiveExamples)         ), }),
+        FileSystem.write({ path: "positive_examples_genes.json", data: generateLinesFor(   getGenes(positiveExamples)         ), }),
         FileSystem.write({ path: "negative_examples.json"     , data: generateLinesFor(   encodeExamples(negativeExamples)   ), }),
-        FileSystem.write({ path: "negative_example_genes.json", data: generateLinesFor(   getGenes(negativeExamples)         ), }),
+        FileSystem.write({ path: "negative_examples_genes.json", data: generateLinesFor(   getGenes(negativeExamples)         ), }),
     ])
     console.log("done writing data")
 

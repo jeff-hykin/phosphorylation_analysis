@@ -2,7 +2,7 @@ import math
 from random import random, sample, choices, shuffle
 
 def cross_validation(*data, number_of_folds, should_randomize=True):
-    number_of_samples = len(inputs)
+    number_of_samples = len(data[0])
     fold_size = math.floor(number_of_samples / number_of_folds)
     folds = []
     
