@@ -215,13 +215,15 @@ if True:
                 total = len(loader)
             except Exception as error:
                 total = "?"
-            for progress, epoch_index in ProgressBar(range(max_epochs)):
+            for progress, epoch_index in ProgressBar(max_epochs):
+                self.show()
                 for batch_index, (batch_of_inputs, batch_of_ideal_outputs) in enumerate(loader):
                     accumulated_batches += 1
                     loss = self.update_weights(batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
                     yield epoch_index, batch_index, to_pure(loss)
                     if batch_index+1 == total or batch_index % self.log_interval == 0:
-                        self.show(f"\r[Train]: overall: {round(accumulated_batches/(total*max_epochs)*100):>3}%, epoch: {epoch_index:>4}, batch: {batch_index+1:>10}/{total}", sep='', end='', flush=True)
+                        pass
+                        self.show(f"\r    [Train {self.__class__.__name__}]: overall: {round(accumulated_batches/(total*max_epochs)*100):>3}%, epoch: {epoch_index:>4}, batch: {batch_index+1:>10}/{total}", sep='', end='', flush=True)
                     
                         # TODO: add/allow checkpoints
             self.show()
