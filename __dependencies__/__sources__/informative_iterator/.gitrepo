@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:jeff-hykin/informative-iterator.git
 	branch = master
-	commit = 900f09204890c58f0f15b499f5f276501bb99385
-	parent = e369f60c43be7fc29e22408d127d643b32f8d829
+	commit = 802a2d27ca8ce8ac810b3da1cb7a6c9e13f758fd
+	parent = c512a4cd5eee11adf48fab7c5c0176a5ec2cbc54
 	method = merge
 	cmdver = 0.4.5
