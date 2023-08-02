@@ -7,7 +7,9 @@
     (local_data): ./local_data.ignore.yaml
     
     (path_to):
-        recent_results: "./recent_results.csv"
+        results_folder: "./results"
+        recent_results: "./results/recent_results.csv"
+        transfer_autoencoder_results: ./results/transfer_autoencoder_results.csv
         huffman_coder: "./huffman_code.ignore.json"
         negative_examples: ./negative_examples.json
         positive_examples: ./positive_examples.json
@@ -17,7 +19,6 @@
         prev_parameters: ./prev_parameters.json
         autoencoder_checker_cache: ./cache.ignore/autoencoder_parameter_check.json
         prev_autoencoder: ./cache.ignore/autoencoder.pickle
-        transfer_autoencoder_results: ./transfer_autoencoder_results.csv
     
     todo:
         - dont add plant features

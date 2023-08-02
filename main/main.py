@@ -3,6 +3,7 @@ from os.path import join
 from random import shuffle
 import math
 from random import random, sample, choices, shuffle
+import pandas
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -74,6 +75,8 @@ def read_data():
     print("splitting up the data")
     # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=45)
     return X, y, genes, sample_size
+
+FS.ensure_is_folder(info.absolute_path_to.results_folder)
 
 def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
     # 
@@ -198,7 +201,7 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
         
         print("random_forest_predictions")
         random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy, random_forest_gene_info, random_forest_gene_accuracy = test_accuracy_of(rf_classifier.predict)
-        pandas.DataFrame.from_dict(random_forest_gene_info, orient='columns').to_csv("random_forest_gene_info.csv")
+        pandas.DataFrame.from_dict(random_forest_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_random_forest.csv")
         print("\n\n")
         
         importances = rf_classifier.feature_importances_
@@ -228,7 +231,7 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
 
         print("mlp_classifier_predictions")
         neural_accuracy, neural_positive_accuracy, neural_negative_accuracy, neural_gene_info, neural_gene_accuracy = test_accuracy_of(mlp_classifier.predict)
-        pandas.DataFrame.from_dict(neural_gene_info, orient='columns').to_csv("neural_gene_info.csv")
+        pandas.DataFrame.from_dict(neural_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_neural.csv")
         print("\n\n")
     # 
     # DecisionTreeClassifier
@@ -243,7 +246,7 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
 
         print("tree_classifier_predictions")
         tree_accuracy, tree_positive_accuracy, tree_negative_accuracy, tree_gene_info, tree_gene_accuracy = test_accuracy_of(tree_classifier.predict)
-        pandas.DataFrame.from_dict(tree_gene_info, orient='columns').to_csv("tree_gene_info.csv")
+        pandas.DataFrame.from_dict(tree_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_tree.csv")
         print("\n\n")
 
     # 
@@ -277,7 +280,7 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
         return predictions
     
     average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy, average_ensemble_gene_info, average_ensemble_gene_accuracy = test_accuracy_of(predict)
-    pandas.DataFrame.from_dict(average_ensemble_gene_info, orient='columns').to_csv("average_ensemble_gene_info.csv")
+    pandas.DataFrame.from_dict(average_ensemble_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_average_ensemble.csv")
     
     def predict(X):
         rf_predictions = rf_classifier.predict(X)
@@ -292,7 +295,7 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
         return predictions
     
     nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy, nn_0_fallback_gene_info, nn_0_fallback_gene_accuracy = test_accuracy_of(predict)
-    pandas.DataFrame.from_dict(nn_0_fallback_gene_info, orient='columns').to_csv("nn_0_fallback_gene_info.csv")
+    pandas.DataFrame.from_dict(nn_0_fallback_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_nn_0_fallback.csv")
     
     def predict(X):
         rf_predictions = rf_classifier.predict(X)
@@ -307,7 +310,7 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
         return predictions
 
     nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy, nn_1_fallback_gene_info, nn_1_fallback_gene_accuracy = test_accuracy_of(predict)
-    pandas.DataFrame.from_dict(nn_1_fallback_gene_info, orient='columns').to_csv("nn_1_fallback_gene_info.csv")
+    pandas.DataFrame.from_dict(nn_1_fallback_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_nn_1_fallback.csv")
     
     return (
         neural_accuracy, neural_positive_accuracy, neural_negative_accuracy, neural_gene_accuracy,
