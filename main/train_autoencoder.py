@@ -19,6 +19,7 @@ import torch.nn.functional as F
 from torch import nn
 import torch.optim as optim
 import torch.nn.utils as utils
+import pandas
 
 from __dependencies__.quik_config import find_and_load
 from __dependencies__.informative_iterator import ProgressBar
@@ -215,15 +216,16 @@ if True:
                 total = len(loader)
             except Exception as error:
                 total = "?"
-            for progress, epoch_index in ProgressBar(max_epochs):
+            for epoch_progress, epoch_index in ProgressBar(max_epochs, title=f"[Train {self.__class__.__name__}]"):
                 self.show()
-                for batch_index, (batch_of_inputs, batch_of_ideal_outputs) in enumerate(loader):
+                for batch_progress, (batch_of_inputs, batch_of_ideal_outputs) in ProgressBar(loader, title="Batch Progress"):
+                    batch_index = batch_progress.index
                     accumulated_batches += 1
                     loss = self.update_weights(batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
                     yield epoch_index, batch_index, to_pure(loss)
                     if batch_index+1 == total or batch_index % self.log_interval == 0:
                         pass
-                        self.show(f"\r    [Train {self.__class__.__name__}]: overall: {round(accumulated_batches/(total*max_epochs)*100):>3}%, epoch: {epoch_index:>4}, batch: {batch_index+1:>10}/{total}", sep='', end='', flush=True)
+                        # self.show(f"\r    [Train {self.__class__.__name__}]: overall: {round(accumulated_batches/(total*max_epochs)*100):>3}%, epoch: {epoch_index:>4}, batch: {batch_index+1:>10}/{total}", sep='', end='', flush=True)
                     
                         # TODO: add/allow checkpoints
             self.show()
@@ -711,8 +713,8 @@ class AutoEncoderHelpers:
         )
         print("evaluating phos classifier")
         with print.indent:
-            for fold_index, each_fold in enumerate(folds):
-                print(f'''fold: {fold_index}, sample_size: {len(each_fold["train"]["inputs"])}''')
+            for fold_progress, each_fold in ProgressBar(folds, title=f"""Fold progress, sample_size: {len(each_fold["train"]["inputs"])}"""):
+                fold_index = fold_progress.index
                 model = AutoEncoderHelpers.create_classifier_from_coder(seralized_coder)
                 training_loss_count = 0
                 training_loss_sum = 0
@@ -767,6 +769,9 @@ class AutoEncoderHelpers:
                 # add them to aggregate_metrics
                 for (each_key, each_list), each_new_value in zip(aggregate_metrics.items(), best_run_within_fold):
                     each_list.append(each_new_value)
+                
+                # save
+                pandas.DataFrame(aggregate_metrics).to_csv(info.absolute_path_to.transfer_autoencoder_results)
         
         return aggregate_metrics
 
