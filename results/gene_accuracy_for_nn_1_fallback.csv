@@ -1,4 +1,4 @@
-,entry_count,positive_count,negative_count,correct_guess_count,positive_guess_count,negative_guess_count
+,entry_count,positive_count,negative_count,correctly_guessed,positive_guess_count,negative_guess_count
 Q9UKV5,5,5,0,3,3,2
 Q92918,7,7,0,4,4,3
 Q96PV6,24,1,23,20,3,21

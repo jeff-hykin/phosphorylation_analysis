@@ -110,7 +110,7 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
             gene_info.setdefault("entry_count", 0)
             gene_info.setdefault("positive_count", 0)
             gene_info.setdefault("negative_count", 0)
-            gene_info.setdefault("correct_guess_count", 0)
+            gene_info.setdefault("correctly_guessed", 0)
             gene_info.setdefault("positive_guess_count", 0)
             gene_info.setdefault("negative_guess_count", 0)
             
@@ -122,9 +122,9 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
             # negative_count
             else:
                 gene_info.negative_count += 1
-            # correct_guess_count
+            # correctly_guessed
             if each_output == each_guess:
-                gene_info.correct_guess_count += 1
+                gene_info.correctly_guessed += 1
             # positive_guess_count
             if each_guess == positive_label:
                 gene_info.positive_guess_count += 1
