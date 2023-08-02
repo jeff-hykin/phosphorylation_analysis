@@ -21,6 +21,7 @@ import torch.optim as optim
 import torch.nn.utils as utils
 
 from __dependencies__.quik_config import find_and_load
+from __dependencies__.informative_iterator import ProgressBar
 from __dependencies__.cool_cache import cache
 from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure, print, LazyDict, super_hash, drop_end, linear_steps, arg_max
 from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential
@@ -214,7 +215,7 @@ if True:
                 total = len(loader)
             except Exception as error:
                 total = "?"
-            for epoch_index in range(max_epochs):
+            for progress, epoch_index in ProgressBar(range(max_epochs)):
                 for batch_index, (batch_of_inputs, batch_of_ideal_outputs) in enumerate(loader):
                     accumulated_batches += 1
                     loss = self.update_weights(batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
@@ -529,7 +530,7 @@ class PhosTransferClassifier(nn.Module, SimpleSerial):
         guesses = (torch.round(model_test_outputs+1/2).squeeze()*2)-1 # converting from (-1 to 1) to (0 to 1) and then back to (-1 to 1)
         outputs = to_tensor(outputs).to(self.hardware)
         
-        flags_for_positive_inputs = inputs == 1
+        flags_for_positive_inputs = guesses == 1
         positive_guesses, positive_outputs = guesses[flags_for_positive_inputs], outputs[flags_for_positive_inputs]
         negative_guesses, negative_outputs = guesses[~flags_for_positive_inputs], outputs[~flags_for_positive_inputs]
         
