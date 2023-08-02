@@ -215,8 +215,8 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
         ax.set_ylabel("Mean decrease in impurity")
         fig.tight_layout()
         FS.ensure_is_folder(FS.dirname(info.absolute_path_to.important_features_image))
-        fig.set_size_inches(16, 14)  # Adjust the figure size as desired
-        plt.savefig(info.absolute_path_to.important_features_image, dpi=4000)
+        fig.set_size_inches(256, 140)  # Adjust the figure size as desired
+        plt.savefig(info.absolute_path_to.important_features_image, dpi=2000)
     
     # 
     # Neural
@@ -282,15 +282,23 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
     average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy, average_ensemble_gene_info, average_ensemble_gene_accuracy = test_accuracy_of(predict)
     pandas.DataFrame.from_dict(average_ensemble_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_average_ensemble.csv")
     
+    negative_shift_amount = 0.1
     def predict(X):
-        rf_predictions = rf_classifier.predict(X)
-        mlp_predictions = mlp_classifier.predict(X)
+        rf_predictions = rf_classifier.predict_proba(X)
+        mlp_predictions = mlp_classifier.predict_proba(X)
         predictions = [0]*len(rf_predictions)
-        for index, (rf_prediction, mlp_prediction) in enumerate(zip( rf_predictions, mlp_predictions )):
-            if mlp_prediction == -1: # negative prediction
-                predictions[index] = rf_prediction
+        for index, ((rf_prediction_probability_negative_case, rf_prediction_probability_positive_case), (mlp_prediction_probability_negative_case, mlp_prediction_probability_positive_case)) in enumerate(zip( rf_predictions, mlp_predictions )):
+            rf_prediction_probability_negative_case += negative_shift_amount
+            mlp_prediction_probability_negative_case += negative_shift_amount
+            mlp_predicts_negative = mlp_prediction_probability_negative_case > mlp_prediction_probability_positive_case
+            rf_predicts_negative = rf_prediction_probability_negative_case > rf_prediction_probability_positive_case
+            if mlp_predicts_negative: # negative prediction
+                if rf_predicts_negative:
+                    predictions[index] = negative_label
+                else:
+                    predictions[index] = positive_label
             else:
-                predictions[index] = mlp_prediction
+                predictions[index] = positive_label
                 
         return predictions
     
