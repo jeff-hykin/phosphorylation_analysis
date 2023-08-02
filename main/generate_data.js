@@ -248,7 +248,7 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
                         continue
                     }
                     for (const eachBool of aminoToOneHot[eachAminoChar]) {
-                        featureNames.push(`index:${index}==${eachAminoChar}`)
+                        featureNames.push(`${eachAminoChar}@${index}`)
                         featureVector.push(eachBool)
                     }
                 }
@@ -290,7 +290,7 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
                         continue
                     }
                     for (const [key, eachBool] of Object.entries(aminoToPhysicochemical(eachAminoChar))) {
-                        featureNames.push(`index:${index}:is_${key}`)
+                        featureNames.push(`is_${key}@${index}`)
                         featureVector.push(eachBool)
                     }
                 }
@@ -304,14 +304,13 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
                 )
                 
             }
-            console.debug(`featureVector.length is:`,featureVector.length)
 
             yield new Uint8Array(featureVector)
         }
     }
     function *getGenes(examples) {
         for (const each of examples) {
-            yield each.uniprotGeneId
+            yield each.geneInfo.uniprotGeneId
         }
     }
     

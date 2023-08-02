@@ -11,6 +11,8 @@
         huffman_coder: "./huffman_code.ignore.json"
         negative_examples: ./negative_examples.json
         positive_examples: ./positive_examples.json
+        negative_examples_genes: ./negative_examples_genes.json
+        positive_examples_genes: ./positive_examples_genes.json
         important_features_image: ./figures/recent_feature_importance.png
         prev_parameters: ./prev_parameters.json
         autoencoder_checker_cache: ./cache.ignore/autoencoder_parameter_check.json
@@ -31,6 +33,9 @@
     (profiles):
         (default):
             feature_set: "huffman_negative"
+            negative_label: -1
+            positive_label: 1
+            gene_classification_threshold: 3
             generate_data:
                 windowPadding: 10 # + or - 10 amino acids
                 aminoMatchPattern: "S"

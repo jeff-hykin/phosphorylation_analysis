@@ -32,6 +32,14 @@ info = find_and_load(
     show_help_for_no_args=False, # change if you want
 )
 
+positive_label = info.config.positive_label
+negative_label = info.config.negative_label
+
+import json
+def json_write(path, data):
+    with open(path, 'w') as outfile:
+        json.dump(data, outfile)
+    
 @cache(watch_filepaths=lambda *args: [ info.absolute_path_to.negative_examples, info.absolute_path_to.positive_examples ])
 def read_data():
     # 
@@ -39,16 +47,23 @@ def read_data():
     # 
     with open(info.absolute_path_to.negative_examples, 'r') as in_file:
         negative_inputs = json.load(in_file)
-        negative_outputs = tuple(-1 for each in negative_inputs)
+        negative_outputs = tuple(negative_label for each in negative_inputs)
         print("loaded negative_examples")
     with open(info.absolute_path_to.positive_examples, 'r') as in_file:
         positive_inputs = json.load(in_file)
-        positive_outputs = tuple(1 for each in positive_inputs)
+        positive_outputs = tuple(positive_label for each in positive_inputs)
         print("loaded positive_examples")
+    with open(info.absolute_path_to.negative_examples_genes, 'r') as in_file:
+        negative_genes = json.load(in_file)
+        print("loaded negative_examples_genes")
+    with open(info.absolute_path_to.positive_examples_genes, 'r') as in_file:
+        positive_genes = json.load(in_file)
+        print("loaded positive_examples_genes")
 
     truncate_size = info.config.classifier_truncate_sample
-    X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
-    y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
+    X     = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
+    y     = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
+    genes = negative_genes[0:truncate_size] + positive_genes[0:truncate_size]
 
     sample_size = len(X)
     print(f'''len(y) = {len(y)}''')
@@ -58,9 +73,9 @@ def read_data():
     # Split the data into training and testing sets
     print("splitting up the data")
     # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=45)
-    return X, y, sample_size
+    return X, y, genes, sample_size
 
-def train_and_test(X_train, X_test, y_train, y_test):
+def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
     # 
     # helper
     # 
@@ -83,7 +98,48 @@ def train_and_test(X_train, X_test, y_train, y_test):
         negative_test_outputs = tuple(each_output  for each_input, each_output in zip(X_test, y_test) if each_output == -1)
         negative_accuracy = accuracy_score(negative_test_outputs, predict(negative_test_inputs))
         print("Negative Accuracy:", negative_accuracy)
-        return accuracy, positive_accuracy, negative_accuracy
+        
+        gene_info_for = {}
+        for each_input, each_output, each_guess, gene in zip(X_test, y_test, y_pred, genes_test):
+            gene_info_for.setdefault(gene, LazyDict())
+            gene_info =  gene_info_for[gene]
+            
+            gene_info.setdefault("entry_count", 0)
+            gene_info.setdefault("positive_count", 0)
+            gene_info.setdefault("negative_count", 0)
+            gene_info.setdefault("correct_guess_count", 0)
+            gene_info.setdefault("positive_guess_count", 0)
+            gene_info.setdefault("negative_guess_count", 0)
+            
+            # entry_count
+            gene_info.entry_count += 1
+            # positive_count
+            if each_output == positive_label:
+                gene_info.positive_count += 1
+            # negative_count
+            else:
+                gene_info.negative_count += 1
+            # correct_guess_count
+            if each_output == each_guess:
+                gene_info.correct_guess_count += 1
+            # positive_guess_count
+            if each_guess == positive_label:
+                gene_info.positive_guess_count += 1
+            # negative_guess_count
+            if each_guess == negative_label:
+                gene_info.negative_guess_count += 1
+        
+        total_count = 0
+        correct_count = 0
+        for gene_id, info in gene_info.items():
+            gene_is_considered_phos  = info.positive_count > info.config.gene_classification_threshold
+            gene_was_guessed_as_phos = info.positive_guess_count > info.config.gene_classification_threshold
+            total_count += 1
+            if gene_is_considered_phos == gene_was_guessed_as_phos:
+                correct_count += 1
+        gene_accuracy = correct_count / total_count
+        
+        return accuracy, positive_accuracy, negative_accuracy, gene_info_for, gene_accuracy
 
 
     # 
@@ -140,7 +196,8 @@ def train_and_test(X_train, X_test, y_train, y_test):
         rf_classifier.fit(X_train, y_train)
         
         print("random_forest_predictions")
-        random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy = test_accuracy_of(rf_classifier.predict)
+        random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy, random_forest_gene_info, random_forest_gene_accuracy = test_accuracy_of(rf_classifier.predict)
+        json_write("random_forest_gene_info.json", random_forest_gene_info)
         print("\n\n")
         
         importances = rf_classifier.feature_importances_
@@ -170,7 +227,8 @@ def train_and_test(X_train, X_test, y_train, y_test):
         mlp_classifier.fit(X_train, y_train)
 
         print("mlp_classifier_predictions")
-        neural_accuracy, neural_positive_accuracy, neural_negative_accuracy = test_accuracy_of(mlp_classifier.predict)
+        neural_accuracy, neural_positive_accuracy, neural_negative_accuracy, neural_gene_info, neural_gene_accuracy = test_accuracy_of(mlp_classifier.predict)
+        json_write("neural_gene_info.json", neural_gene_info)
         print("\n\n")
     # 
     # DecisionTreeClassifier
@@ -184,7 +242,8 @@ def train_and_test(X_train, X_test, y_train, y_test):
         tree_classifier.fit(X_train, y_train)
 
         print("tree_classifier_predictions")
-        tree_accuracy, tree_positive_accuracy, tree_negative_accuracy = test_accuracy_of(tree_classifier.predict)
+        tree_accuracy, tree_positive_accuracy, tree_negative_accuracy, tree_gene_info, tree_gene_accuracy = test_accuracy_of(tree_classifier.predict)
+        json_write("tree_gene_info.json", tree_gene_info)
         print("\n\n")
 
     # 
@@ -217,7 +276,8 @@ def train_and_test(X_train, X_test, y_train, y_test):
                 
         return predictions
     
-    average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy = test_accuracy_of(predict)
+    average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy, average_ensemble_gene_info, average_ensemble_gene_accuracy = test_accuracy_of(predict)
+    json_write("average_ensemble_gene_info.json", average_ensemble_gene_info)
     
     def predict(X):
         rf_predictions = rf_classifier.predict(X)
@@ -231,7 +291,8 @@ def train_and_test(X_train, X_test, y_train, y_test):
                 
         return predictions
     
-    nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy = test_accuracy_of(predict)
+    nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy, nn_0_fallback_gene_info, nn_0_fallback_gene_accuracy = test_accuracy_of(predict)
+    json_write("nn_0_fallback_gene_info.json", nn_0_fallback_gene_info)
     
     def predict(X):
         rf_predictions = rf_classifier.predict(X)
@@ -245,48 +306,59 @@ def train_and_test(X_train, X_test, y_train, y_test):
                 
         return predictions
 
-    nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy = test_accuracy_of(predict)
+    nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy, nn_1_fallback_gene_info, nn_1_fallback_gene_accuracy = test_accuracy_of(predict)
+    json_write("nn_1_fallback_gene_info.json", nn_1_fallback_gene_info)
     
     return (
-        neural_accuracy, neural_positive_accuracy, neural_negative_accuracy,
-        random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy,
-        average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,
-        tree_accuracy, tree_positive_accuracy, tree_negative_accuracy,
-        nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy,
-        nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy,
+        neural_accuracy, neural_positive_accuracy, neural_negative_accuracy, neural_negative_gene_accuracy
+        random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy, random_forest_negative_gene_accuracy
+        average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy, average_ensemble_negative_gene_accuracy
+        tree_accuracy, tree_positive_accuracy, tree_negative_accuracy, tree_negative_gene_accuracy
+        nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy, nn_0_fallback_negative_gene_accuracy
+        nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy, nn_1_fallback_negative_gene_accuracy
     )
 
-X, y, sample_size = read_data()
+X, y, genes, sample_size = read_data()
 
 number_of_folds = 4
 folds = cross_validation(
     X,
     y,
+    genes,
     number_of_folds=number_of_folds,
 )
 
 rows_of_output = []
-for index, each in enumerate(folds):
+for progress, each in ProgressBar(folds):
+    index = progress.index
+    X_train, y_train, genes_train = each["train"]
+    X_test, y_test, genes_test = each["test"]
     (
-        neural_accuracy, neural_positive_accuracy, neural_negative_accuracy,
-        random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy,
-        average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,
-        tree_accuracy, tree_positive_accuracy, tree_negative_accuracy,
-        nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy,
-        nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy,
+        neural_accuracy, neural_positive_accuracy, neural_negative_accuracy, neural_negative_gene_accuracy,
+        random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy, random_forest_negative_gene_accuracy,
+        average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy, average_ensemble_negative_gene_accuracy,
+        tree_accuracy, tree_positive_accuracy, tree_negative_accuracy, tree_negative_gene_accuracy,
+        nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy, nn_0_fallback_negative_gene_accuracy,
+        nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy, nn_1_fallback_negative_gene_accuracy,
     ) = train_and_test(
-        X_train=each["train"][0],
-        X_test=each["test"][1],
-        y_train=each["train"][0],
-        y_test=each["test"][1],
+        X_train=X_train,
+        y_train=y_train,
+        X_test=X_test,
+        y_test=y_test,
     )
     
-    rows_of_output.append([sample_size, info.config.feature_set, "neural",           index+1, neural_accuracy          , neural_positive_accuracy          , neural_negative_accuracy          ,])
-    rows_of_output.append([sample_size, info.config.feature_set, "random_forest",    index+1, random_forest_accuracy   , random_forest_positive_accuracy   , random_forest_negative_accuracy   ,])
-    rows_of_output.append([sample_size, info.config.feature_set, "tree",             index+1, tree_accuracy            , tree_positive_accuracy            , tree_negative_accuracy            ,])
-    rows_of_output.append([sample_size, info.config.feature_set, "average_ensemble", index+1, average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,])
-    rows_of_output.append([sample_size, info.config.feature_set, "nn_0_fallback",    index+1, nn_0_fallback_accuracy   , nn_0_fallback_positive_accuracy   , nn_0_fallback_negative_accuracy   ,])
-    rows_of_output.append([sample_size, info.config.feature_set, "nn_1_fallback",    index+1, nn_1_fallback_accuracy   , nn_1_fallback_positive_accuracy   , nn_1_fallback_negative_accuracy   ,])
+    rows_of_output.append([sample_size, info.config.feature_set, "neural",           index+1, neural_accuracy          , neural_positive_accuracy          , neural_negative_accuracy          , neural_negative_gene_accuracy           ,])
+    rows_of_output.append([sample_size, info.config.feature_set, "random_forest",    index+1, random_forest_accuracy   , random_forest_positive_accuracy   , random_forest_negative_accuracy   , random_forest_negative_gene_accuracy    ,])
+    rows_of_output.append([sample_size, info.config.feature_set, "tree",             index+1, tree_accuracy            , tree_positive_accuracy            , tree_negative_accuracy            , tree_negative_gene_accuracy             ,])
+    rows_of_output.append([sample_size, info.config.feature_set, "average_ensemble", index+1, average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy, average_ensemble_negative_gene_accuracy ,])
+    rows_of_output.append([sample_size, info.config.feature_set, "nn_0_fallback",    index+1, nn_0_fallback_accuracy   , nn_0_fallback_positive_accuracy   , nn_0_fallback_negative_accuracy   , nn_0_fallback_negative_gene_accuracy    ,])
+    rows_of_output.append([sample_size, info.config.feature_set, "nn_1_fallback",    index+1, nn_1_fallback_accuracy   , nn_1_fallback_positive_accuracy   , nn_1_fallback_negative_accuracy   , nn_1_fallback_negative_gene_accuracy    ,])
+    
+    Csv.write(
+        path=info.path_to.recent_results,
+        rows=rows_of_output,
+        column_names=[ "sample_size", "feature_set", "model", "fold_number", "accuracy", "positive_accuracy", "negative_accuracy", "gene_accuracy",],
+    )
 
 # 200,000 raw features
     # Total Accuracy: 0.6795935855061819
@@ -297,8 +369,3 @@ for index, each in enumerate(folds):
     # Positive Accuracy: 0.692262659771685
     # Negative Accuracy: 0.6668304909814715
 
-Csv.write(
-    path=info.path_to.recent_results,
-    rows=rows_of_output,
-    column_names=[ "sample_size", "feature_set", "model", "fold_number", "accuracy", "positive_accuracy", "negative_accuracy"],
-)
