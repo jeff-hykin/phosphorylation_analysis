@@ -19,8 +19,12 @@ import math
 from random import random, sample, choices, shuffle
 
 from __dependencies__.quik_config import find_and_load
-from __dependencies__.blissful_basics import Csv, FS
+from __dependencies__.informative_iterator import ProgressBar
+from __dependencies__.cool_cache import cache
+from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure, print, LazyDict, super_hash, drop_end, linear_steps, arg_max
+from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential
 from generic_tools.cross_validation import cross_validation
+
 
 info = find_and_load(
     "config.yaml", # walks up folders until it finds a file with this name
@@ -29,30 +33,33 @@ info = find_and_load(
     show_help_for_no_args=False, # change if you want
 )
 
-# 
-# read data
-# 
-with open(info.absolute_path_to.negative_examples, 'r') as in_file:
-    negative_inputs = json.load(in_file)
-    negative_outputs = tuple(-1 for each in negative_inputs)
-    print("loaded negative_examples")
-with open(info.absolute_path_to.positive_examples, 'r') as in_file:
-    positive_inputs = json.load(in_file)
-    positive_outputs = tuple(1 for each in positive_inputs)
-    print("loaded positive_examples")
+@cache(watch_filepaths=lambda *args: [ info.absolute_path_to.negative_examples, info.absolute_path_to.positive_examples ])
+def read_data():
+    # 
+    # read data
+    # 
+    with open(info.absolute_path_to.negative_examples, 'r') as in_file:
+        negative_inputs = json.load(in_file)
+        negative_outputs = tuple(-1 for each in negative_inputs)
+        print("loaded negative_examples")
+    with open(info.absolute_path_to.positive_examples, 'r') as in_file:
+        positive_inputs = json.load(in_file)
+        positive_outputs = tuple(1 for each in positive_inputs)
+        print("loaded positive_examples")
 
-truncate_size = 50_000
-X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
-y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
+    truncate_size = info.config.classifier_truncate_sample
+    X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
+    y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
 
-sample_size = len(X)
-print(f'''len(y) = {len(y)}''')
-print(f'''sum(y) = {sum(y)}''')
+    sample_size = len(X)
+    print(f'''len(y) = {len(y)}''')
+    print(f'''sum(y) = {sum(y)}''')
 
-# Assuming you have your data and labels ready, let's call them X and y respectively
-# Split the data into training and testing sets
-print("splitting up the data")
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=45)
+    # Assuming you have your data and labels ready, let's call them X and y respectively
+    # Split the data into training and testing sets
+    print("splitting up the data")
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=45)
+    return X, y, sample_size
 
 def train_and_test(X_train, X_test, y_train, y_test):
     # 
@@ -249,6 +256,8 @@ def train_and_test(X_train, X_test, y_train, y_test):
         nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy,
         nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy,
     )
+
+X, y, sample_size = read_data()
 
 number_of_folds = 4
 folds = cross_validation(
