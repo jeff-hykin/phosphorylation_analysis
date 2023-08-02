@@ -580,17 +580,18 @@ class AutoEncoderHelpers:
         """
         number_of_folds = 4
         folds = cross_validation(
-            inputs=X,
-            outputs=X,
+            X,
             number_of_folds=number_of_folds,
         )
         aggregate_average_validation_loss = 0
         
         with print.indent:
             for fold_index, each_fold in enumerate(folds):
-                print(f'''fold: {fold_index}, sample_size: {len(each_fold["train"]["inputs"])}''')
+                training_inputs = training_outputs = each_fold["train"][0]
+                testing_inputs  = testing_outputs  = each_fold["test"][0]
+                print(f'''fold: {fold_index}, sample_size: {len(training_inputs)}''')
                 coder = AutoEncoder(
-                    input_shape=(len(each_fold["train"]["inputs"][0]), ),
+                    input_shape=(len(training_inputs[0]), ),
                     latent_shape=(hyperparameters.latent_size, ),
                     number_of_layers=hyperparameters.number_of_layers,
                     learning_rate=hyperparameters.learning_rate,
@@ -603,7 +604,7 @@ class AutoEncoderHelpers:
                 fold_validation_losses = []
                 with print.indent:
                     for batch_index, (_, _, each_loss) in enumerate(coder.fit(
-                        input_output_pairs=list(zip(each_fold["train"]["inputs"], each_fold["train"]["outputs"])),
+                        input_output_pairs=list(zip(training_inputs, training_outputs)),
                         max_epochs=hyperparameters.max_epochs,
                         batch_size=hyperparameters.batch_size,
                         shuffle=True,
@@ -611,8 +612,8 @@ class AutoEncoderHelpers:
                         training_loss_sum += each_loss
                         training_loss_count += 1
                         average_validation_loss = coder.average_loss_for(
-                            batch_of_inputs=each_fold["test"]["inputs"],
-                            batch_of_ideal_outputs=each_fold["test"]["outputs"],
+                            batch_of_inputs=testing_inputs,
+                            batch_of_ideal_outputs=testing_outputs,
                         )
                         fold_validation_losses.append(average_validation_loss)
                         average_training_loss = training_loss_sum/training_loss_count
@@ -697,8 +698,8 @@ class AutoEncoderHelpers:
                 )
         """
         folds = cross_validation(
-            inputs=inputs,
-            outputs=outputs,
+            inputs,
+            outputs,
             number_of_folds=number_of_folds,
         )
         print(f'''len(folds) = {len(folds)}''')
@@ -716,13 +717,15 @@ class AutoEncoderHelpers:
         with print.indent:
             for fold_progress, each_fold in ProgressBar(folds, title=f"""Fold progress"""):
                 fold_index = fold_progress.index
+                training_inputs, training_outputs = each_fold["train"]
+                testing_inputs, testing_outputs  = each_fold["test"]
                 model = AutoEncoderHelpers.create_classifier_from_coder(seralized_coder)
                 training_loss_count = 0
                 training_loss_sum = 0
                 metrics = []
                 with print.indent:
                     for epoch_index, batch_index, each_loss in model.fit(
-                        input_output_pairs=list(zip(each_fold["train"]["inputs"], each_fold["train"]["outputs"])),
+                        input_output_pairs=list(zip(training_inputs, training_outputs)),
                         max_epochs=hyperparameters.max_epochs,
                         batch_size=hyperparameters.batch_size,
                         shuffle=True,
@@ -740,8 +743,8 @@ class AutoEncoderHelpers:
                             negative_correct_count,
                             negative_accuracy
                         ) = model.get_accuracies_and_loss(
-                            inputs=each_fold["test"]["inputs"],
-                            outputs=each_fold["test"]["outputs"]
+                            inputs=testing_inputs,
+                            outputs=testing_outputs
                         )
                         
                         metrics.append(

@@ -1,6 +1,8 @@
 import json
 from os.path import join
 from random import shuffle
+import math
+from random import random, sample, choices, shuffle
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -14,9 +16,6 @@ from sklearn.datasets import make_classification
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy
-
-import math
-from random import random, sample, choices, shuffle
 
 from __dependencies__.quik_config import find_and_load
 from __dependencies__.informative_iterator import ProgressBar
@@ -261,8 +260,8 @@ X, y, sample_size = read_data()
 
 number_of_folds = 4
 folds = cross_validation(
-    inputs=X,
-    outputs=y,
+    X,
+    y,
     number_of_folds=number_of_folds,
 )
 
@@ -276,10 +275,10 @@ for index, each in enumerate(folds):
         nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy,
         nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy,
     ) = train_and_test(
-        X_train=each["train"]["inputs"],
-        X_test=each["test"]["inputs"],
-        y_train=each["train"]["outputs"],
-        y_test=each["test"]["outputs"],
+        X_train=each["train"][0],
+        X_test=each["test"][1],
+        y_train=each["train"][0],
+        y_test=each["test"][1],
     )
     
     rows_of_output.append([sample_size, info.config.feature_set, "neural",           index+1, neural_accuracy          , neural_positive_accuracy          , neural_negative_accuracy          ,])

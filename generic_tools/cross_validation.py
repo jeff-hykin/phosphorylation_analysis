@@ -1,7 +1,7 @@
 import math
 from random import random, sample, choices, shuffle
 
-def cross_validation(inputs, outputs, number_of_folds, should_randomize=True):
+def cross_validation(*data, number_of_folds, should_randomize=True):
     number_of_samples = len(inputs)
     fold_size = math.floor(number_of_samples / number_of_folds)
     folds = []
@@ -27,14 +27,14 @@ def cross_validation(inputs, outputs, number_of_folds, should_randomize=True):
         # uses iterators to avoid memory usage and up-front computation
         # 
         folds.append({
-            "train": {
-                "inputs": tuple(inputs[each] for each in train_indices),
-                "outputs": tuple(outputs[each] for each in train_indices),
-            },
-            "test": {
-                "inputs": tuple(inputs[each] for each in test_indices),
-                "outputs": tuple(outputs[each] for each in test_indices),
-            },
+            "train": tuple(
+                tuple(each_source[each_index] for each_index in train_indices)
+                    for each_source in data
+            ),
+            "test": tuple(
+                tuple(each_source[each_index] for each_index in test_indices)
+                    for each_source in data
+            ),
         })
 
     return folds
