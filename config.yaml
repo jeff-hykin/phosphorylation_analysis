@@ -23,7 +23,7 @@
             - how many layers? 50 units, 20 units
             - latent space: 2 latent, 5, 10,
             - Relu
-        - maybe switch to protien level prediction
+        - maybe switch to protien level prediction:
             - maybe evaluate if 
             - maybe use HMM's
             - LSTM

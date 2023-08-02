@@ -1,5 +1,7 @@
+import os
 import setuptools
 import toml
+from file_system_py import iterate_paths_in
 
 # 
 # get the data out of the toml file
@@ -25,8 +27,14 @@ setuptools.setup(
     author_email=package_info["author_email"],
     license=package_info["license"],
     packages=[package_info["name"]],
+    package_data={
+        # include all files/folders in the module (recursively)
+        package_info["name"]: [
+            each[len(package_info["name"])+1:]
+                for each in iterate_paths_in(package_info["name"], recursively=True)
+        ],
+    },
     install_requires=[
-        'super_map >= 1.1.1',
         # examples:
         # 'aiohttp >= 3.7.4',
         # 'python-socketio >= 5.3.0',
