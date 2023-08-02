@@ -33,431 +33,433 @@ info = find_and_load(
     show_help_for_no_args=False, # change if you want
 )
 
-def read_json(path):
-    import json
-    with open(path, 'r') as in_file:
-        return json.load(in_file)
-
 default_seed = 10275023948
 torch.manual_seed(default_seed)
 
-class Network:
-    @staticmethod
-    def default_setup(self, config):
-        self.grad_clip_value = 1000
-        self.setup_config    = config
-        self.seed            = config.get("seed"           , default_seed)
-        self.suppress_output = config.get("suppress_output", False)
-        self.hardware        = config.get("device"         , torch.device("cuda" if torch.cuda.is_available() else "cpu"))
-        self.show = lambda *args, **kwargs: print(*args, **kwargs) if not self.suppress_output else None
-        self.to(self.hardware)
-    
-    def default_init(self, config):
-        import torch.nn.init as init
-        for each_layer in self.children():
-            # if its not a loss function
-            if not isinstance(each_layer, torch.nn.modules.loss._Loss) and hasattr(each_layer, "weight"):
-                init.xavier_uniform_(each_layer.weight)
-                if each_layer.bias is not None:
-                    init.zeros_(each_layer.bias)
-        self.to(self.hardware)
-    
-    @staticmethod
-    def default_forward(self, input_data):
-        """
-        Uses:
-            self.hardware
-            self.input_shape
-            self.output_shape
-        Arguments:
-            input_data:
-                either an input tensor or batch of tensors
-        Ouptut:
-            ether an output tensor or a batch of outputs
-        Examples:
-            obj.forward(torch.tensor([
-                # first image in batch
-                [
-                    # red layer
-                    [
-                        [ 1, 2, 3 ],
-                        [ 4, 5, 6] 
-                    ], 
-                    # blue layer
-                    [
-                        [ 1, 2, 3 ],
-                        [ 4, 5, 6] 
-                    ], 
-                    # green layer
-                    [
-                        [ 1, 2, 3 ],
-                        [ 4, 5, 6] 
-                    ],
-                ] 
-            ]))
+# 
+# Autoencoder definitions
+# 
+if True:
+    class Network:
+        @staticmethod
+        def default_setup(self, config):
+            self.grad_clip_value = 1000
+            self.setup_config    = config
+            self.seed            = config.get("seed"           , default_seed)
+            self.suppress_output = config.get("suppress_output", False)
+            self.hardware        = config.get("device"         , torch.device("cuda" if torch.cuda.is_available() else "cpu"))
+            self.show = lambda *args, **kwargs: print(*args, **kwargs) if not self.suppress_output else None
+            self.to(self.hardware)
         
-        """
-        # converts to torch if needed
-        input_data = to_tensor(input_data).type(torch.float).to(self.hardware)
+        def default_init(self, config):
+            import torch.nn.init as init
+            for each_layer in self.children():
+                # if its not a loss function
+                if not isinstance(each_layer, torch.nn.modules.loss._Loss) and hasattr(each_layer, "weight"):
+                    init.xavier_uniform_(each_layer.weight)
+                    if each_layer.bias is not None:
+                        init.zeros_(each_layer.bias)
+            self.to(self.hardware)
         
-        # 
-        # batch or not?
-        # 
-        is_a_batch = len(input_data.shape) > len(self.input_shape)
-        if not is_a_batch: 
-            batch_size = 1
-            # convert images into batches
-            input_data = torch.reshape(input_data, (1, *input_data.shape))
-            output_shape = self.output_shape
-        else:
-            batch_size = tuple(input_data.shape)[0]
-            output_shape = (batch_size, *self.output_shape)
-        
-        # 
-        # forward pass
-        # 
-        neuron_activations = input_data
-        for each_layer in self.layers:
-            # if its not a loss function
-            if not isinstance(each_layer, torch.nn.modules.loss._Loss):
-                neuron_activations = each_layer.forward(neuron_activations)
-                if torch.isnan(neuron_activations).any():
-                    import code; code.interact(local={**globals(),**locals()})
-                    raise Exception(f'''nan output from neurons.\nComing from:{repr(self)}\n\nSpecifically this layer: {repr(each_layer)}\nCausing this output:{neuron_activations}''', )
-        
-        # force the output to be the correct shape
-        return torch.reshape(neuron_activations, output_shape)
-    
-    @staticmethod
-    def default_update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index):
-        """
-        Uses:
-            self.grad_clip_value
-            self.optimizer # pytorch optimizer class
-            self.forward(batch_of_inputs)
-            self.loss_function(batch_of_actual_outputs, batch_of_ideal_outputs)
-        """
-        self.optimizer.zero_grad()
-        batch_of_actual_outputs = self.forward(batch_of_inputs)
-        loss = self.loss_function(batch_of_actual_outputs, batch_of_ideal_outputs)
-        loss.backward()
-        if self.grad_clip_value != None:
-            utils.clip_grad_norm_(self.parameters(), self.grad_clip_value)
-        self.optimizer.step()
-        return loss
-    
-    @staticmethod
-    def default_fit(self, *, input_output_pairs=None, dataset=None, loader=None, batch_size=64, shuffle=True, **kwargs):
-        """
+        @staticmethod
+        def default_forward(self, input_data):
+            """
             Uses:
-                self.update_weights(batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
-                    self.optimizer # pytorch optimizer class
-                    self.forward(batch_of_inputs)
-                    self.loss_function(batch_of_actual_outputs, batch_of_ideal_outputs)
-                self.show(args)
-                self.train() # provided by pytorch's `nn.Module`
-            
+                self.hardware
+                self.input_shape
+                self.output_shape
+            Arguments:
+                input_data:
+                    either an input tensor or batch of tensors
+            Ouptut:
+                ether an output tensor or a batch of outputs
             Examples:
-                for epoch_index, batch_index, loss in model.fit(
-                    dataset=torchvision.datasets.MNIST(<mnist args>),
-                    epochs=4,
-                    batch_size=64,
-                ):
-                    pass
+                obj.forward(torch.tensor([
+                    # first image in batch
+                    [
+                        # red layer
+                        [
+                            [ 1, 2, 3 ],
+                            [ 4, 5, 6] 
+                        ], 
+                        # blue layer
+                        [
+                            [ 1, 2, 3 ],
+                            [ 4, 5, 6] 
+                        ], 
+                        # green layer
+                        [
+                            [ 1, 2, 3 ],
+                            [ 4, 5, 6] 
+                        ],
+                    ] 
+                ]))
+            
+            """
+            # converts to torch if needed
+            input_data = to_tensor(input_data).type(torch.float).to(self.hardware)
+            
+            # 
+            # batch or not?
+            # 
+            is_a_batch = len(input_data.shape) > len(self.input_shape)
+            if not is_a_batch: 
+                batch_size = 1
+                # convert images into batches
+                input_data = torch.reshape(input_data, (1, *input_data.shape))
+                output_shape = self.output_shape
+            else:
+                batch_size = tuple(input_data.shape)[0]
+                output_shape = (batch_size, *self.output_shape)
+            
+            # 
+            # forward pass
+            # 
+            neuron_activations = input_data
+            for each_layer in self.layers:
+                # if its not a loss function
+                if not isinstance(each_layer, torch.nn.modules.loss._Loss):
+                    neuron_activations = each_layer.forward(neuron_activations)
+                    if torch.isnan(neuron_activations).any():
+                        import code; code.interact(local={**globals(),**locals()})
+                        raise Exception(f'''nan output from neurons.\nComing from:{repr(self)}\n\nSpecifically this layer: {repr(each_layer)}\nCausing this output:{neuron_activations}''', )
+            
+            # force the output to be the correct shape
+            return torch.reshape(neuron_activations, output_shape)
+        
+        @staticmethod
+        def default_update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index):
+            """
+            Uses:
+                self.grad_clip_value
+                self.optimizer # pytorch optimizer class
+                self.forward(batch_of_inputs)
+                self.loss_function(batch_of_actual_outputs, batch_of_ideal_outputs)
+            """
+            self.optimizer.zero_grad()
+            batch_of_actual_outputs = self.forward(batch_of_inputs)
+            loss = self.loss_function(batch_of_actual_outputs, batch_of_ideal_outputs)
+            loss.backward()
+            if self.grad_clip_value != None:
+                utils.clip_grad_norm_(self.parameters(), self.grad_clip_value)
+            self.optimizer.step()
+            return loss
+        
+        @staticmethod
+        def default_fit(self, *, input_output_pairs=None, dataset=None, loader=None, batch_size=64, shuffle=True, **kwargs):
+            """
+                Uses:
+                    self.update_weights(batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
+                        self.optimizer # pytorch optimizer class
+                        self.forward(batch_of_inputs)
+                        self.loss_function(batch_of_actual_outputs, batch_of_ideal_outputs)
+                    self.show(args)
+                    self.train() # provided by pytorch's `nn.Module`
                 
-                for epoch_index, batch_index, loss in model.fit(
-                    loader=torch.utils.data.DataLoader(<dataloader args>),
-                    epochs=4,
-                ):
-                    pass
-        """
-        # TODO: test input_output_pairs
-        if input_output_pairs is not None:
-            if shuffle:
-                try:
-                    len(input_output_pairs)
-                    input_output_pairs = list(input_output_pairs)
-                    from random import random, sample, choices, shuffle
-                    shuffle(input_output_pairs)
-                except Exception as error:
-                    pass
-            # creates batches
-            def bundle(iterable, bundle_size):
-                next_bundle = []
-                for each in iterable:
-                    next_bundle.append(each)
-                    if len(next_bundle) == bundle_size:
+                Examples:
+                    for epoch_index, batch_index, loss in model.fit(
+                        dataset=torchvision.datasets.MNIST(<mnist args>),
+                        epochs=4,
+                        batch_size=64,
+                    ):
+                        pass
+                    
+                    for epoch_index, batch_index, loss in model.fit(
+                        loader=torch.utils.data.DataLoader(<dataloader args>),
+                        epochs=4,
+                    ):
+                        pass
+            """
+            # TODO: test input_output_pairs
+            if input_output_pairs is not None:
+                if shuffle:
+                    try:
+                        len(input_output_pairs)
+                        input_output_pairs = list(input_output_pairs)
+                        from random import random, sample, choices, shuffle
+                        shuffle(input_output_pairs)
+                    except Exception as error:
+                        pass
+                # creates batches
+                def bundle(iterable, bundle_size):
+                    next_bundle = []
+                    for each in iterable:
+                        next_bundle.append(each)
+                        if len(next_bundle) == bundle_size:
+                            yield tuple(next_bundle)
+                            next_bundle = []
+                    # return any half-made bundles
+                    if len(next_bundle) > 0:
                         yield tuple(next_bundle)
-                        next_bundle = []
-                # return any half-made bundles
-                if len(next_bundle) > 0:
-                    yield tuple(next_bundle)
-            # unpair, batch, then re-pair the inputs and outputs
-            input_generator        = (each for each, _ in input_output_pairs)
-            ideal_output_generator = (each for _   , each in input_output_pairs)
-            seperated_batches = zip(bundle(input_generator, batch_size), bundle(ideal_output_generator, batch_size))
-            loader = tuple((to_tensor(each_input_batch), to_tensor(each_output_batch)) for each_input_batch, each_output_batch in seperated_batches)
-            # NOTE: shuffling isn't possible when there is no length (and generators don't have lengths). So maybe think of an alternative
-        else:
-            # convert the dataset into a loader (assumming loader was not given)
-            if isinstance(dataset, torch.utils.data.Dataset):
-                loader = torch.utils.data.DataLoader(
-                    dataset,
-                    batch_size=batch_size,
-                    shuffle=shuffle,
-                )
+                # unpair, batch, then re-pair the inputs and outputs
+                input_generator        = (each for each, _ in input_output_pairs)
+                ideal_output_generator = (each for _   , each in input_output_pairs)
+                seperated_batches = zip(bundle(input_generator, batch_size), bundle(ideal_output_generator, batch_size))
+                loader = tuple((to_tensor(each_input_batch).to(self.hardware), to_tensor(each_output_batch).to(self.hardware)) for each_input_batch, each_output_batch in seperated_batches)
+                # NOTE: shuffling isn't possible when there is no length (and generators don't have lengths). So maybe think of an alternative
+            else:
+                # convert the dataset into a loader (assumming loader was not given)
+                if isinstance(dataset, torch.utils.data.Dataset):
+                    loader = torch.utils.data.DataLoader(
+                        dataset,
+                        batch_size=batch_size,
+                        shuffle=shuffle,
+                    )
+            
+            train_losses = []
+            self.train()
+            max_epochs = kwargs.get("max_epochs", 1)
+            accumulated_batches = 0
+            try:
+                total = len(loader)
+            except Exception as error:
+                total = "?"
+            for epoch_index in range(max_epochs):
+                for batch_index, (batch_of_inputs, batch_of_ideal_outputs) in enumerate(loader):
+                    accumulated_batches += 1
+                    loss = self.update_weights(batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
+                    yield epoch_index, batch_index, to_pure(loss)
+                    if batch_index+1 == total or batch_index % self.log_interval == 0:
+                        self.show(f"\r[Train]: overall: {round(accumulated_batches/(total*max_epochs)*100):>3}%, epoch: {epoch_index:>4}, batch: {batch_index+1:>10}/{total}", sep='', end='', flush=True)
+                    
+                        # TODO: add/allow checkpoints
+            self.show()
         
-        train_losses = []
-        self.train()
-        max_epochs = kwargs.get("max_epochs", 1)
-        accumulated_batches = 0
-        try:
-            total = len(loader)
-        except Exception as error:
-            total = "?"
-        for epoch_index in range(max_epochs):
-            for batch_index, (batch_of_inputs, batch_of_ideal_outputs) in enumerate(loader):
-                accumulated_batches += 1
-                loss = self.update_weights(batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
-                yield epoch_index, batch_index, to_pure(loss)
-                if batch_index+1 == total or batch_index % self.log_interval == 0:
-                    self.show(f"\r[Train]: overall: {round(accumulated_batches/(total*max_epochs)*100):>3}%, epoch: {epoch_index:>4}, batch: {batch_index+1:>10}/{total}", sep='', end='', flush=True)
-                
-                    # TODO: add/allow checkpoints
-        self.show()
-    
-    @staticmethod
-    def wrap_loss_function(self, loss_func):
+        @staticmethod
+        def wrap_loss_function(self, loss_func):
+            """
+            Uses:
+                self.hardware
+            """
+            def loss_function(model_output, ideal_output):
+                # try:
+                    # convert from one-hot into number, and send tensor to device
+                    return loss_func(model_output.squeeze(), to_tensor(ideal_output).to(self.hardware).squeeze())
+                # except Exception as error:
+                #     import code; code.interact(local={**globals(),**locals()})
+                #     exit()
+            
+            return loss_function
+        
+        @staticmethod
+        def wrap_activation_function(activation_function):
+            """
+            Uses:
+                self.hardware
+            """
+            if isinstance(activation_function, nn.Module):
+                return activation_function
+            else:
+                class ActivationFunction(nn.Module):
+                    def forward(self, x):
+                        return activation_function(x)
+                return ActivationFunction()
+
+    class SimpleSerial:
         """
         Uses:
-            self.hardware
+            self._config
         """
-        def loss_function(model_output, ideal_output):
-            # try:
-                # convert from one-hot into number, and send tensor to device
-                return loss_func(model_output.squeeze(), to_tensor(ideal_output).squeeze().to(self.hardware))
-            # except Exception as error:
-            #     import code; code.interact(local={**globals(),**locals()})
-            #     exit()
+        def to_serial_form(self):
+            config = dict(self._config)
+            try:
+                del config["device"]
+            except Exception as error:
+                pass
+            return (config, self.state_dict())
         
-        return loss_function
-    
-    @staticmethod
-    def wrap_activation_function(activation_function):
-        """
-        Uses:
-            self.hardware
-        """
-        if isinstance(activation_function, nn.Module):
-            return activation_function
-        else:
-            class ActivationFunction(nn.Module):
-                def forward(self, x):
-                    return activation_function(x)
-            return ActivationFunction()
+        @classmethod
+        def from_serial_form(cls, data):
+            (config, state_dict) = data
+            output = cls(**config)
+            output.load_state_dict(state_dict)
+            return output
 
-class SimpleSerial:
-    """
-    Uses:
-        self._config
-    """
-    def to_serial_form(self):
-        config = dict(self._config)
-        try:
-            del config["device"]
-        except Exception as error:
-            pass
-        return (config, self.state_dict())
-    
-    @classmethod
-    def from_serial_form(cls, data):
-        (config, state_dict) = data
-        output = cls(**config)
-        output.load_state_dict(state_dict)
-        return output
+    class Encoder(nn.Module, SimpleSerial):
+        def __init__(self, **config):
+            super(Encoder, self).__init__()
+            # 
+            # options
+            # 
+            Network.default_setup(self, config)
+            self._config = config = {
+                **dict(
+                    input_shape= (400, ),
+                    output_shape= (10,),
+                    batch_size= 64  ,
+                    number_of_layers= 3,
+                    activation_function_eval= "nn.ReLU()",
+                    loss_function_eval= "F.mse_loss",
+                ),
+                **config,
+            }
+            self.input_shape              = config['input_shape']
+            self.output_shape             = config['output_shape']
+            self.batch_size               = config['batch_size']
+            self.number_of_layers         = config['number_of_layers']
+            self.activation_function_eval = config['activation_function_eval']
+            self.loss_function_eval       = config['loss_function_eval']
+            
+            self.activation_function = Network.wrap_activation_function(eval(self.activation_function_eval, globals(), globals()))
+            self.loss_function       = Network.wrap_loss_function(self,eval(self.loss_function_eval, globals(), globals()))
+            
+            # 
+            # layers
+            # 
+            self.layers = Sequential()
+            self.layers.add_module('flatten', nn.Flatten(1)) # 1 => skip the first dimension because thats the batch dimension
+            for layer_index in range(self.number_of_layers-1):
+                self.layers.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, int(self.size_of_last_layer*(2/3))))
+                self.layers.add_module(f'fc{layer_index}_activation', self.activation_function)
+            # final layer
+            self.layers.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, product(self.output_shape)))
+            self.layers.add_module(f'fc{layer_index+1}_activation', self.activation_function)
+            
+            Network.default_init(self, config)
+        
+        @property
+        def size_of_last_layer(self):
+            return product(self.input_shape if len(self._modules) == 0 else layer_output_shapes(self._modules.values(), self.input_shape)[-1])
+            
+        def forward(self, input_data):
+            return Network.default_forward(self, input_data)
+        
+        def update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index):
+            return Network.default_update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
+            
+        def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
+            return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
 
-class Encoder(nn.Module, SimpleSerial):
-    def __init__(self, **config):
-        super(Encoder, self).__init__()
-        # 
-        # options
-        # 
-        Network.default_setup(self, config)
-        self._config = config = {
-            **dict(
-                input_shape= (400, ),
-                output_shape= (10,),
-                batch_size= 64  ,
-                number_of_layers= 3,
-                activation_function_eval= "nn.ReLU()",
-                loss_function_eval= "F.mse_loss",
-            ),
-            **config,
-        }
-        self.input_shape              = config['input_shape']
-        self.output_shape             = config['output_shape']
-        self.batch_size               = config['batch_size']
-        self.number_of_layers         = config['number_of_layers']
-        self.activation_function_eval = config['activation_function_eval']
-        self.loss_function_eval       = config['loss_function_eval']
+    class Decoder(nn.Module, SimpleSerial):
+        def __init__(self, **config):
+            super(Decoder, self).__init__()
+            # 
+            # options
+            # 
+            Network.default_setup(self, config)
+            self._config = config = {
+                **dict(
+                    input_shape= (10, ),
+                    output_shape= (400,),
+                    batch_size= 64  ,
+                    number_of_layers= 3,
+                    activation_function_eval= "nn.ReLU()",
+                    loss_function_eval= "F.mse_loss",
+                ),
+                **config,
+            }
+            self.input_shape              = config['input_shape']
+            self.output_shape             = config['output_shape']
+            self.batch_size               = config['batch_size']
+            self.number_of_layers         = config['number_of_layers']
+            self.activation_function_eval = config['activation_function_eval']
+            self.loss_function_eval       = config['loss_function_eval']
+            
+            self.activation_function = Network.wrap_activation_function(eval(self.activation_function_eval, globals(), globals()))
+            self.loss_function       = Network.wrap_loss_function(self,eval(self.loss_function_eval, globals(), globals()))
+            
+            # 
+            # layers
+            # 
+            self.layers = Sequential()
+            for layer_index in range(self.number_of_layers-1):
+                self.layers.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, int(self.size_of_last_layer*(2/3))))
+                self.layers.add_module(f'fc{layer_index}_activation', self.activation_function)
+            self.layers.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, product(self.output_shape)))
+            self.layers.add_module(f'fc{layer_index+1}_activation', self.activation_function)
+            
+            # 
+            # support (optimizer, loss)
+            # 
+            Network.default_init(self, config)
         
-        self.activation_function = Network.wrap_activation_function(eval(self.activation_function_eval, globals(), globals()))
-        self.loss_function       = Network.wrap_loss_function(self,eval(self.loss_function_eval, globals(), globals()))
+        @property
+        def size_of_last_layer(self):
+            return product(self.input_shape if len(self._modules) == 0 else layer_output_shapes(self._modules.values(), self.input_shape)[-1])
+            
+        def forward(self, input_data):
+            return Network.default_forward(self, input_data)
         
-        # 
-        # layers
-        # 
-        self.layers = Sequential()
-        self.layers.add_module('flatten', nn.Flatten(1)) # 1 => skip the first dimension because thats the batch dimension
-        for layer_index in range(self.number_of_layers-1):
-            self.layers.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, int(self.size_of_last_layer*(2/3))))
-            self.layers.add_module(f'fc{layer_index}_activation', self.activation_function)
-        # final layer
-        self.layers.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, product(self.output_shape)))
-        self.layers.add_module(f'fc{layer_index+1}_activation', self.activation_function)
+        def update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index):
+            return Network.default_update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
+            
+        def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
+            return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
         
-        Network.default_init(self, config)
-    
-    @property
-    def size_of_last_layer(self):
-        return product(self.input_shape if len(self._modules) == 0 else layer_output_shapes(self._modules.values(), self.input_shape)[-1])
+    class AutoEncoder(nn.Module, SimpleSerial):
+        def __init__(self, **config):
+            super(AutoEncoder, self).__init__()
+            # 
+            # options
+            # 
+            Network.default_setup(self, config)
+            self._config = config = {
+                **dict(
+                    input_shape=(400, ),
+                    latent_shape=(30,),
+                    learning_rate=0.01,
+                    momentum=0.5,
+                    log_interval=100 ,
+                    number_of_layers=3,
+                    activation_function_eval="nn.ReLU()",
+                    loss_function_eval="F.mse_loss",
+                ),
+                **config,
+            }
+            self.input_shape              = config['input_shape']
+            self.latent_shape             = config['latent_shape']
+            self.learning_rate            = config['learning_rate']
+            self.momentum                 = config['momentum']
+            self.log_interval             = config['log_interval']
+            self.number_of_layers         = config['number_of_layers']
+            self.activation_function_eval = config['activation_function_eval']
+            self.loss_function_eval       = config['loss_function_eval']
+            
+            self.output_shape             = config['input_shape']
+            self.activation_function = Network.wrap_activation_function(eval(self.activation_function_eval, globals(), globals()))
+            self.loss_function       = Network.wrap_loss_function(self,eval(self.loss_function_eval, globals(), globals()))
+            
+            self.encoder = Encoder(input_shape=self.input_shape, output_shape=self.latent_shape)
+            self.decoder = Decoder(input_shape=self.latent_shape, output_shape=self.output_shape)
+            # 
+            # layers
+            #
+            self.layers = Sequential() 
+            self.layers.add_module('encoder', Encoder(input_shape=self.input_shape, output_shape=self.latent_shape))
+            self.layers.add_module('decoder', Decoder(input_shape=self.latent_shape, output_shape=self.output_shape))
+            
+            # 
+            # support (optimizer, loss)
+            # 
+            Network.default_init(self, config)
+            # create an optimizer
+            self.optimizer = optim.SGD(self.parameters(), lr=self.learning_rate, momentum=self.momentum)
+            
+        @property
+        def size_of_last_layer(self):
+            return product(self.input_shape if len(self._modules) == 0 else layer_output_shapes(self._modules.values(), self.input_shape)[-1])
         
-    def forward(self, input_data):
-        return Network.default_forward(self, input_data)
-    
-    def update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index):
-        return Network.default_update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
+        def forward(self, input_data):
+            # input_data.to(self.hardware)
+            # latent_space = self.encoder.forward(input_data)
+            # output = self.decoder.forward(latent_space)
+            # return output
+            return Network.default_forward(self, input_data)
         
-    def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
-        return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
+        def update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index):
+            return Network.default_update_weights(self, batch_of_inputs, batch_of_inputs, epoch_index, batch_index)
+        
+        def average_loss_for(self, batch_of_inputs, batch_of_ideal_outputs):
+            batch_of_inputs = to_tensor(batch_of_inputs)
+            batch_of_actual_outputs = self.forward(batch_of_inputs)
+            return self.loss_function(batch_of_actual_outputs, batch_of_ideal_outputs)
+            
+        def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
+            return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
 
-class Decoder(nn.Module, SimpleSerial):
-    def __init__(self, **config):
-        super(Decoder, self).__init__()
-        # 
-        # options
-        # 
-        Network.default_setup(self, config)
-        self._config = config = {
-            **dict(
-                input_shape= (10, ),
-                output_shape= (400,),
-                batch_size= 64  ,
-                number_of_layers= 3,
-                activation_function_eval= "nn.ReLU()",
-                loss_function_eval= "F.mse_loss",
-            ),
-            **config,
-        }
-        self.input_shape              = config['input_shape']
-        self.output_shape             = config['output_shape']
-        self.batch_size               = config['batch_size']
-        self.number_of_layers         = config['number_of_layers']
-        self.activation_function_eval = config['activation_function_eval']
-        self.loss_function_eval       = config['loss_function_eval']
-        
-        self.activation_function = Network.wrap_activation_function(eval(self.activation_function_eval, globals(), globals()))
-        self.loss_function       = Network.wrap_loss_function(self,eval(self.loss_function_eval, globals(), globals()))
-        
-        # 
-        # layers
-        # 
-        self.layers = Sequential()
-        for layer_index in range(self.number_of_layers-1):
-            self.layers.add_module(f'fc{layer_index}', nn.Linear(self.size_of_last_layer, int(self.size_of_last_layer*(2/3))))
-            self.layers.add_module(f'fc{layer_index}_activation', self.activation_function)
-        self.layers.add_module(f'fc{layer_index+1}', nn.Linear(self.size_of_last_layer, product(self.output_shape)))
-        self.layers.add_module(f'fc{layer_index+1}_activation', self.activation_function)
-        
-        # 
-        # support (optimizer, loss)
-        # 
-        Network.default_init(self, config)
-    
-    @property
-    def size_of_last_layer(self):
-        return product(self.input_shape if len(self._modules) == 0 else layer_output_shapes(self._modules.values(), self.input_shape)[-1])
-        
-    def forward(self, input_data):
-        return Network.default_forward(self, input_data)
-    
-    def update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index):
-        return Network.default_update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
-        
-    def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
-        return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
-    
-class AutoEncoder(nn.Module, SimpleSerial):
-    def __init__(self, **config):
-        super(AutoEncoder, self).__init__()
-        # 
-        # options
-        # 
-        Network.default_setup(self, config)
-        self._config = config = {
-            **dict(
-                input_shape=(400, ),
-                latent_shape=(30,),
-                learning_rate=0.01,
-                momentum=0.5,
-                log_interval=100 ,
-                number_of_layers=3,
-                activation_function_eval="nn.ReLU()",
-                loss_function_eval="F.mse_loss",
-            ),
-            **config,
-        }
-        self.input_shape              = config['input_shape']
-        self.latent_shape             = config['latent_shape']
-        self.learning_rate            = config['learning_rate']
-        self.momentum                 = config['momentum']
-        self.log_interval             = config['log_interval']
-        self.number_of_layers         = config['number_of_layers']
-        self.activation_function_eval = config['activation_function_eval']
-        self.loss_function_eval       = config['loss_function_eval']
-        
-        self.output_shape             = config['input_shape']
-        self.activation_function = Network.wrap_activation_function(eval(self.activation_function_eval, globals(), globals()))
-        self.loss_function       = Network.wrap_loss_function(self,eval(self.loss_function_eval, globals(), globals()))
-        
-        self.encoder = Encoder(input_shape=self.input_shape, output_shape=self.latent_shape)
-        self.decoder = Decoder(input_shape=self.latent_shape, output_shape=self.output_shape)
-        # 
-        # layers
-        #
-        self.layers = Sequential() 
-        self.layers.add_module('encoder', Encoder(input_shape=self.input_shape, output_shape=self.latent_shape))
-        self.layers.add_module('decoder', Decoder(input_shape=self.latent_shape, output_shape=self.output_shape))
-        
-        # 
-        # support (optimizer, loss)
-        # 
-        Network.default_init(self, config)
-        # create an optimizer
-        self.optimizer = optim.SGD(self.parameters(), lr=self.learning_rate, momentum=self.momentum)
-        
-    @property
-    def size_of_last_layer(self):
-        return product(self.input_shape if len(self._modules) == 0 else layer_output_shapes(self._modules.values(), self.input_shape)[-1])
-    
-    def forward(self, input_data):
-        # input_data.to(self.hardware)
-        # latent_space = self.encoder.forward(input_data)
-        # output = self.decoder.forward(latent_space)
-        # return output
-        return Network.default_forward(self, input_data)
-    
-    def update_weights(self, batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index):
-        return Network.default_update_weights(self, batch_of_inputs, batch_of_inputs, epoch_index, batch_index)
-    
-    def average_loss_for(self, batch_of_inputs, batch_of_ideal_outputs):
-        batch_of_inputs = to_tensor(batch_of_inputs)
-        batch_of_actual_outputs = self.forward(batch_of_inputs)
-        return self.loss_function(batch_of_actual_outputs, batch_of_ideal_outputs)
-        
-    def fit(self, *, input_output_pairs=None, dataset=None, loader=None, max_epochs=1, batch_size=64, shuffle=True):
-        return Network.default_fit(self, input_output_pairs=input_output_pairs, dataset=dataset, loader=loader, max_epochs=max_epochs, batch_size=batch_size, shuffle=shuffle,)
-
+# 
+# classifier definitions
+# 
 class PhosTransferClassifier(nn.Module, SimpleSerial):
     def __init__(self, **config):
         super(PhosTransferClassifier, self).__init__()
@@ -540,6 +542,10 @@ class PhosTransferClassifier(nn.Module, SimpleSerial):
         negative_accuracy      = to_pure(torch.mean((negative_guesses == negative_outputs).float()))
         return loss, correct_count, accuracy, positive_correct_count, positive_accuracy, negative_correct_count, negative_accuracy
 
+
+# 
+# main logic
+# 
 from collections import namedtuple
 class AutoEncoderHelpers:
     @staticmethod
@@ -784,277 +790,27 @@ if True:
         print(f'''sum(y) = {sum(y)}''')
         return X, y
     
-    X, y = read_data(5000000)
-    
-# transformed_x = AutoEncoderHelpers.transform_phos_data(phos_x=X, autoencoder_train_x=X)
+    X, y = read_data(info.config.classifier_truncate_sample)
 
-fold_metrics = AutoEncoderHelpers.evaluate_phos_classifier(
-    inputs=X,
-    outputs=y,
-    number_of_folds=4,
-    seralized_coder=AutoEncoderHelpers.train_autoencoder(
-        x=X,
-        hyperparameters=LazyDict(info.config.autoencoder_hyperparameters),
-    ),
-    hyperparameters=LazyDict(
-        max_epochs=20,
-        batch_size=64,
-    ),
-)
-import pandas
-fold_metrics = pandas.DataFrame(fold_metrics)
-print(fold_metrics)
-fold_metrics.to_csv(info.absolute_path_to.transfer_autoencoder_results)
-
-# 
-    # TODO:
-        # come up with a validation function that returns a validation and training accuracy
-        # auto-try different parameters (loss function, activations, number of layers, learning rate, momentum)
-        # save the one with the best validation accuracy
-        
-        # train it on more sequences first (not just phos sequences), then "over" train it on phos sequences (high number of epochs)
-        
-        # use the encoder in a regular NN 
-
-    # large_pickle_save(coder.to_serial_form())
-
-    # def train_and_test(X_train, X_test, y_train, y_test):
-    #     # 
-    #     # helper
-    #     # 
-    #     def test_accuracy_of(predict):
-    #         print("getting accuracy scores\n")
-    #         # 
-    #         # total
-    #         # 
-    #         y_pred = predict(X_test)
-    #         accuracy = accuracy_score(y_test, predict(X_test))
-    #         print("Total Accuracy:", accuracy)
-    #         print(f'''confusion_matrix(y_test, y_pred) = {confusion_matrix(y_test, y_pred)}''')
-            
-    #         positive_test_inputs  = tuple(each_input   for each_input, each_output in zip(X_test, y_test) if each_output == 1)
-    #         positive_test_outputs = tuple(each_output  for each_input, each_output in zip(X_test, y_test) if each_output == 1)
-    #         positive_accuracy = accuracy_score(positive_test_outputs, predict(positive_test_inputs))
-    #         print("Positive Accuracy:", positive_accuracy)
-            
-    #         negative_test_inputs  = tuple(each_input   for each_input, each_output in zip(X_test, y_test) if each_output == -1)
-    #         negative_test_outputs = tuple(each_output  for each_input, each_output in zip(X_test, y_test) if each_output == -1)
-    #         negative_accuracy = accuracy_score(negative_test_outputs, predict(negative_test_inputs))
-    #         print("Negative Accuracy:", negative_accuracy)
-    #         return accuracy, positive_accuracy, negative_accuracy
-
-
-    #     # 
-    #     # naive_bayes_classifier
-    #     # 
-    #     if 0:
-    #         # positive_truncate = 10_000
-    #         # X = negative_inputs + positive_inputs[0:positive_truncate]
-    #         # y = negative_outputs + positive_outputs[0:positive_truncate]
-
-    #         # print(f'''len(y) = {len(y)}''')
-    #         # print(f'''sum(y) = {sum(y)}''')
-
-    #         # # Assuming you have your data and labels ready, let's call them X and y respectively
-    #         # # Split the data into training and testing sets
-    #         # print("splitting up the data")
-    #         # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-            
-    #         # Create a Random Forest Classifier object
-    #         naive_bayes_classifier = GaussianNB(priors=[0.5, 0.5])
-
-    #         # Train the naive_bayes_classifier using the training data
-    #         print("training naive_bayes")
-    #         naive_bayes_classifier.fit(X_train, y_train)
-
-    #         print("naive_bayes_predictions")
-    #         test_accuracy_of(naive_bayes_classifier.predict)
-    #         print("\n\n")
-
-    #     # 
-    #     # SVM
-    #     # 
-    #     if 0:
-    #         # Create a Random Forest Classifier object
-    #         svm_classifier = SVC()
-
-    #         # Train the svm_classifier using the training data
-    #         print("training svm")
-    #         svm_classifier.fit(X_train, y_train)
-
-    #         print("svm_predictions")
-    #         test_accuracy_of(svm_classifier.predict)
-    #         print("\n\n")
-        
-    #     # 
-    #     # random_forest
-    #     # 
-    #     if True:
-    #         # Create a Random Forest Classifier object
-    #         rf_classifier = RandomForestClassifier(n_estimators=500,max_depth=20)
-
-    #         # Train the classifier using the training data
-    #         print("training random_forest")
-    #         rf_classifier.fit(X_train, y_train)
-            
-    #         print("random_forest_predictions")
-    #         random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy = test_accuracy_of(rf_classifier.predict)
-    #         print("\n\n")
-            
-    #         importances = rf_classifier.feature_importances_
-    #         feature_names = [ str(index) for index in range(len(X[0]))]
-    #         forest_importances = pd.Series(importances, index=feature_names)
-            
-    #         fig, ax = plt.subplots()
-    #         std = numpy.std([tree.feature_importances_ for tree in rf_classifier.estimators_], axis=0)
-    #         forest_importances.plot.bar(yerr=std, ax=ax)
-    #         ax.set_title("Feature importances using MDI")
-    #         ax.set_ylabel("Mean decrease in impurity")
-    #         fig.tight_layout()
-    #         FS.ensure_is_folder(FS.dirname(info.absolute_path_to.important_features_image))
-    #         dpi = 400
-    #         fig.set_size_inches(16, 14)  # Adjust the figure size as desired
-    #         plt.savefig(info.absolute_path_to.important_features_image, dpi=400)
-        
-    #     # 
-    #     # Neural
-    #     # 
-    #     if True:
-    #         # Create a Random Forest Classifier object
-    #         mlp_classifier = MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=1000)
-
-    #         # Train the svm_classifier using the training data
-    #         print("training mlp_classifier")
-    #         mlp_classifier.fit(X_train, y_train)
-
-    #         print("mlp_classifier_predictions")
-    #         neural_accuracy, neural_positive_accuracy, neural_negative_accuracy = test_accuracy_of(mlp_classifier.predict)
-    #         print("\n\n")
-    #     # 
-    #     # DecisionTreeClassifier
-    #     # 
-    #     if True:
-    #         # Create a Random Forest Classifier object
-    #         tree_classifier = DecisionTreeClassifier()
-
-    #         # Train the svm_classifier using the training data
-    #         print("training tree_classifier")
-    #         tree_classifier.fit(X_train, y_train)
-
-    #         print("tree_classifier_predictions")
-    #         tree_accuracy, tree_positive_accuracy, tree_negative_accuracy = test_accuracy_of(tree_classifier.predict)
-    #         print("\n\n")
-
-    #     # 
-    #     # Auto Neural
-    #     # 
-    #     if True:
-    #         # maybe use a transformer like https://www.nature.com/articles/s41592-021-01252-x
-    #         pass
-    #         # create an autoencoder for sequences near phos sites
-    #         # use prev 3 amino acids to predict next amino acid
-
-    #     # 
-    #     # combined
-    #     # 
-
-    #     def predict(X):
-    #         rf_predictions = rf_classifier.predict_proba(X)
-    #         mlp_predictions = mlp_classifier.predict_proba(X)
-    #         predictions = [0]*len(rf_predictions)
-    #         for index, probs in enumerate(zip( rf_predictions, mlp_predictions )):
-    #             combined_probabilites = [ sum(each)/2.0 for each in zip(*probs)]
-    #             best_label = None
-    #             max_probability = -1
-    #             for label_index, probability in enumerate(combined_probabilites):
-    #                 if probability > max_probability:
-    #                     max_probability = probability
-    #                     best_label = label_index
-                        
-    #             predictions[index] = best_label
-                    
-    #         return predictions
-        
-    #     average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy = test_accuracy_of(predict)
-        
-    #     def predict(X):
-    #         rf_predictions = rf_classifier.predict(X)
-    #         mlp_predictions = mlp_classifier.predict(X)
-    #         predictions = [0]*len(rf_predictions)
-    #         for index, (rf_prediction, mlp_prediction) in enumerate(zip( rf_predictions, mlp_predictions )):
-    #             if mlp_prediction == -1: # negative prediction
-    #                 predictions[index] = rf_prediction
-    #             else:
-    #                 predictions[index] = mlp_prediction
-                    
-    #         return predictions
-        
-    #     nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy = test_accuracy_of(predict)
-        
-    #     def predict(X):
-    #         rf_predictions = rf_classifier.predict(X)
-    #         mlp_predictions = mlp_classifier.predict(X)
-    #         predictions = [0]*len(rf_predictions)
-    #         for index, (rf_prediction, mlp_prediction) in enumerate(zip( rf_predictions, mlp_predictions )):
-    #             if mlp_prediction == 1: # negative prediction
-    #                 predictions[index] = rf_prediction
-    #             else:
-    #                 predictions[index] = mlp_prediction
-                    
-    #         return predictions
-
-    #     nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy = test_accuracy_of(predict)
-        
-    #     return (
-    #         neural_accuracy, neural_positive_accuracy, neural_negative_accuracy,
-    #         random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy,
-    #         average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,
-    #         tree_accuracy, tree_positive_accuracy, tree_negative_accuracy,
-    #         nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy,
-    #         nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy,
-    #     )
-
-    # number_of_folds = 4
-    # folds = cross_validation(
-    #     inputs=X,
-    #     outputs=y,
-    #     number_of_folds=number_of_folds,
-    # )
-
-    # rows_of_output = []
-    # for index, each in enumerate(folds):
-    #     (
-    #         neural_accuracy, neural_positive_accuracy, neural_negative_accuracy,
-    #         random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy,
-    #         average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,
-    #         tree_accuracy, tree_positive_accuracy, tree_negative_accuracy,
-    #         nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy,
-    #         nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy,
-    #     ) = train_and_test(
-    #         X_train=each["train"]["inputs"],
-    #         X_test=each["test"]["inputs"],
-    #         y_train=each["train"]["outputs"],
-    #         y_test=each["test"]["outputs"],
-    #     )
-        
-    #     rows_of_output.append([sample_size, info.config.feature_set, "neural",           index+1, neural_accuracy          , neural_positive_accuracy          , neural_negative_accuracy          ,])
-    #     rows_of_output.append([sample_size, info.config.feature_set, "random_forest",    index+1, random_forest_accuracy   , random_forest_positive_accuracy   , random_forest_negative_accuracy   ,])
-    #     rows_of_output.append([sample_size, info.config.feature_set, "tree",             index+1, tree_accuracy            , tree_positive_accuracy            , tree_negative_accuracy            ,])
-    #     rows_of_output.append([sample_size, info.config.feature_set, "average_ensemble", index+1, average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy,])
-    #     rows_of_output.append([sample_size, info.config.feature_set, "nn_0_fallback",    index+1, nn_0_fallback_accuracy   , nn_0_fallback_positive_accuracy   , nn_0_fallback_negative_accuracy   ,])
-    #     rows_of_output.append([sample_size, info.config.feature_set, "nn_1_fallback",    index+1, nn_1_fallback_accuracy   , nn_1_fallback_positive_accuracy   , nn_1_fallback_negative_accuracy   ,])
-
-    # # 200,000 raw features
-    #     # Total Accuracy: 0.6795935855061819
-    #     # confusion_matrix(y_test, y_pred) = [
-    #     #     [13568  6779]
-    #     #     [ 6308 14190]
-    #     # ]
-    #     # Positive Accuracy: 0.692262659771685
-    #     # Negative Accuracy: 0.6668304909814715
-
-    # Csv.write(
-    #     path=info.path_to.recent_results,
-    #     rows=rows_of_output,
-    #     column_names=[ "sample_size", "feature_set", "model", "fold_number", "accuracy", "positive_accuracy", "negative_accuracy"],
-    # )
+#
+# evaluate 
+#  
+if True:
+    # transformed_x = AutoEncoderHelpers.transform_phos_data(phos_x=X, autoencoder_train_x=X)
+    fold_metrics = AutoEncoderHelpers.evaluate_phos_classifier(
+        inputs=X,
+        outputs=y,
+        number_of_folds=4,
+        seralized_coder=AutoEncoderHelpers.train_autoencoder(
+            x=X,
+            hyperparameters=LazyDict(info.config.autoencoder_hyperparameters),
+        ),
+        hyperparameters=LazyDict(
+            max_epochs=20,
+            batch_size=64,
+        ),
+    )
+    import pandas
+    fold_metrics = pandas.DataFrame(fold_metrics)
+    print(fold_metrics)
+    fold_metrics.to_csv(info.absolute_path_to.transfer_autoencoder_results)

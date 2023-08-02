@@ -48,6 +48,7 @@
                     physicochemicalCategories: false
                     handCodedMotifs: false
             
+            classifier_truncate_sample: 50_000
             phos_classifier_hyperparameters:
                 number_of_layers: 1 # layers in additon to the encoder layers
                 final_activation_function_eval: "lambda x: x/(1 + torch.abs(x))" # modified sigmoid
@@ -61,9 +62,9 @@
                 
             autoencoder_hyperparameters:
                 max_epochs: 10
-                batch_size: 64
-                latent_size: 30
-                number_of_layers: 3
+                batch_size: 512
+                latent_size: 100
+                number_of_layers: 2
                 learning_rate: 0.01
                 momentum: 0.5
                 activation_function_eval: "nn.ReLU()"
