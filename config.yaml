@@ -72,14 +72,14 @@
                 momentum: 0.5
                 
             autoencoder_hyperparameters:
-                max_epochs: 100
+                max_epochs: 400
                 batch_size: 1024
                 latent_size: 128
-                number_of_layers: 2
-                learning_rate: 0.01
+                number_of_layers: 3
+                learning_rate: 0.20
                 momentum: 0.5
                 activation_function_eval: "nn.Sigmoid()"
-                loss_function_eval: "F.binary_cross_entropy"
-                validation_threshold: 0.05
+                loss_function_eval: "lambda *args: F.binary_cross_entropy(torch.clip(args[0], min=0, max=1), torch.clip(args[1], min=0, max=1))" # TODO: figure out why there is one random 1.251 value in the tensor that causes binary_cross_entropy to fail
+                validation_threshold: 0.02
                 number_of_folds: 3
 
