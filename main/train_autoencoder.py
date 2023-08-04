@@ -240,7 +240,10 @@ if True:
             def loss_function(model_output, ideal_output):
                 # try:
                     # convert from one-hot into number, and send tensor to device
-                    return loss_func(to_tensor(model_output).to(self.hardware).squeeze(), to_tensor(ideal_output).to(self.hardware).squeeze())
+                    return loss_func(
+                        to_tensor(model_output).cpu().squeeze(),
+                        to_tensor(ideal_output).cpu().squeeze()
+                    )
                 # except Exception as error:
                 #     import code; code.interact(local={**globals(),**locals()})
                 #     exit()
