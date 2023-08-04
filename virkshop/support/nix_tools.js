@@ -13,7 +13,7 @@ import { run, hasCommand, throwIfFails, zipInto, mergeInto, returnAsString, Time
 import { Console, black, white, red, green, blue, yellow, cyan, magenta, lightBlack, lightWhite, lightRed, lightGreen, lightBlue, lightYellow, lightMagenta, lightCyan, blackBackground, whiteBackground, redBackground, greenBackground, blueBackground, yellowBackground, magentaBackground, cyanBackground, lightBlackBackground, lightRedBackground, lightGreenBackground, lightYellowBackground, lightBlueBackground, lightMagentaBackground, lightCyanBackground, lightWhiteBackground, bold, reset, dim, italic, underline, inverse, strikethrough, gray, grey, lightGray, lightGrey, grayBackground, greyBackground, lightGrayBackground, lightGreyBackground, } from "https://deno.land/x/quickr@0.6.36/main/console.js"
 import { move as moveAndRename } from "https://deno.land/std@0.133.0/fs/mod.ts"
 import * as Path from "https://deno.land/std@0.128.0/path/mod.ts"
-import { indent, findAll } from "https://deno.land/x/good@0.7.7/string.js"
+import { indent, findAll } from "https://deno.land/x/good@1.4.2.0/string.js"
 
 export const nix = {
     async ensureInstalled(options={defaultVersion: null}) {
@@ -597,8 +597,8 @@ export const nix = {
                 const nixCertPathInfo = await nixCertPathPromise
                 if (!nixCertPathInfo.isFile) {
                     // forcefully link
-                    var {success} = await run`sudo /bin/mkdir -p ${FileSystem.parentPath(nixCertPath)}`
-                    var {success} = await run`sudo /bin/ln -s ${Console.env.NIX_SSL_CERT_FILE} ${nixCertPath}`
+                    var {success} = await run`sudo /bin/mkdir -p ${FileSystem.parentPath(nixCertPathInfo.path)}`
+                    var {success} = await run`sudo /bin/ln -s ${Console.env.NIX_SSL_CERT_FILE} ${nixCertPathInfo.path}`
                     // FIXME: report errors if not successful
                     // TODO: instead of depending on /bin/mkdir run a sudo process with the current deno executable
                 }
