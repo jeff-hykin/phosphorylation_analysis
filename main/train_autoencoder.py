@@ -681,10 +681,10 @@ class AutoEncoderHelpers:
                         training_loss_count += 1
                         average_training_loss    = training_loss_sum/training_loss_count
                         
-                        average_validation_loss = model.loss_function(
+                        average_validation_loss = to_pure(model.loss_function(
                             test_dataset.data_sources[0], 
                             test_dataset.data_sources[0], 
-                        )
+                        ))
                         metrics.append(
                             (
                                 average_training_loss,
@@ -713,7 +713,7 @@ class AutoEncoderHelpers:
         from statistics import mean as average
         # train using ideal number of epochs on whole dataset
         for epoch_index, batch_index, each_loss in model.fit(
-            input_output_pairs=list(zip(x, x)),
+            dataset=dataset,
             max_epochs=round(average(number_of_epochs_before_stopping)),
             batch_size=hyperparameters.batch_size,
             shuffle=True,
