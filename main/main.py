@@ -20,7 +20,7 @@ import numpy
 
 from __dependencies__.quik_config import find_and_load
 from __dependencies__.informative_iterator import ProgressBar
-from __dependencies__.cool_cache import cache
+from __dependencies__.cool_cache import cache, super_hash
 from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure, print, LazyDict, super_hash, drop_end, linear_steps, arg_max
 from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential
 from generic_tools.cross_validation import cross_validation
@@ -41,6 +41,36 @@ def json_write(path, data):
     with open(path, 'w') as outfile:
         json.dump(data, outfile)
     
+@cache()
+def read_full_data():
+    # 
+    # read data
+    # 
+    with open(info.absolute_path_to.all_negative_examples, 'r') as in_file:
+        negative_inputs = json.load(in_file)
+        negative_outputs = tuple(negative_label for each in negative_inputs)
+        print("loaded all_negative_examples")
+    with open(info.absolute_path_to.all_positive_examples, 'r') as in_file:
+        positive_inputs = json.load(in_file)
+        positive_outputs = tuple(positive_label for each in positive_inputs)
+        print("loaded all_positive_examples")
+    with open(info.absolute_path_to.all_negative_examples_genes, 'r') as in_file:
+        negative_genes = json.load(in_file)
+        print("loaded all_negative_examples_genes")
+    with open(info.absolute_path_to.all_positive_examples_genes, 'r') as in_file:
+        positive_genes = json.load(in_file)
+        print("loaded all_positive_examples_genes")
+
+    X     = negative_inputs + positive_inputs
+    y     = negative_outputs + positive_outputs
+    genes = negative_genes + positive_genes
+
+    sample_size = len(X)
+    print(f'''len(y) = {len(y)}''')
+    print(f'''sum(y) = {sum(y)}''')
+
+    return X, y, genes, sample_size
+
 @cache(watch_filepaths=lambda *args: [ info.absolute_path_to.negative_examples, info.absolute_path_to.positive_examples ])
 def read_data():
     # 
@@ -72,8 +102,6 @@ def read_data():
 
     # Assuming you have your data and labels ready, let's call them X and y respectively
     # Split the data into training and testing sets
-    print("splitting up the data")
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=45)
     return X, y, genes, sample_size
 
 FS.ensure_is_folder(info.absolute_path_to.results_folder)
@@ -103,7 +131,11 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
         print("Negative Accuracy:", negative_accuracy)
         
         gene_info_for = {}
-        for each_input, each_output, each_guess, gene in zip(X_test, y_test, y_pred, genes_test):
+        all_x, all_y, all_genes, sample_size = read_full_data()
+        print("predicting")
+        all_predictions = predict(all_x)
+        print("evaluating gene accuracy...")
+        for progress, (each_input, each_output, each_guess, gene) in ProgressBar(zip(all_x, all_y, all_predictions, all_genes), iterations=len(all_x)):
             gene_info_for.setdefault(gene, LazyDict())
             gene_info =  gene_info_for[gene]
             
@@ -145,7 +177,8 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
         
         return accuracy, positive_accuracy, negative_accuracy, gene_info_for, gene_accuracy
 
-
+    
+    training_data_hash = super_hash((X_train, y_train, X_test, y_test))
     # 
     # naive_bayes_classifier
     # 
@@ -192,12 +225,17 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
     # random_forest
     # 
     if True:
-        # Create a Random Forest Classifier object
-        rf_classifier = RandomForestClassifier(n_estimators=500,max_depth=20)
+        @cache(depends_on=lambda *args: [ training_data_hash ])
+        def train_random_forest(n_estimators, max_depth):
+            # Create a Random Forest Classifier object
+            rf_classifier = RandomForestClassifier(n_estimators=n_estimators,max_depth=max_depth)
 
-        # Train the classifier using the training data
-        print("training random_forest")
-        rf_classifier.fit(X_train, y_train)
+            # Train the classifier using the training data
+            print("training random_forest")
+            rf_classifier.fit(X_train, y_train)
+            return rf_classifier
+        
+        rf_classifier = train_random_forest(500, 20)
         
         print("random_forest_predictions")
         random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy, random_forest_gene_info, random_forest_gene_accuracy = test_accuracy_of(rf_classifier.predict)
@@ -216,19 +254,24 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
         fig.tight_layout()
         FS.ensure_is_folder(FS.dirname(info.absolute_path_to.important_features_image))
         fig.set_size_inches(256, 140)  # Adjust the figure size as desired
-        plt.savefig(info.absolute_path_to.important_features_image, dpi=2000)
+        plt.savefig(info.absolute_path_to.important_features_image, dpi=200)
     
     # 
     # Neural
     # 
     if True:
-        # Create a Random Forest Classifier object
-        mlp_classifier = MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=1000)
+        @cache(depends_on=lambda *args: [ training_data_hash ])
+        def train_mlp():
+            # Create a Random Forest Classifier object
+            mlp_classifier = MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=1000)
 
-        # Train the svm_classifier using the training data
-        print("training mlp_classifier")
-        mlp_classifier.fit(X_train, y_train)
-
+            # Train the svm_classifier using the training data
+            print("training mlp_classifier")
+            mlp_classifier.fit(X_train, y_train)
+            return mlp_classifier
+        
+        mlp_classifier = train_mlp()
+        
         print("mlp_classifier_predictions")
         neural_accuracy, neural_positive_accuracy, neural_negative_accuracy, neural_gene_info, neural_gene_accuracy = test_accuracy_of(mlp_classifier.predict)
         pandas.DataFrame.from_dict(neural_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_neural.csv")
@@ -236,7 +279,7 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
     # 
     # DecisionTreeClassifier
     # 
-    if True:
+    if 0:
         # Create a Random Forest Classifier object
         tree_classifier = DecisionTreeClassifier()
 
@@ -252,7 +295,7 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
     # 
     # Auto Neural
     # 
-    if True:
+    if 0:
         # maybe use a transformer like https://www.nature.com/articles/s41592-021-01252-x
         pass
         # create an autoencoder for sequences near phos sites

@@ -55,7 +55,7 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
         skipEntryIf: ({ uniprotGeneId, aminoAcidsString, })=>(
             !geneIds.has(uniprotGeneId)
             || !aminoAcidsString[parameters.windowPadding].match(parameters.aminoMatchPattern)
-            || aminoAcidsString.match(/SSS+/) // done to improve huffman code, eliminates a few outliers
+            || (parameters.useHuffmanEncoding && aminoAcidsString.match(/SSS+/)) // done to improve huffman code, eliminates a few outliers
         ),
         geneData,
     })
