@@ -19,6 +19,7 @@
         prev_parameters: ./prev_parameters.json
         autoencoder_checker_cache: ./cache.ignore/autoencoder_parameter_check.json
         prev_autoencoder: ./cache.ignore/autoencoder.pickle
+        autoencoder_losses: ./results/autoencoder_losses.csv
     
     todo:
         - dont add plant features
@@ -67,7 +68,7 @@
                 momentum: 0.5
                 
             autoencoder_hyperparameters:
-                max_epochs: 30
+                max_epochs: 100
                 batch_size: 1024
                 latent_size: 128
                 number_of_layers: 2
@@ -75,4 +76,6 @@
                 momentum: 0.5
                 activation_function_eval: "nn.Sigmoid()"
                 loss_function_eval: "F.binary_cross_entropy"
+                validation_threshold: 0.05
+                number_of_folds: 3
 
