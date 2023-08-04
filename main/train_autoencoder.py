@@ -20,6 +20,7 @@ from torch import nn
 import torch.optim as optim
 import torch.nn.utils as utils
 import pandas
+from torch.utils.data import Dataset
 
 from __dependencies__.quik_config import find_and_load
 from __dependencies__.informative_iterator import ProgressBar
@@ -44,6 +45,69 @@ torch.manual_seed(default_seed)
 # Autoencoder definitions
 # 
 if True:
+    class IndexDataset(Dataset):
+        def __init__(self, *data_sources, re_indexer, length=None):
+            self.re_indexer = re_indexer
+            self.data_sources = data_sources
+            self.length = length
+
+        def __len__(self):
+            return self.length or len(self.re_indexer)
+
+        def __getitem__(self, index):
+            return tuple(each[self.re_indexer[index]] for each in self.data_sources)
+        
+    class SimpleDataset(Dataset):
+        def __init__(self, *data_sources, length=None):
+            self.data_sources = data_sources
+            self.length = length
+
+        def __len__(self):
+            return self.length or len(self.data_sources[0])
+
+        def __getitem__(self, index):
+            return tuple(each[index] for each in self.data_sources)
+    
+        def cross_validation(self, number_of_folds, should_randomize=True):
+            from random import shuffle
+            number_of_samples = len(self.data_sources[0][0])
+            fold_size = math.floor(number_of_samples / number_of_folds)
+            folds = []
+            
+            indicies = list(range(number_of_samples))
+            if should_randomize: shuffle(indicies)
+            
+            for index in range(number_of_folds):
+                start = index * fold_size
+                end = number_of_samples if index == number_of_folds - 1 else (index + 1) * fold_size
+                train_indices = []
+                test_indices = []
+                
+                copy_of_indicies = list(indicies)
+                
+                for j in range(number_of_samples):
+                    if j >= start and j < end:
+                        test_indices.append(copy_of_indicies.pop())
+                    else:
+                        train_indices.append(copy_of_indicies.pop())
+                
+                # 
+                # uses iterators to avoid memory usage and up-front computation
+                # 
+                indexer = to_tensor(train_indices).long()
+                folds.append((
+                    IndexDataset(
+                        *self.data_sources,
+                        re_indexer=to_tensor(train_indices).long(),
+                    ),
+                    IndexDataset(
+                        *self.data_sources,
+                        re_indexer=to_tensor(test_indices).long(),
+                    ),
+                ))
+
+            return folds
+    
     class Network:
         @staticmethod
         def default_setup(self, config):
@@ -51,7 +115,7 @@ if True:
             self.setup_config    = config
             self.seed            = config.get("seed"           , default_seed)
             self.suppress_output = config.get("suppress_output", False)
-            self.hardware        = config.get("device"         , torch.device("cuda" if torch.cuda.is_available() else "cpu"))
+            self.hardware        = config.get("device"         , core.default_device)
             self.show = lambda *args, **kwargs: print(*args, **kwargs) if not self.suppress_output else None
             self.to(self.hardware)
         
@@ -179,10 +243,15 @@ if True:
                 if shuffle:
                     try:
                         len(input_output_pairs)
-                        input_output_pairs = list(input_output_pairs)
-                        from random import random, sample, choices, shuffle
-                        shuffle(input_output_pairs)
+                        if isinstance(input_output_pairs, torch.Tensor):
+                            indexes = torch.randperm(input_output_pairs.shape[0])
+                            input_output_pairs = input_output_pairs[indexes]
+                        else:
+                            input_output_pairs = list(input_output_pairs)
+                            from random import random, sample, choices, shuffle
+                            shuffle(input_output_pairs)
                     except Exception as error:
+                        # NOTE: shuffling isn't possible when there is no length (and generators don't have lengths). So maybe think of an alternative
                         pass
                 # creates batches
                 def bundle(iterable, bundle_size):
@@ -199,8 +268,13 @@ if True:
                 input_generator        = (each for each, _ in input_output_pairs)
                 ideal_output_generator = (each for _   , each in input_output_pairs)
                 seperated_batches = zip(bundle(input_generator, batch_size), bundle(ideal_output_generator, batch_size))
-                loader = tuple((to_tensor(each_input_batch).to(self.hardware), to_tensor(each_output_batch).to(self.hardware)) for each_input_batch, each_output_batch in seperated_batches)
-                # NOTE: shuffling isn't possible when there is no length (and generators don't have lengths). So maybe think of an alternative
+                loader = tuple(
+                    (
+                        to_tensor(each_input_batch).to(self.hardware),
+                        to_tensor(each_output_batch).to(self.hardware)
+                    )
+                        for each_input_batch, each_output_batch in seperated_batches
+                )
             else:
                 # convert the dataset into a loader (assumming loader was not given)
                 if isinstance(dataset, torch.utils.data.Dataset):
@@ -219,7 +293,11 @@ if True:
             except Exception as error:
                 total = "?"
             for epoch_progress, epoch_index in ProgressBar(max_epochs, title=f"[Train {self.__class__.__name__}]"):
-                for batch_progress, (batch_of_inputs, batch_of_ideal_outputs) in ProgressBar(loader, title="Batch Progress"):
+                for batch_progress, data in ProgressBar(loader, title="Batch Progress"):
+                    if len(data) == 1: # autoencoder
+                        batch_of_inputs = batch_of_ideal_outputs = data[0]
+                    else:
+                        (batch_of_inputs, batch_of_ideal_outputs) = data
                     batch_index = batch_progress.index
                     accumulated_batches += 1
                     loss = self.update_weights(batch_of_inputs, batch_of_ideal_outputs, epoch_index, batch_index)
@@ -558,88 +636,16 @@ class PhosTransferClassifier(nn.Module, SimpleSerial):
 from collections import namedtuple
 class AutoEncoderHelpers:
     @staticmethod
-    def get_autoencode_score(hyperparameters, validation_threshold=0.05):
-        """
-            Arguments:
-                hyperparameters.max_epochs
-                hyperparameters.batch_size
-                hyperparameters.latent_size
-                hyperparameters.number_of_layers
-                hyperparameters.learning_rate
-                hyperparameters.activation_function_eval
-                hyperparameters.loss_function_eval
-                hyperparameters.momentum
-            Example:
-                parameter_score = AutoEncoderHelpers.get_autoencode_score(LazyDict(
-                    max_epochs=20,
-                    batch_size=64,
-                    latent_size=30,
-                    number_of_layers=3,
-                    learning_rate=0.01,
-                    momentum=0.5,
-                    activation_function_eval="nn.ReLU()",
-                    loss_function_eval="F.mse_loss",
-                ))
-        """
-        number_of_folds = 4
-        folds = cross_validation(
-            X,
-            number_of_folds=number_of_folds,
-        )
-        aggregate_average_validation_loss = 0
-        
-        with print.indent:
-            for fold_index, each_fold in enumerate(folds):
-                training_inputs = training_outputs = each_fold["train"][0]
-                testing_inputs  = testing_outputs  = each_fold["test"][0]
-                print(f'''fold: {fold_index}, sample_size: {len(training_inputs)}''')
-                coder = AutoEncoder(
-                    input_shape=(len(training_inputs[0]), ),
-                    latent_shape=(hyperparameters.latent_size, ),
-                    number_of_layers=hyperparameters.number_of_layers,
-                    learning_rate=hyperparameters.learning_rate,
-                    momentum=hyperparameters.momentum,
-                    activation_function_eval=hyperparameters.activation_function_eval,
-                    loss_function_eval=hyperparameters.loss_function_eval,
-                )
-                training_loss_count = 0
-                training_loss_sum = 0
-                fold_validation_losses = []
-                with print.indent:
-                    for batch_index, (_, _, each_loss) in enumerate(coder.fit(
-                        input_output_pairs=list(zip(training_inputs, training_outputs)),
-                        max_epochs=hyperparameters.max_epochs,
-                        batch_size=hyperparameters.batch_size,
-                        shuffle=True,
-                    )):
-                        training_loss_sum += each_loss
-                        training_loss_count += 1
-                        average_validation_loss = coder.average_loss_for(
-                            batch_of_inputs=testing_inputs,
-                            batch_of_ideal_outputs=testing_outputs,
-                        )
-                        fold_validation_losses.append(average_validation_loss)
-                        average_training_loss = training_loss_sum/training_loss_count
-                        
-                        print(f'''average_training_loss = {average_training_loss}''')
-                        print(f'''average_validation_loss = {average_validation_loss}''')
-                        
-                        if average_validation_loss*(1 - validation_threshold) > average_training_loss:
-                            print(f'''stopping training early: batch_index:{batch_index}''')
-                            break
-                
-                aggregate_average_validation_loss += min(fold_validation_losses)
-        return -(aggregate_average_validation_loss/number_of_folds)
-    
-    @staticmethod
     @cache() # this function will only run if the inputs change
     def train_autoencoder(x, hyperparameters):
         """
             Summary:
                 will only retrain if the features changed
         """
-        folds = cross_validation(
-            x,
+        dataset = SimpleDataset(
+            to_tensor(x).to(core.default_device)
+        )
+        folds = dataset.cross_validation(
             number_of_folds=hyperparameters.number_of_folds,
         )
         aggregate_metrics = LazyDict(
@@ -647,11 +653,12 @@ class AutoEncoderHelpers:
             average_validation_loss=[],
         )
         number_of_epochs_before_stopping = []
+        
         with print.indent:
-            for fold_progress, each_fold in ProgressBar(folds, title=f"""Autoencoder Fold progress"""):
+            for fold_progress, (train_dataset, test_dataset) in ProgressBar(folds, title=f"""Autoencoder Fold progress"""):
                 fold_index = fold_progress.index
                 model = AutoEncoder(
-                    input_shape=(len(x[0]), ),
+                    input_shape=(len(train_dataset[0][0]), ),
                     latent_shape=(hyperparameters.latent_size, ),
                     number_of_layers=hyperparameters.number_of_layers,
                     learning_rate=hyperparameters.learning_rate,
@@ -659,15 +666,13 @@ class AutoEncoderHelpers:
                     activation_function_eval=hyperparameters.activation_function_eval,
                     loss_function_eval=hyperparameters.loss_function_eval,
                 )
-                training_inputs = training_outputs = to_tensor(each_fold["train"][0])
-                testing_inputs = testing_outputs  =  to_tensor(each_fold["test"][0])
                 training_loss_count = 0
                 training_loss_sum = 0
                 metrics = []
                 number_of_epochs_before_stopping.append(hyperparameters.max_epochs)
                 with print.indent:
                     for epoch_index, batch_index, each_loss in model.fit(
-                        input_output_pairs=list(zip(training_inputs, training_outputs)),
+                        dataset=train_dataset,
                         max_epochs=hyperparameters.max_epochs,
                         batch_size=hyperparameters.batch_size,
                         shuffle=True,
@@ -676,7 +681,10 @@ class AutoEncoderHelpers:
                         training_loss_count += 1
                         average_training_loss    = training_loss_sum/training_loss_count
                         
-                        average_validation_loss = model.loss_function(testing_inputs, testing_outputs)
+                        average_validation_loss = model.loss_function(
+                            test_dataset.data_sources[0], 
+                            test_dataset.data_sources[0], 
+                        )
                         metrics.append(
                             (
                                 average_training_loss,
@@ -922,7 +930,7 @@ if True:
     from __dependencies__.informative_iterator import ProgressBar
     from __dependencies__.cool_cache import cache
     from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure, print, LazyDict, super_hash, drop_end, linear_steps, arg_max
-    from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential
+    from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential, core
     from generic_tools.cross_validation import cross_validation
 
 
