@@ -795,16 +795,17 @@ if True:
             print("loaded positive_examples")
 
 
-        sample_size = len(X)
-        print(f'''len(y) = {len(y)}''')
-        print(f'''sum(y) = {sum(y)}''')
         return negative_inputs, negative_outputs, positive_inputs, positive_outputs
     
     negative_inputs, negative_outputs, positive_inputs, positive_outputs = read_data()
+    truncate_size = info.config.classifier_truncate_sample
     full_x = negative_inputs+positive_inputs
     shuffle(full_x)
     X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
     y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
+    sample_size = len(X)
+    print(f'''len(y) = {len(y)}''')
+    print(f'''sum(y) = {sum(y)}''')
 
 #
 # evaluate 
