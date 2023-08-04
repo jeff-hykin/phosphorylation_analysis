@@ -316,15 +316,17 @@ if True:
                 self.hardware
             """
             def loss_function(model_output, ideal_output):
-                # try:
+                try:
                     # convert from one-hot into number, and send tensor to device
                     return loss_func(
-                        to_tensor(model_output).cpu().squeeze(),
-                        to_tensor(ideal_output).cpu().squeeze()
+                        to_tensor(model_output).to(self.hardware).squeeze(),
+                        to_tensor(ideal_output).to(self.hardware).squeeze()
                     )
-                # except Exception as error:
-                #     import code; code.interact(local={**globals(),**locals()})
-                #     exit()
+                except Exception as error:
+                    print(f'''model_output = {model_output}''')
+                    print(f'''ideal_output = {ideal_output}''')
+                    import code; code.interact(local={**globals(),**locals()})
+                    exit()
             
             return loss_function
         
@@ -681,10 +683,12 @@ class AutoEncoderHelpers:
                         training_loss_count += 1
                         average_training_loss    = training_loss_sum/training_loss_count
                         
+                        test_inputs = test_dataset.data_sources[0]
                         average_validation_loss = to_pure(model.loss_function(
-                            test_dataset.data_sources[0], 
-                            test_dataset.data_sources[0], 
+                            model.forward(test_inputs), 
+                            test_inputs,
                         ))
+                        print(f'''\ntraining_loss:{average_training_loss:.3f}, validation_loss:{average_validation_loss:.3f}''')
                         metrics.append(
                             (
                                 average_training_loss,
