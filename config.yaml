@@ -26,7 +26,6 @@
         autoencoder_losses: ./results/autoencoder_losses.csv
     
     todo:
-        - dont add plant features
         - do autoencoder:
             - how many layers? 50 units, 20 units
             - latent space: 2 latent, 5, 10,
@@ -42,6 +41,7 @@
             negative_label: -1
             positive_label: 1
             gene_classification_threshold: 3
+            negative_example_too_similar_threshold: 5 # if 5 or fewer amino acids are different, then its "too" similar
             generate_data:
                 windowPadding: 10 # + or - 10 amino acids
                 aminoMatchPattern: "S"
