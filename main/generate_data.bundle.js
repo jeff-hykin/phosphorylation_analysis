@@ -22,7 +22,7 @@ function createCommonjsModule(fn, basedir, module) {
 function commonjsRequire() {
   throw new Error("Dynamic requires are not currently supported by @rollup/plugin-commonjs");
 }
-var commonjsGlobal, lodash, VERSION, _, add, after, ary, assign, assignIn, assignInWith, assignWith, at, attempt, before, bind, bindAll, bindKey, camelCase, capitalize, castArray, ceil, chain, chunk, clamp, clone, cloneDeep, cloneDeepWith, cloneWith, compact, concat, cond, conforms, conformsTo, constant, countBy, create, curry, curryRight, debounce, deburr, lodash_default, defaultTo, defaults, defaultsDeep, defer, delay, difference, differenceBy, differenceWith, divide, drop, dropRight, dropRightWhile, dropWhile, each2, eachRight, endsWith, entries, entriesIn, eq, escape, escapeRegExp, every, extend, extendWith, fill, filter, find, findIndex, findKey, findLast, findLastIndex, findLastKey, first, flatMap, flatMapDeep, flatMapDepth, flatten, flattenDeep, flattenDepth, flip, floor, flow, flowRight, forEach, forEachRight, forIn, forInRight, forOwn, forOwnRight, fromPairs, functions, functionsIn, get, groupBy, gt, gte, has, hasIn, head, identity, inRange, includes, indexOf, initial, intersection2, intersectionBy, intersectionWith, invert, invertBy, invoke, invokeMap, isArguments, isArray, isArrayBuffer, isArrayLike, isArrayLikeObject, isBoolean, isBuffer, isDate, isElement, isEmpty, isEqual, isEqualWith, isError, isFinite, isFunction, isInteger, isLength, isMap, isMatch, isMatchWith, isNaN2, isNative, isNil, isNull, isNumber, isObject, isObjectLike, isPlainObject, isRegExp, isSafeInteger, isSet, isString, isSymbol, isTypedArray, isUndefined, isWeakMap, isWeakSet, iteratee, join, kebabCase, keyBy, keys, keysIn, last, lastIndexOf, lowerCase, lowerFirst, lt, lte, map, mapKeys, mapValues, matches, matchesProperty, max, maxBy, mean, meanBy, memoize, merge, mergeWith, method, methodOf, min, minBy, mixin, multiply, negate, noConflict, noop, now, nth, nthArg, omit, omitBy, once, orderBy, over, overArgs, overEvery, overSome, pad, padEnd, padStart, parseInt$1, partial, partialRight, partition, pick, pickBy, property, propertyOf, pull, pullAll, pullAllBy, pullAllWith, pullAt, random, range, rangeRight, rearg, reduce, reduceRight, reject, remove, repeat, replace, rest, result, reverse, round, runInContext, sample, sampleSize, set, setWith, shuffle, size, slice, snakeCase, some, sortBy, sortedIndex, sortedIndexBy, sortedIndexOf, sortedLastIndex, sortedLastIndexBy, sortedLastIndexOf, sortedUniq, sortedUniqBy, split, spread, startCase, startsWith, stubArray, stubFalse, stubObject, stubString, stubTrue, subtract, sum, sumBy, tail, take, takeRight, takeRightWhile, takeWhile, tap, template, templateSettings, throttle, thru, times, toArray, toFinite, toInteger, toLength, toLower, toNumber, toPairs, toPairsIn, toPath, toPlainObject, toSafeInteger, toString2, toUpper, transform, trim, trimEnd, trimStart, truncate, unary, unescape, union, unionBy, unionWith, uniq, uniqBy, uniqWith, uniqueId, unset, unzip, unzipWith, update, updateWith, upperCase, upperFirst, values, valuesIn, without, words, wrap, xor, xorBy, xorWith, zip2, zipObject, zipObjectDeep, zipWith;
+var commonjsGlobal, lodash, VERSION, _, add, after, ary, assign, assignIn, assignInWith, assignWith, at, attempt, before, bind, bindAll, bindKey, camelCase, capitalize, castArray, ceil, chain, chunk, clamp, clone, cloneDeep, cloneDeepWith, cloneWith, compact, concat, cond, conforms, conformsTo, constant, countBy, create, curry, curryRight, debounce, deburr, lodash_default, defaultTo, defaults, defaultsDeep, defer, delay, difference, differenceBy, differenceWith, divide, drop, dropRight, dropRightWhile, dropWhile, each2, eachRight, endsWith, entries, entriesIn, eq, escape, escapeRegExp, every, extend, extendWith, fill, filter, find, findIndex, findKey, findLast, findLastIndex, findLastKey, first, flatMap, flatMapDeep, flatMapDepth, flatten, flattenDeep, flattenDepth, flip, floor, flow, flowRight, forEach, forEachRight, forIn, forInRight, forOwn, forOwnRight, fromPairs, functions, functionsIn, get, groupBy, gt, gte, has, hasIn, head, identity, inRange, includes, indexOf, initial, intersection, intersectionBy, intersectionWith, invert, invertBy, invoke, invokeMap, isArguments, isArray, isArrayBuffer, isArrayLike, isArrayLikeObject, isBoolean, isBuffer, isDate, isElement, isEmpty, isEqual, isEqualWith, isError, isFinite, isFunction, isInteger, isLength, isMap, isMatch, isMatchWith, isNaN2, isNative, isNil, isNull, isNumber, isObject, isObjectLike, isPlainObject, isRegExp, isSafeInteger, isSet, isString, isSymbol, isTypedArray, isUndefined, isWeakMap, isWeakSet, iteratee, join, kebabCase, keyBy, keys, keysIn, last, lastIndexOf, lowerCase, lowerFirst, lt, lte, map, mapKeys, mapValues, matches, matchesProperty, max, maxBy, mean, meanBy, memoize, merge, mergeWith, method, methodOf, min, minBy, mixin, multiply, negate, noConflict, noop, now, nth, nthArg, omit, omitBy, once, orderBy, over, overArgs, overEvery, overSome, pad, padEnd, padStart, parseInt$1, partial, partialRight, partition, pick, pickBy, property, propertyOf, pull, pullAll, pullAllBy, pullAllWith, pullAt, random, range, rangeRight, rearg, reduce, reduceRight, reject, remove, repeat, replace, rest, result, reverse, round, runInContext, sample, sampleSize, set, setWith, shuffle, size, slice, snakeCase, some, sortBy, sortedIndex, sortedIndexBy, sortedIndexOf, sortedLastIndex, sortedLastIndexBy, sortedLastIndexOf, sortedUniq, sortedUniqBy, split, spread, startCase, startsWith, stubArray, stubFalse, stubObject, stubString, stubTrue, subtract, sum, sumBy, tail, take, takeRight, takeRightWhile, takeWhile, tap, template, templateSettings, throttle, thru, times, toArray, toFinite, toInteger, toLength, toLower, toNumber, toPairs, toPairsIn, toPath, toPlainObject, toSafeInteger, toString2, toUpper, transform, trim, trimEnd, trimStart, truncate, unary, unescape, union, unionBy, unionWith, uniq, uniqBy, uniqWith, uniqueId, unset, unzip, unzipWith, update, updateWith, upperCase, upperFirst, values, valuesIn, without, words, wrap, xor, xorBy, xorWith, zip2, zipObject, zipObjectDeep, zipWith;
 var init_lodash = __esm({
   "esbuild_serve:http-import:https://cdn.skypack.dev/-/lodash@v4.17.21-K6GEbP02mWFnLA45zAmi/dist=es2019,mode=imports/optimized/lodash.js"() {
     commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
@@ -482,11 +482,11 @@ var init_lodash = __esm({
           return false;
         }
         var asciiSize = baseProperty("length");
-        function asciiToArray(string) {
-          return string.split("");
+        function asciiToArray(string2) {
+          return string2.split("");
         }
-        function asciiWords(string) {
-          return string.match(reAsciiWord) || [];
+        function asciiWords(string2) {
+          return string2.match(reAsciiWord) || [];
         }
         function baseFindKey(collection, predicate, eachFunc) {
           var result2;
@@ -572,8 +572,8 @@ var init_lodash = __esm({
             return [key, object[key]];
           });
         }
-        function baseTrim(string) {
-          return string ? string.slice(0, trimmedEndIndex(string) + 1).replace(reTrimStart, "") : string;
+        function baseTrim(string2) {
+          return string2 ? string2.slice(0, trimmedEndIndex(string2) + 1).replace(reTrimStart, "") : string2;
         }
         function baseUnary(func) {
           return function(value) {
@@ -585,8 +585,8 @@ var init_lodash = __esm({
             return object[key];
           });
         }
-        function cacheHas(cache3, key) {
-          return cache3.has(key);
+        function cacheHas(cache4, key) {
+          return cache4.has(key);
         }
         function charsStartIndex(strSymbols, chrSymbols) {
           var index = -1, length = strSymbols.length;
@@ -617,11 +617,11 @@ var init_lodash = __esm({
         function getValue(object, key) {
           return object == null ? undefined$1 : object[key];
         }
-        function hasUnicode(string) {
-          return reHasUnicode.test(string);
+        function hasUnicode(string2) {
+          return reHasUnicode.test(string2);
         }
-        function hasUnicodeWord(string) {
-          return reHasUnicodeWord.test(string);
+        function hasUnicodeWord(string2) {
+          return reHasUnicodeWord.test(string2);
         }
         function iteratorToArray(iterator) {
           var data, result2 = [];
@@ -685,31 +685,31 @@ var init_lodash = __esm({
           }
           return index;
         }
-        function stringSize(string) {
-          return hasUnicode(string) ? unicodeSize(string) : asciiSize(string);
+        function stringSize(string2) {
+          return hasUnicode(string2) ? unicodeSize(string2) : asciiSize(string2);
         }
-        function stringToArray(string) {
-          return hasUnicode(string) ? unicodeToArray(string) : asciiToArray(string);
+        function stringToArray(string2) {
+          return hasUnicode(string2) ? unicodeToArray(string2) : asciiToArray(string2);
         }
-        function trimmedEndIndex(string) {
-          var index = string.length;
-          while (index-- && reWhitespace.test(string.charAt(index))) {
+        function trimmedEndIndex(string2) {
+          var index = string2.length;
+          while (index-- && reWhitespace.test(string2.charAt(index))) {
           }
           return index;
         }
         var unescapeHtmlChar = basePropertyOf(htmlUnescapes);
-        function unicodeSize(string) {
+        function unicodeSize(string2) {
           var result2 = reUnicode.lastIndex = 0;
-          while (reUnicode.test(string)) {
+          while (reUnicode.test(string2)) {
             ++result2;
           }
           return result2;
         }
-        function unicodeToArray(string) {
-          return string.match(reUnicode) || [];
+        function unicodeToArray(string2) {
+          return string2.match(reUnicode) || [];
         }
-        function unicodeWords(string) {
-          return string.match(reUnicodeWord) || [];
+        function unicodeWords(string2) {
+          return string2.match(reUnicodeWord) || [];
         }
         var runInContext2 = function runInContext3(context) {
           context = context == null ? root : _22.defaults(root.Object(), context, _22.pick(root, contextProps));
@@ -1341,26 +1341,26 @@ var init_lodash = __esm({
             return number >= nativeMin(start, end) && number < nativeMax(start, end);
           }
           function baseIntersection(arrays, iteratee3, comparator) {
-            var includes3 = comparator ? arrayIncludesWith : arrayIncludes, length = arrays[0].length, othLength = arrays.length, othIndex = othLength, caches = Array2(othLength), maxLength = Infinity, result3 = [];
+            var includes3 = comparator ? arrayIncludesWith : arrayIncludes, length = arrays[0].length, othLength = arrays.length, othIndex = othLength, caches = Array2(othLength), maxLength2 = Infinity, result3 = [];
             while (othIndex--) {
               var array = arrays[othIndex];
               if (othIndex && iteratee3) {
                 array = arrayMap(array, baseUnary(iteratee3));
               }
-              maxLength = nativeMin(array.length, maxLength);
+              maxLength2 = nativeMin(array.length, maxLength2);
               caches[othIndex] = !comparator && (iteratee3 || length >= 120 && array.length >= 120) ? new SetCache(othIndex && array) : undefined$1;
             }
             array = arrays[0];
             var index = -1, seen = caches[0];
             outer:
-              while (++index < length && result3.length < maxLength) {
+              while (++index < length && result3.length < maxLength2) {
                 var value = array[index], computed = iteratee3 ? iteratee3(value) : value;
                 value = comparator || value !== 0 ? value : 0;
                 if (!(seen ? cacheHas(seen, computed) : includes3(result3, computed, comparator))) {
                   othIndex = othLength;
                   while (--othIndex) {
-                    var cache3 = caches[othIndex];
-                    if (!(cache3 ? cacheHas(cache3, computed) : includes3(arrays[othIndex], computed, comparator))) {
+                    var cache4 = caches[othIndex];
+                    if (!(cache4 ? cacheHas(cache4, computed) : includes3(arrays[othIndex], computed, comparator))) {
                       continue outer;
                     }
                   }
@@ -1704,18 +1704,18 @@ var init_lodash = __esm({
             }
             return result3;
           }
-          function baseRepeat(string, n) {
+          function baseRepeat(string2, n) {
             var result3 = "";
-            if (!string || n < 1 || n > MAX_SAFE_INTEGER) {
+            if (!string2 || n < 1 || n > MAX_SAFE_INTEGER) {
               return result3;
             }
             do {
               if (n % 2) {
-                result3 += string;
+                result3 += string2;
               }
               n = nativeFloor(n / 2);
               if (n) {
-                string += string;
+                string2 += string2;
               }
             } while (n);
             return result3;
@@ -1757,11 +1757,11 @@ var init_lodash = __esm({
             metaMap.set(func, data);
             return func;
           };
-          var baseSetToString = !defineProperty ? identity2 : function(func, string) {
+          var baseSetToString = !defineProperty ? identity2 : function(func, string2) {
             return defineProperty(func, "toString", {
               configurable: true,
               enumerable: false,
-              value: constant2(string),
+              value: constant2(string2),
               writable: true
             });
           };
@@ -2160,17 +2160,17 @@ var init_lodash = __esm({
             return wrapper;
           }
           function createCaseFirst(methodName) {
-            return function(string) {
-              string = toString22(string);
-              var strSymbols = hasUnicode(string) ? stringToArray(string) : undefined$1;
-              var chr = strSymbols ? strSymbols[0] : string.charAt(0);
-              var trailing = strSymbols ? castSlice(strSymbols, 1).join("") : string.slice(1);
+            return function(string2) {
+              string2 = toString22(string2);
+              var strSymbols = hasUnicode(string2) ? stringToArray(string2) : undefined$1;
+              var chr = strSymbols ? strSymbols[0] : string2.charAt(0);
+              var trailing = strSymbols ? castSlice(strSymbols, 1).join("") : string2.slice(1);
               return chr[methodName]() + trailing;
             };
           }
           function createCompounder(callback) {
-            return function(string) {
-              return arrayReduce(words2(deburr2(string).replace(reApos, "")), callback, "");
+            return function(string2) {
+              return arrayReduce(words2(deburr2(string2).replace(reApos, "")), callback, "");
             };
           }
           function createCtor(Ctor) {
@@ -2912,12 +2912,12 @@ var init_lodash = __esm({
           }
           function memoizeCapped(func) {
             var result3 = memoize2(func, function(key) {
-              if (cache3.size === MAX_MEMOIZE_SIZE) {
-                cache3.clear();
+              if (cache4.size === MAX_MEMOIZE_SIZE) {
+                cache4.clear();
               }
               return key;
             });
-            var cache3 = result3.cache;
+            var cache4 = result3.cache;
             return result3;
           }
           function mergeData(data, source) {
@@ -3014,16 +3014,16 @@ var init_lodash = __esm({
             return setToString(wrapper, insertWrapDetails(source, updateWrapDetails(getWrapDetails(source), bitmask)));
           }
           function shortOut(func) {
-            var count = 0, lastCalled = 0;
+            var count2 = 0, lastCalled = 0;
             return function() {
               var stamp = nativeNow(), remaining = HOT_SPAN - (stamp - lastCalled);
               lastCalled = stamp;
               if (remaining > 0) {
-                if (++count >= HOT_COUNT) {
+                if (++count2 >= HOT_COUNT) {
                   return arguments[0];
                 }
               } else {
-                count = 0;
+                count2 = 0;
               }
               return func.apply(undefined$1, arguments);
             };
@@ -3039,12 +3039,12 @@ var init_lodash = __esm({
             array.length = size3;
             return array;
           }
-          var stringToPath = memoizeCapped(function(string) {
+          var stringToPath = memoizeCapped(function(string2) {
             var result3 = [];
-            if (string.charCodeAt(0) === 46) {
+            if (string2.charCodeAt(0) === 46) {
               result3.push("");
             }
-            string.replace(rePropName, function(match, number, quote, subString) {
+            string2.replace(rePropName, function(match, number, quote, subString) {
               result3.push(quote ? subString.replace(reEscapeChar, "$1") : number || match);
             });
             return result3;
@@ -3871,12 +3871,12 @@ var init_lodash = __esm({
               throw new TypeError2(FUNC_ERROR_TEXT);
             }
             var memoized = function() {
-              var args = arguments, key = resolver ? resolver.apply(this, args) : args[0], cache3 = memoized.cache;
-              if (cache3.has(key)) {
-                return cache3.get(key);
+              var args = arguments, key = resolver ? resolver.apply(this, args) : args[0], cache4 = memoized.cache;
+              if (cache4.has(key)) {
+                return cache4.get(key);
               }
               var result3 = func.apply(this, args);
-              memoized.cache = cache3.set(key, result3) || cache3;
+              memoized.cache = cache4.set(key, result3) || cache4;
               return result3;
             };
             memoized.cache = new (memoize2.Cache || MapCache)();
@@ -4495,29 +4495,29 @@ var init_lodash = __esm({
             word = word.toLowerCase();
             return result3 + (index ? capitalize22(word) : word);
           });
-          function capitalize22(string) {
-            return upperFirst2(toString22(string).toLowerCase());
+          function capitalize22(string2) {
+            return upperFirst2(toString22(string2).toLowerCase());
           }
-          function deburr2(string) {
-            string = toString22(string);
-            return string && string.replace(reLatin, deburrLetter).replace(reComboMark, "");
+          function deburr2(string2) {
+            string2 = toString22(string2);
+            return string2 && string2.replace(reLatin, deburrLetter).replace(reComboMark, "");
           }
-          function endsWith2(string, target, position) {
-            string = toString22(string);
+          function endsWith2(string2, target, position) {
+            string2 = toString22(string2);
             target = baseToString(target);
-            var length = string.length;
+            var length = string2.length;
             position = position === undefined$1 ? length : baseClamp(toInteger2(position), 0, length);
             var end = position;
             position -= target.length;
-            return position >= 0 && string.slice(position, end) == target;
+            return position >= 0 && string2.slice(position, end) == target;
           }
-          function escape2(string) {
-            string = toString22(string);
-            return string && reHasUnescapedHtml.test(string) ? string.replace(reUnescapedHtml, escapeHtmlChar) : string;
+          function escape2(string2) {
+            string2 = toString22(string2);
+            return string2 && reHasUnescapedHtml.test(string2) ? string2.replace(reUnescapedHtml, escapeHtmlChar) : string2;
           }
-          function escapeRegExp2(string) {
-            string = toString22(string);
-            return string && reHasRegExpChar.test(string) ? string.replace(reRegExpChar, "\\$&") : string;
+          function escapeRegExp2(string2) {
+            string2 = toString22(string2);
+            return string2 && reHasRegExpChar.test(string2) ? string2.replace(reRegExpChar, "\\$&") : string2;
           }
           var kebabCase2 = createCompounder(function(result3, word, index) {
             return result3 + (index ? "-" : "") + word.toLowerCase();
@@ -4526,91 +4526,91 @@ var init_lodash = __esm({
             return result3 + (index ? " " : "") + word.toLowerCase();
           });
           var lowerFirst2 = createCaseFirst("toLowerCase");
-          function pad2(string, length, chars) {
-            string = toString22(string);
+          function pad2(string2, length, chars) {
+            string2 = toString22(string2);
             length = toInteger2(length);
-            var strLength = length ? stringSize(string) : 0;
+            var strLength = length ? stringSize(string2) : 0;
             if (!length || strLength >= length) {
-              return string;
+              return string2;
             }
             var mid = (length - strLength) / 2;
-            return createPadding(nativeFloor(mid), chars) + string + createPadding(nativeCeil(mid), chars);
+            return createPadding(nativeFloor(mid), chars) + string2 + createPadding(nativeCeil(mid), chars);
           }
-          function padEnd2(string, length, chars) {
-            string = toString22(string);
+          function padEnd2(string2, length, chars) {
+            string2 = toString22(string2);
             length = toInteger2(length);
-            var strLength = length ? stringSize(string) : 0;
-            return length && strLength < length ? string + createPadding(length - strLength, chars) : string;
+            var strLength = length ? stringSize(string2) : 0;
+            return length && strLength < length ? string2 + createPadding(length - strLength, chars) : string2;
           }
-          function padStart2(string, length, chars) {
-            string = toString22(string);
+          function padStart2(string2, length, chars) {
+            string2 = toString22(string2);
             length = toInteger2(length);
-            var strLength = length ? stringSize(string) : 0;
-            return length && strLength < length ? createPadding(length - strLength, chars) + string : string;
+            var strLength = length ? stringSize(string2) : 0;
+            return length && strLength < length ? createPadding(length - strLength, chars) + string2 : string2;
           }
-          function parseInt2(string, radix, guard) {
+          function parseInt2(string2, radix, guard) {
             if (guard || radix == null) {
               radix = 0;
             } else if (radix) {
               radix = +radix;
             }
-            return nativeParseInt(toString22(string).replace(reTrimStart, ""), radix || 0);
+            return nativeParseInt(toString22(string2).replace(reTrimStart, ""), radix || 0);
           }
-          function repeat22(string, n, guard) {
-            if (guard ? isIterateeCall(string, n, guard) : n === undefined$1) {
+          function repeat22(string2, n, guard) {
+            if (guard ? isIterateeCall(string2, n, guard) : n === undefined$1) {
               n = 1;
             } else {
               n = toInteger2(n);
             }
-            return baseRepeat(toString22(string), n);
+            return baseRepeat(toString22(string2), n);
           }
           function replace2() {
-            var args = arguments, string = toString22(args[0]);
-            return args.length < 3 ? string : string.replace(args[1], args[2]);
+            var args = arguments, string2 = toString22(args[0]);
+            return args.length < 3 ? string2 : string2.replace(args[1], args[2]);
           }
           var snakeCase2 = createCompounder(function(result3, word, index) {
             return result3 + (index ? "_" : "") + word.toLowerCase();
           });
-          function split2(string, separator, limit) {
-            if (limit && typeof limit != "number" && isIterateeCall(string, separator, limit)) {
+          function split2(string2, separator, limit) {
+            if (limit && typeof limit != "number" && isIterateeCall(string2, separator, limit)) {
               separator = limit = undefined$1;
             }
             limit = limit === undefined$1 ? MAX_ARRAY_LENGTH : limit >>> 0;
             if (!limit) {
               return [];
             }
-            string = toString22(string);
-            if (string && (typeof separator == "string" || separator != null && !isRegExp2(separator))) {
+            string2 = toString22(string2);
+            if (string2 && (typeof separator == "string" || separator != null && !isRegExp2(separator))) {
               separator = baseToString(separator);
-              if (!separator && hasUnicode(string)) {
-                return castSlice(stringToArray(string), 0, limit);
+              if (!separator && hasUnicode(string2)) {
+                return castSlice(stringToArray(string2), 0, limit);
               }
             }
-            return string.split(separator, limit);
+            return string2.split(separator, limit);
           }
           var startCase2 = createCompounder(function(result3, word, index) {
             return result3 + (index ? " " : "") + upperFirst2(word);
           });
-          function startsWith2(string, target, position) {
-            string = toString22(string);
-            position = position == null ? 0 : baseClamp(toInteger2(position), 0, string.length);
+          function startsWith2(string2, target, position) {
+            string2 = toString22(string2);
+            position = position == null ? 0 : baseClamp(toInteger2(position), 0, string2.length);
             target = baseToString(target);
-            return string.slice(position, position + target.length) == target;
+            return string2.slice(position, position + target.length) == target;
           }
-          function template2(string, options, guard) {
+          function template2(string2, options, guard) {
             var settings = lodash2.templateSettings;
-            if (guard && isIterateeCall(string, options, guard)) {
+            if (guard && isIterateeCall(string2, options, guard)) {
               options = undefined$1;
             }
-            string = toString22(string);
+            string2 = toString22(string2);
             options = assignInWith2({}, options, settings, customDefaultsAssignIn);
             var imports = assignInWith2({}, options.imports, settings.imports, customDefaultsAssignIn), importsKeys = keys2(imports), importsValues = baseValues(imports, importsKeys);
             var isEscaping, isEvaluating, index = 0, interpolate = options.interpolate || reNoMatch, source = "__p += '";
             var reDelimiters = RegExp2((options.escape || reNoMatch).source + "|" + interpolate.source + "|" + (interpolate === reInterpolate ? reEsTemplate : reNoMatch).source + "|" + (options.evaluate || reNoMatch).source + "|$", "g");
             var sourceURL = "//# sourceURL=" + (hasOwnProperty.call(options, "sourceURL") ? (options.sourceURL + "").replace(/\s/g, " ") : "lodash.templateSources[" + ++templateCounter + "]") + "\n";
-            string.replace(reDelimiters, function(match, escapeValue, interpolateValue, esTemplateValue, evaluateValue, offset) {
+            string2.replace(reDelimiters, function(match, escapeValue, interpolateValue, esTemplateValue, evaluateValue, offset) {
               interpolateValue || (interpolateValue = esTemplateValue);
-              source += string.slice(index, offset).replace(reUnescapedString, escapeStringChar);
+              source += string2.slice(index, offset).replace(reUnescapedString, escapeStringChar);
               if (escapeValue) {
                 isEscaping = true;
                 source += "' +\n__e(" + escapeValue + ") +\n'";
@@ -4649,60 +4649,60 @@ var init_lodash = __esm({
           function toUpper2(value) {
             return toString22(value).toUpperCase();
           }
-          function trim2(string, chars, guard) {
-            string = toString22(string);
-            if (string && (guard || chars === undefined$1)) {
-              return baseTrim(string);
+          function trim2(string2, chars, guard) {
+            string2 = toString22(string2);
+            if (string2 && (guard || chars === undefined$1)) {
+              return baseTrim(string2);
             }
-            if (!string || !(chars = baseToString(chars))) {
-              return string;
+            if (!string2 || !(chars = baseToString(chars))) {
+              return string2;
             }
-            var strSymbols = stringToArray(string), chrSymbols = stringToArray(chars), start = charsStartIndex(strSymbols, chrSymbols), end = charsEndIndex(strSymbols, chrSymbols) + 1;
+            var strSymbols = stringToArray(string2), chrSymbols = stringToArray(chars), start = charsStartIndex(strSymbols, chrSymbols), end = charsEndIndex(strSymbols, chrSymbols) + 1;
             return castSlice(strSymbols, start, end).join("");
           }
-          function trimEnd2(string, chars, guard) {
-            string = toString22(string);
-            if (string && (guard || chars === undefined$1)) {
-              return string.slice(0, trimmedEndIndex(string) + 1);
+          function trimEnd2(string2, chars, guard) {
+            string2 = toString22(string2);
+            if (string2 && (guard || chars === undefined$1)) {
+              return string2.slice(0, trimmedEndIndex(string2) + 1);
             }
-            if (!string || !(chars = baseToString(chars))) {
-              return string;
+            if (!string2 || !(chars = baseToString(chars))) {
+              return string2;
             }
-            var strSymbols = stringToArray(string), end = charsEndIndex(strSymbols, stringToArray(chars)) + 1;
+            var strSymbols = stringToArray(string2), end = charsEndIndex(strSymbols, stringToArray(chars)) + 1;
             return castSlice(strSymbols, 0, end).join("");
           }
-          function trimStart2(string, chars, guard) {
-            string = toString22(string);
-            if (string && (guard || chars === undefined$1)) {
-              return string.replace(reTrimStart, "");
+          function trimStart2(string2, chars, guard) {
+            string2 = toString22(string2);
+            if (string2 && (guard || chars === undefined$1)) {
+              return string2.replace(reTrimStart, "");
             }
-            if (!string || !(chars = baseToString(chars))) {
-              return string;
+            if (!string2 || !(chars = baseToString(chars))) {
+              return string2;
             }
-            var strSymbols = stringToArray(string), start = charsStartIndex(strSymbols, stringToArray(chars));
+            var strSymbols = stringToArray(string2), start = charsStartIndex(strSymbols, stringToArray(chars));
             return castSlice(strSymbols, start).join("");
           }
-          function truncate2(string, options) {
+          function truncate2(string2, options) {
             var length = DEFAULT_TRUNC_LENGTH, omission = DEFAULT_TRUNC_OMISSION;
             if (isObject22(options)) {
               var separator = "separator" in options ? options.separator : separator;
               length = "length" in options ? toInteger2(options.length) : length;
               omission = "omission" in options ? baseToString(options.omission) : omission;
             }
-            string = toString22(string);
-            var strLength = string.length;
-            if (hasUnicode(string)) {
-              var strSymbols = stringToArray(string);
+            string2 = toString22(string2);
+            var strLength = string2.length;
+            if (hasUnicode(string2)) {
+              var strSymbols = stringToArray(string2);
               strLength = strSymbols.length;
             }
             if (length >= strLength) {
-              return string;
+              return string2;
             }
             var end = length - stringSize(omission);
             if (end < 1) {
               return omission;
             }
-            var result3 = strSymbols ? castSlice(strSymbols, 0, end).join("") : string.slice(0, end);
+            var result3 = strSymbols ? castSlice(strSymbols, 0, end).join("") : string2.slice(0, end);
             if (separator === undefined$1) {
               return result3 + omission;
             }
@@ -4710,7 +4710,7 @@ var init_lodash = __esm({
               end += result3.length - end;
             }
             if (isRegExp2(separator)) {
-              if (string.slice(end).search(separator)) {
+              if (string2.slice(end).search(separator)) {
                 var match, substring = result3;
                 if (!separator.global) {
                   separator = RegExp2(separator.source, toString22(reFlags.exec(separator)) + "g");
@@ -4721,7 +4721,7 @@ var init_lodash = __esm({
                 }
                 result3 = result3.slice(0, newEnd === undefined$1 ? end : newEnd);
               }
-            } else if (string.indexOf(baseToString(separator), end) != end) {
+            } else if (string2.indexOf(baseToString(separator), end) != end) {
               var index = result3.lastIndexOf(separator);
               if (index > -1) {
                 result3 = result3.slice(0, index);
@@ -4729,21 +4729,21 @@ var init_lodash = __esm({
             }
             return result3 + omission;
           }
-          function unescape2(string) {
-            string = toString22(string);
-            return string && reHasEscapedHtml.test(string) ? string.replace(reEscapedHtml, unescapeHtmlChar) : string;
+          function unescape2(string2) {
+            string2 = toString22(string2);
+            return string2 && reHasEscapedHtml.test(string2) ? string2.replace(reEscapedHtml, unescapeHtmlChar) : string2;
           }
           var upperCase2 = createCompounder(function(result3, word, index) {
             return result3 + (index ? " " : "") + word.toUpperCase();
           });
           var upperFirst2 = createCaseFirst("toUpperCase");
-          function words2(string, pattern, guard) {
-            string = toString22(string);
+          function words2(string2, pattern, guard) {
+            string2 = toString22(string2);
             pattern = guard ? undefined$1 : pattern;
             if (pattern === undefined$1) {
-              return hasUnicodeWord(string) ? unicodeWords(string) : asciiWords(string);
+              return hasUnicodeWord(string2) ? unicodeWords(string2) : asciiWords(string2);
             }
-            return string.match(pattern) || [];
+            return string2.match(pattern) || [];
           }
           var attempt2 = baseRest(function(func, args) {
             try {
@@ -5531,7 +5531,7 @@ var init_lodash = __esm({
     includes = lodash.includes;
     indexOf = lodash.indexOf;
     initial = lodash.initial;
-    intersection2 = lodash.intersection;
+    intersection = lodash.intersection;
     intersectionBy = lodash.intersectionBy;
     intersectionWith = lodash.intersectionWith;
     invert = lodash.invert;
@@ -5847,7 +5847,7 @@ __export(lodash_4_17_exports, {
   includes: () => includes,
   indexOf: () => indexOf,
   initial: () => initial,
-  intersection: () => intersection2,
+  intersection: () => intersection,
   intersectionBy: () => intersectionBy,
   intersectionWith: () => intersectionWith,
   invert: () => invert,
@@ -6061,6 +6061,257 @@ var init_lodash_4_17 = __esm({
   }
 });
 
+// esbuild_serve:http-import:https://deno.land/x/good@1.4.4.2/value.js
+var typedArrayClasses = [
+  Uint16Array,
+  Uint32Array,
+  Uint8Array,
+  Uint8ClampedArray,
+  Int16Array,
+  Int32Array,
+  Int8Array,
+  Float32Array,
+  Float64Array,
+  globalThis.BigInt64Array,
+  globalThis.BigUint64Array
+].filter((each3) => each3);
+var copyableClasses = /* @__PURE__ */ new Set([RegExp, Date, URL, ...typedArrayClasses, globalThis.ArrayBuffer, globalThis.DataView]);
+var IteratorPrototype = Object.getPrototypeOf(Object.getPrototypeOf([][Symbol.iterator]()));
+var ArrayIterator = Object.getPrototypeOf([][Symbol.iterator]);
+var MapIterator = Object.getPrototypeOf((/* @__PURE__ */ new Map())[Symbol.iterator]);
+var SetIterator = Object.getPrototypeOf((/* @__PURE__ */ new Set())[Symbol.iterator]);
+var AsyncFunction = class {
+};
+var GeneratorFunction = class {
+};
+var AsyncGeneratorFunction = class {
+};
+var SyncGenerator = class {
+};
+var AsyncGenerator = class {
+};
+try {
+  AsyncFunction = eval("(async function(){}).constructor");
+  GeneratorFunction = eval("(function*(){}).constructor");
+  AsyncGeneratorFunction = eval("(async function*(){}).constructor");
+  SyncGenerator = eval("((function*(){})()).constructor");
+  AsyncGenerator = eval("((async function*(){})()).constructor");
+} catch (error) {
+}
+var isPrimitive = (value) => !(value instanceof Object);
+var isPureObject = (value) => value instanceof Object && Object.getPrototypeOf(value).constructor == Object;
+var isPracticallyPrimitive = (value) => isPrimitive(value) || value instanceof Date || value instanceof RegExp || value instanceof URL;
+var isBuiltInIterator = (value) => IteratorPrototype.isPrototypeOf(value);
+var isGeneratorType = (value) => {
+  if (value instanceof Object) {
+    if (isBuiltInIterator(value)) {
+      return true;
+    }
+    const constructor = value.constructor;
+    return constructor == SyncGenerator || constructor == AsyncGenerator;
+  }
+  return false;
+};
+var isAsyncIterable = function(value) {
+  return value && typeof value[Symbol.asyncIterator] === "function";
+};
+var isSyncIterable = function(value) {
+  return value && typeof value[Symbol.iterator] === "function";
+};
+var isIterableObjectOrContainer = function(value) {
+  return value instanceof Object && (typeof value[Symbol.iterator] == "function" || typeof value[Symbol.asyncIterator] === "function");
+};
+var isTechnicallyIterable = function(value) {
+  return value instanceof Object || typeof value == "string";
+};
+var isSyncIterableObjectOrContainer = function(value) {
+  return value instanceof Object && typeof value[Symbol.iterator] == "function";
+};
+var deepCopySymbol = Symbol.for("deepCopy");
+var clonedFromSymbol = Symbol();
+var getThis = Symbol();
+Object.getPrototypeOf(function() {
+})[getThis] = function() {
+  return this;
+};
+function deepCopyInner(value, valueChain = [], originalToCopyMap = /* @__PURE__ */ new Map()) {
+  valueChain.push(value);
+  if (value == null) {
+    return value;
+  }
+  if (!(value instanceof Object)) {
+    return value;
+  }
+  if (originalToCopyMap.has(value)) {
+    return originalToCopyMap.get(value);
+  }
+  if (value[deepCopySymbol] instanceof Function) {
+    const clonedValue = value[deepCopySymbol](originalToCopyMap);
+    originalToCopyMap.set(value, clonedValue);
+    return clonedValue;
+  }
+  if (isGeneratorType(value)) {
+    throw Error(`Sadly built-in generators cannot be deep copied.
+And I found a generator along this path:
+${valueChain.reverse().map((each3) => `${each3},
+`)}`);
+  }
+  let object, theThis, thisCopy;
+  if (value instanceof Date) {
+    object = new Date(value.getTime());
+  } else if (value instanceof RegExp) {
+    object = new RegExp(value);
+  } else if (value instanceof URL) {
+    object = new URL(value);
+  } else if (value instanceof Function) {
+    theThis = value[getThis]();
+    object = value.bind(theThis);
+  } else if (copyableClasses.has(value.constructor)) {
+    object = new value.constructor(value);
+  } else if (value instanceof Array) {
+    object = [];
+  } else if (value instanceof Set) {
+    object = /* @__PURE__ */ new Set();
+  } else if (value instanceof Map) {
+    object = /* @__PURE__ */ new Map();
+  }
+  originalToCopyMap.set(value, object);
+  if (object instanceof Function) {
+    thisCopy = deepCopyInner(theThis, valueChain, originalToCopyMap);
+    object = object.bind(thisCopy);
+  }
+  const output2 = object;
+  try {
+    output2.constructor = value.constructor;
+  } catch (error) {
+  }
+  Object.setPrototypeOf(output2, Object.getPrototypeOf(value));
+  const propertyDefinitions = {};
+  for (const [key, description] of Object.entries(Object.getOwnPropertyDescriptors(value))) {
+    const { value: value2, get: get3, set: set4, ...options } = description;
+    const getIsFunc = get3 instanceof Function;
+    const setIsFunc = set4 instanceof Function;
+    if (getIsFunc || setIsFunc) {
+      propertyDefinitions[key] = {
+        ...options,
+        get: get3 ? function(...args) {
+          return get3.apply(output2, args);
+        } : void 0,
+        set: set4 ? function(...args) {
+          return set4.apply(output2, args);
+        } : void 0
+      };
+    } else {
+      if (key == "length" && output2 instanceof Array) {
+        continue;
+      }
+      propertyDefinitions[key] = {
+        ...options,
+        value: deepCopyInner(value2, valueChain, originalToCopyMap)
+      };
+    }
+  }
+  Object.defineProperties(output2, propertyDefinitions);
+  return output2;
+}
+var deepCopy = (value) => deepCopyInner(value);
+var shallowSortObject = (obj) => {
+  return Object.keys(obj).sort().reduce(
+    (newObj, key) => {
+      newObj[key] = obj[key];
+      return newObj;
+    },
+    {}
+  );
+};
+var deepSortObject = (obj, seen = /* @__PURE__ */ new Map()) => {
+  if (!(obj instanceof Object)) {
+    return obj;
+  } else if (seen.has(obj)) {
+    return seen.get(obj);
+  } else {
+    if (obj instanceof Array) {
+      const sortedChildren = [];
+      seen.set(obj, sortedChildren);
+      for (const each3 of obj) {
+        sortedChildren.push(deepSortObject(each3, seen));
+      }
+      return sortedChildren;
+    } else {
+      const sorted = {};
+      seen.set(obj, sorted);
+      for (const eachKey of Object.keys(obj).sort()) {
+        sorted[eachKey] = deepSortObject(obj[eachKey], seen);
+      }
+      return sorted;
+    }
+  }
+};
+var stableStringify = (value, ...args) => {
+  return JSON.stringify(deepSortObject(value), ...args);
+};
+var allKeys = function(obj) {
+  let keys2 = [];
+  if (obj == null) {
+    return [];
+  }
+  if (!(obj instanceof Object)) {
+    obj = Object.getPrototypeOf(obj);
+  }
+  while (obj) {
+    keys2 = keys2.concat(Reflect.ownKeys(obj));
+    obj = Object.getPrototypeOf(obj);
+  }
+  return keys2;
+};
+var ownKeyDescriptions = Object.getOwnPropertyDescriptors;
+var allKeyDescriptions = function(value, options = { includingBuiltin: false }) {
+  var { includingBuiltin } = { ...options };
+  let descriptions = [];
+  if (value == null) {
+    return {};
+  }
+  if (!(value instanceof Object)) {
+    value = Object.getPrototypeOf(value);
+  }
+  const rootPrototype = Object.getPrototypeOf({});
+  let prevObj;
+  while (value && value != prevObj) {
+    if (!includingBuiltin && value == rootPrototype) {
+      break;
+    }
+    descriptions = descriptions.concat(Object.entries(Object.getOwnPropertyDescriptors(value)));
+    prevObj = value;
+    value = Object.getPrototypeOf(value);
+  }
+  descriptions.reverse();
+  return Object.fromEntries(descriptions);
+};
+
+// esbuild_serve:http-import:https://deno.land/x/good@1.4.4.2/async.js
+function deferredPromise() {
+  let methods;
+  let state = "pending";
+  const promise = new Promise((resolve9, reject2) => {
+    methods = {
+      async resolve(value) {
+        await value;
+        state = "fulfilled";
+        resolve9(value);
+      },
+      reject(reason) {
+        state = "rejected";
+        reject2(reason);
+      }
+    };
+  });
+  Object.defineProperty(promise, "state", {
+    get: () => state
+  });
+  return Object.assign(promise, methods);
+}
+var objectPrototype = Object.getPrototypeOf({});
+
 // esbuild_serve:http-import:https://deno.land/x/good@1.4.4.2/iterable.js
 var emptyIterator = /* @__PURE__ */ function* () {
 }();
@@ -6085,6 +6336,341 @@ var iter = (object) => {
     return iterable[Symbol.iterator]();
   }
 };
+var handleResult = ({ value, done }) => done ? Stop : value;
+var next = (object) => {
+  if (object.next instanceof Function) {
+    const result2 = object.next();
+    if (result2 instanceof Promise) {
+      return result2.then(handleResult);
+    } else {
+      return handleResult(result2);
+    }
+  } else {
+    throw Error(`can't call next(object) on the following object as there is no object.next() method`, object);
+  }
+};
+function flattened({ iterable, depth = Infinity, asyncsInsideSyncIterable = false }) {
+  if (depth <= 0) {
+    return iterable;
+  }
+  iterable = makeIterable(iterable);
+  if (asyncsInsideSyncIterable || iterable[Symbol.asyncIterator]) {
+    return async function* () {
+      for await (const each3 of iterable) {
+        if (isAsyncIterable(each3) || isSyncIterableObjectOrContainer(each3)) {
+          for await (const eachChild of flattened({ iterable: each3, depth: depth - 1, asyncsInsideSyncIterable })) {
+            yield eachChild;
+          }
+        } else {
+          yield each3;
+        }
+      }
+    }();
+  } else {
+    return function* () {
+      for (const each3 of iterable) {
+        if (isSyncIterableObjectOrContainer(each3)) {
+          for (const eachChild of flattened({ iterable: each3, depth: depth - 1 })) {
+            yield eachChild;
+          }
+        } else {
+          yield each3;
+        }
+      }
+    }();
+  }
+}
+function forkBy({ data, filters, outputArrays = false }) {
+  let isAsync = isAsyncIterable(data);
+  const conditionHandlers = {};
+  const iterator = iter(data);
+  for (const [key, check] of Object.entries(filters)) {
+    const que = [];
+    let index = 0;
+    if (isAsync || check instanceof AsyncFunction) {
+      conditionHandlers[key] = new Iterable(async function* () {
+        while (1) {
+          if (conditionHandlers[key].hitError) {
+            throw conditionHandlers[key].hitError;
+          }
+          if (que.length == 0) {
+            const nextValue = await next(iterator);
+            if (nextValue == Stop) {
+              break;
+            }
+            for (const [key2, generator] of Object.entries(conditionHandlers)) {
+              let shouldPush = false;
+              try {
+                shouldPush = await generator.check(nextValue, index++);
+              } catch (error) {
+                generator.hitError = error;
+              }
+              if (shouldPush) {
+                generator.que.push(nextValue);
+              }
+            }
+          }
+          if (que.length != 0) {
+            yield que.shift();
+          }
+        }
+      }());
+    } else {
+      conditionHandlers[key] = new Iterable(function* () {
+        while (1) {
+          if (conditionHandlers[key].hitError) {
+            throw conditionHandlers[key].hitError;
+          }
+          if (que.length == 0) {
+            const nextValue = next(iterator);
+            if (nextValue == Stop) {
+              break;
+            }
+            for (const [key2, generator] of Object.entries(conditionHandlers)) {
+              let shouldPush = false;
+              try {
+                shouldPush = generator.check(nextValue, index++);
+              } catch (error) {
+                generator.hitError = error;
+              }
+              if (shouldPush) {
+                generator.que.push(nextValue);
+              }
+            }
+          }
+          if (que.length != 0) {
+            yield que.shift();
+          }
+        }
+      }());
+    }
+    conditionHandlers[key].check = check;
+    conditionHandlers[key].hitError = false;
+    conditionHandlers[key].que = que;
+  }
+  if (outputArrays) {
+    for (const [key, value] of Object.entries(conditionHandlers)) {
+      if (isAsyncIterable(value)) {
+        conditionHandlers[key] = asyncIteratorToList(value);
+      } else {
+        conditionHandlers[key] = [...value];
+      }
+    }
+  }
+  return conditionHandlers;
+}
+function Iterable(value, options = { length: null, _createEmpty: false }) {
+  const { length, _createEmpty } = { length: null, _createEmpty: false, ...options };
+  if (_createEmpty) {
+    return this;
+  }
+  const self2 = this === void 0 || this === globalThis ? new Iterable(null, { _createEmpty: true }) : this;
+  if (value instanceof Array) {
+    self2.length = value.length;
+  } else if (value instanceof Set) {
+    self2.length = value.size;
+  } else if (typeof length == "number") {
+    self2.length = length;
+  }
+  self2._source = makeIterable(value);
+  if (self2._source[Symbol.iterator]) {
+    self2[Symbol.iterator] = self2._source[Symbol.iterator].bind(self2._source);
+  }
+  if (self2._source[Symbol.asyncIterator]) {
+    self2[Symbol.asyncIterator] = self2._source[Symbol.asyncIterator].bind(self2._source);
+  }
+  self2[Symbol.isConcatSpreadable] = true;
+  self2.lengthIs = function(length2) {
+    self2.length = length2;
+    return self2;
+  };
+  self2.map = function(func) {
+    const output2 = {
+      ...self2._source,
+      [Symbol.iterator]: () => {
+        const iterator = iter(self2._source);
+        let index = 0;
+        return {
+          next() {
+            const { value: value2, done } = iterator.next();
+            return {
+              value: done || func(value2, index++),
+              done
+            };
+          }
+        };
+      }
+    };
+    const includeAsyncIterator = isAsyncIterable(self2._source) || func instanceof AsyncFunction;
+    if (includeAsyncIterator) {
+      output2[Symbol.asyncIterator] = () => {
+        const iterator = iter(self2._source);
+        let index = 0;
+        return {
+          async next() {
+            const { value: value2, done } = await iterator.next();
+            return {
+              value: done || await func(value2, index++),
+              done
+            };
+          }
+        };
+      };
+    }
+    return new Iterable(output2);
+  };
+  self2.filter = function(func) {
+    const output2 = {
+      ...self2._source,
+      [Symbol.iterator]: () => {
+        const iterator = iter(self2._source);
+        let index = 0;
+        return {
+          next() {
+            while (1) {
+              const result2 = iterator.next();
+              if (result2.done || func(result2.value, index++)) {
+                return result2;
+              }
+            }
+          }
+        };
+      }
+    };
+    const includeAsyncIterator = isAsyncIterable(self2._source) || func instanceof AsyncFunction;
+    if (includeAsyncIterator) {
+      output2[Symbol.asyncIterator] = () => {
+        const iterator = iter(self2._source);
+        let index = 0;
+        return {
+          async next() {
+            while (1) {
+              const result2 = await iterator.next();
+              if (result2.done || await func(result2.value, index++)) {
+                return result2;
+              }
+            }
+          }
+        };
+      };
+    }
+    return new Iterable(output2);
+  };
+  self2.forkBy = ({ ...args }, ...other) => forkBy({ ...args, data: self2 }, ...other);
+  self2.flat = (depth = 1, asyncsInsideSyncIterable = false) => {
+    return new Iterable(
+      flattened({ iterable: self2, depth, asyncsInsideSyncIterable })
+    );
+  };
+  self2.then = (func) => {
+    const output2 = {
+      ...self2._source,
+      [Symbol.iterator]: () => {
+        const iterator = iter(self2._source);
+        let index = -1;
+        return {
+          next() {
+            const output3 = iterator.next();
+            index++;
+            if (output3.done) {
+              func(self2, index);
+            }
+            return output3;
+          }
+        };
+      }
+    };
+    const includeAsyncIterator = isAsyncIterable(self2._source);
+    if (includeAsyncIterator) {
+      output2[Symbol.asyncIterator] = () => {
+        const iterator = iter(self2._source);
+        let index = -1;
+        return {
+          async next() {
+            const output3 = await iterator.next();
+            index++;
+            if (output3.done) {
+              await func(self2, index);
+            }
+            return output3;
+          }
+        };
+      };
+    }
+    return new Iterable(output2);
+  };
+  self2.finally = (func) => {
+    const output2 = {
+      ...self2._source,
+      [Symbol.iterator]: () => {
+        const iterator = iter(self2._source);
+        let index = -1;
+        return {
+          next() {
+            let output3 = { value: null, done: true };
+            try {
+              output3 = iterator.next();
+              index++;
+            } finally {
+              if (output3.done) {
+                func(self2, index);
+              }
+            }
+          }
+        };
+      }
+    };
+    const includeAsyncIterator = isAsyncIterable(self2._source);
+    if (includeAsyncIterator) {
+      output2[Symbol.asyncIterator] = () => {
+        const iterator = iter(self2._source);
+        let index = 0;
+        return {
+          async next() {
+            let output3 = { value: null, done: true };
+            try {
+              output3 = await iterator.next();
+              index++;
+            } finally {
+              if (output3.done) {
+                await func(self2, index);
+              }
+            }
+          }
+        };
+      };
+    }
+    return new Iterable(output2);
+  };
+  Object.defineProperties(self2, {
+    toArray: {
+      get() {
+        if (self2[Symbol.asyncIterator]) {
+          return (async () => {
+            const iterator = self2[Symbol.asyncIterator]();
+            const output2 = [];
+            while (1) {
+              const { value: value2, done } = await iterator.next();
+              if (done) {
+                break;
+              }
+              output2.push(value2);
+            }
+            return output2;
+          })();
+        } else {
+          return [...self2];
+        }
+      }
+    },
+    flattened: {
+      get() {
+        return self2.flat(Infinity);
+      }
+    }
+  });
+  return self2;
+}
 async function asyncIteratorToList(asyncIterator) {
   const results = [];
   for await (const each3 of asyncIterator) {
@@ -6163,7 +6749,7 @@ function concurrentlyTransform({ iterator, transformFunction, poolLimit = null, 
 concurrentlyTransform.defaultPoolLimit = 40;
 
 // esbuild_serve:http-import:https://deno.land/x/good@1.4.4.2/string.js
-var indent = ({ string, by = "    ", noLead = false }) => (noLead ? "" : by) + string.replace(/\n/g, "\n" + by);
+var indent = ({ string: string2, by = "    ", noLead = false }) => (noLead ? "" : by) + string2.replace(/\n/g, "\n" + by);
 var toString = (value) => {
   if (typeof value == "symbol") {
     return toRepresentation(value);
@@ -6212,21 +6798,21 @@ var toRepresentation = (item) => {
     } else if (item2 instanceof Object && item2.constructor == Object) {
       output2 = pureObjectRepr(item2);
     } else if (item2 instanceof Map) {
-      let string = "new Map(";
+      let string2 = "new Map(";
       for (const [key, value] of item2.entries()) {
         const stringKey = recursionWrapper(key);
         const stringValue = recursionWrapper(value);
         if (!stringKey.match(/\n/g)) {
-          string += `
+          string2 += `
   [${stringKey}, ${indent({ string: stringValue, by: "  ", noLead: true })}],`;
         } else {
-          string += `
+          string2 += `
   [${indent({ string: stringKey, by: "  ", noLead: true })},
   ${indent({ string: stringValue, by: "    ", noLead: true })}],`;
         }
       }
-      string += "\n)";
-      output2 = string;
+      string2 += "\n)";
+      output2 = string2;
     } else {
       if (item2[reprSymbol] instanceof Function) {
         try {
@@ -6268,15 +6854,15 @@ var toRepresentation = (item) => {
     return output2;
   };
   const pureObjectRepr = (item2) => {
-    let string = "{";
+    let string2 = "{";
     for (const [key, value] of Object.entries(item2)) {
       const stringKey = recursionWrapper(key);
       const stringValue = recursionWrapper(value);
-      string += `
+      string2 += `
   ${stringKey}: ${indent({ string: stringValue, by: "  ", noLead: true })},`;
     }
-    string += "\n}";
-    return string;
+    string2 += "\n}";
+    return string2;
   };
   return recursionWrapper(item);
 };
@@ -6363,16 +6949,16 @@ var regexProxyOptions = Object.freeze({
   }
 });
 proxyRegExp = (parent, flags) => {
-  const regex2 = new RegExp(parent, flags);
-  const output2 = new Proxy(regex2, regexProxyOptions);
-  Object.setPrototypeOf(output2, Object.getPrototypeOf(regex2));
+  const regex3 = new RegExp(parent, flags);
+  const output2 = new Proxy(regex3, regexProxyOptions);
+  Object.setPrototypeOf(output2, Object.getPrototypeOf(regex3));
   return output2;
 };
 function regexWithStripWarning(shouldStrip) {
   return (strings, ...values2) => {
     let newRegexString = "";
-    for (const [string, value] of zip(strings, values2)) {
-      newRegexString += string;
+    for (const [string2, value] of zip(strings, values2)) {
+      newRegexString += string2;
       if (value instanceof RegExp) {
         if (!shouldStrip && value.flags.replace(/g/, "").length > 0) {
           console.warn(`Warning: flags inside of regex:
@@ -6401,6 +6987,32 @@ function regexWithStripWarning(shouldStrip) {
 }
 var regex = regexWithStripWarning(false);
 regex.stripFlags = regexWithStripWarning(true);
+function levenshteinDistanceBetween(str1, str2) {
+  if (str1.length > str2.length) {
+    ;
+    [str1, str2] = [str2, str1];
+  }
+  let distances = Array.from({ length: str1.length + 1 }, (_4, i) => +i);
+  for (let str2Index = 0; str2Index < str2.length; str2Index++) {
+    const tempDistances = [str2Index + 1];
+    for (let str1Index = 0; str1Index < str1.length; str1Index++) {
+      let char1 = str1[str1Index];
+      let char2 = str2[str2Index];
+      if (char1 === char2) {
+        tempDistances.push(distances[str1Index]);
+      } else {
+        tempDistances.push(1 + Math.min(distances[str1Index], distances[str1Index + 1], tempDistances[tempDistances.length - 1]));
+      }
+    }
+    distances = tempDistances;
+  }
+  return distances[distances.length - 1];
+}
+function levenshteinDistanceOrdering({ word, otherWords }) {
+  word = word.toLowerCase();
+  let prioritized = [...otherWords].sort((a, b) => levenshteinDistanceBetween(word, a) - levenshteinDistanceBetween(word, b));
+  return prioritized;
+}
 var textDecoder = new TextDecoder("utf-8");
 var textEncoder = new TextEncoder("utf-8");
 var utf8BytesToString = textDecoder.decode.bind(textDecoder);
@@ -6454,6 +7066,283 @@ var _2 = await Promise.resolve().then(() => (init_lodash_4_17(), lodash_4_17_exp
 
 // generic_tools/cross_validation.js
 var _3 = await Promise.resolve().then(() => (init_lodash_4_17(), lodash_4_17_exports));
+
+// esbuild_serve:http-import:https://deno.land/x/good@1.4.4.2/array.js
+var NamedArray = class extends Array {
+  toJSON() {
+    return { ...this };
+  }
+  toString() {
+    return { ...this };
+  }
+  [Symbol.for("customInspect")]() {
+    return { ...this };
+  }
+  [Symbol.for("Deno.customInspect")]() {
+    return { ...this };
+  }
+  [Symbol.for("nodejs.util.inspect.custom")]() {
+    return { ...this };
+  }
+};
+
+// esbuild_serve:http-import:https://deno.land/x/good@1.4.4.2/csv.js
+var argumentNames = [
+  "input",
+  "separator",
+  "lineSeparator",
+  "firstRowIsColumnNames",
+  "columnNames",
+  "skipEmptyLines",
+  "commentSymbol"
+];
+function parseCsv({
+  input: input2 = null,
+  separator = ",",
+  lineSeparator = /\r?\n/g,
+  firstRowIsColumnNames = false,
+  columnNames = null,
+  skipEmptyLines = true,
+  commentSymbol = null,
+  returnRowsAs = null,
+  ...other
+}) {
+  if (Object.keys(other).length > 0) {
+    const keys2 = Object.keys(other);
+    const spellingHelp = keys2.map(
+      (each3) => `for ${JSON.stringify(each3)} maybe you meant: ${levenshteinDistanceOrdering({ word: each3, otherWords: argumentNames })[0]}`
+    ).join("\n        ");
+    throw Error(`
+            When calling parseCsv() some unrecognized arguments were given
+            so I'm guessing you may have misspelled something:
+                ${spellingHelp}
+            
+        `.replace(/\n            /g, "\n"));
+  }
+  let columnNamesForParsing = columnNames;
+  const isAComment = (line) => commentSymbol && line.startsWith(commentSymbol);
+  const getCells = (eachLine, ...args) => {
+    const cells = eachLine.split(separator);
+    const cellsWithTypes = [];
+    let skipTo = 0;
+    let index = -1;
+    for (let eachCell of cells) {
+      index += 1;
+      if (index < skipTo) {
+        continue;
+      }
+      const stripped = eachCell.trim();
+      if (stripped.length == 0) {
+        cellsWithTypes.push("");
+      } else {
+        const firstChar = stripped[0];
+        if (!(firstChar == '"' || firstChar == "[" || firstChar == "{")) {
+          try {
+            cellsWithTypes.push(JSON.parse(stripped));
+          } catch (error) {
+            cellsWithTypes.push(stripped);
+          }
+        } else {
+          const remainingEndIndicies = [];
+          let remainingIndex = index;
+          while (remainingIndex <= cells.length) {
+            remainingEndIndicies.unshift(remainingIndex);
+            remainingIndex++;
+          }
+          skipTo = 0;
+          for (let eachRemainingEndIndex of remainingEndIndicies) {
+            try {
+              cellsWithTypes.push(
+                JSON.parse(
+                  cells.slice(index, eachRemainingEndIndex).join(separator)
+                )
+              );
+              skipTo = eachRemainingEndIndex;
+              break;
+            } catch (error) {
+            }
+          }
+          if (skipTo != 0) {
+            continue;
+          } else {
+            cellsWithTypes.push(eachCell);
+          }
+        }
+      }
+    }
+    if (columnNamesForParsing) {
+      const namedArray = new NamedArray(cellsWithTypes.length);
+      for (const [eachIndex, eachName, eachValue] of enumerate(columnNames, cellsWithTypes)) {
+        namedArray[eachIndex] = eachValue;
+        namedArray[eachName] = eachValue;
+      }
+      return namedArray;
+    }
+    return cellsWithTypes;
+  };
+  const isNonEmptyLine = skipEmptyLines ? () => true : (line) => line.trim().length != 0;
+  var { comments, rows } = Iterable(
+    typeof input2 == "string" ? input2.split(lineSeparator) : input2
+  ).map(
+    (eachLine) => {
+      if (typeof eachLine != "string") {
+        eachLine = utf8BytesToString(eachLine);
+      }
+      return eachLine.replace(lineSeparator, "");
+    }
+  ).flat(
+    1
+  ).filter(
+    isNonEmptyLine
+  ).forkBy({
+    filters: {
+      comments: isAComment,
+      rows: (line) => !isAComment(line)
+    }
+  });
+  rows = rows.map(getCells);
+  if (!firstRowIsColumnNames) {
+    const shouldReturnArray = returnRowsAs == "array" || returnRowsAs == null && input2 instanceof Array;
+    if (shouldReturnArray) {
+      if (!isAsyncIterable(input2)) {
+        rows = [...rows];
+        rows.comments = [...comments];
+        rows.columnNames = columnNames || [];
+      } else {
+        return new Promise(async (resolve9, reject2) => {
+          try {
+            const outputValue = [];
+            for await (const each3 of rows) {
+              outputValue.push(each3);
+            }
+            const outputComments = [];
+            for await (const each3 of comments) {
+              outputComments.push(each3);
+            }
+            outputValue.rows = rows;
+            outputValue.comments = outputComments;
+            outputValue.columnNames = columnNames || [];
+          } catch (error) {
+            reject2(error);
+          }
+        });
+      }
+    } else {
+      rows.rows = rows;
+      rows.comments = comments;
+      rows.columnNames = columnNames || [];
+      return rows;
+    }
+  } else {
+    const shouldReturnArray = returnRowsAs == "array" || returnRowsAs == null && input2 instanceof Array;
+    if (isAsyncIterable(input2)) {
+      if (!shouldReturnArray) {
+        var { iteratorForFirst, rows } = rows.forkBy({
+          filters: {
+            firstElement: (line, index) => index === 0,
+            rows: (line, index) => index !== 0
+          }
+        });
+        const promiseOutput = new Promise(async (resolve9, reject2) => {
+          try {
+            const firstValue = await next(iteratorForFirst);
+            if (firstValue == Stop) {
+              const output2 = [];
+              output2.rows = output2;
+              output2.comments = comments;
+              output2.columnNames = columnNames || [];
+              return resolve9(output2);
+            }
+            const columnNamesFromInput = firstValue.map((each3) => `${each3}`);
+            const columnNamesForReturning = columnNamesFromInput || columnNames;
+            columnNamesForParsing = columnNames || columnNamesFromInput;
+            rows.rows = rows;
+            rows.comments = comments;
+            rows.columnNames = columnNamesForReturning;
+            promiseOutput.columnNames.resolve(columnNamesForReturning);
+            resolve9(rows);
+          } catch (error) {
+            promiseOutput.columnNames.reject(error);
+            reject2(error);
+          }
+        });
+        promiseOutput.rows = rows;
+        promiseOutput.comments = comments;
+        promiseOutput.columnNames = deferredPromise();
+        Object.assign(promiseOutput, rows);
+        return promiseOutput;
+      } else {
+        return new Promise(async (resolve9, reject2) => {
+          try {
+            const firstValue = await next(rows);
+            const output2 = [];
+            if (firstValue == Stop) {
+              output2.rows = output2;
+              output2.comments = comments;
+              output2.columnNames = columnNames || [];
+              return resolve9(output2);
+            }
+            const columnNamesFromInput = firstValue.map((each3) => `${each3}`);
+            const columnNamesForReturning = columnNamesFromInput || columnNames;
+            columnNamesForParsing = columnNames || columnNamesFromInput;
+            for await (const each3 of rows) {
+              output2.push(each3);
+            }
+            output2.rows = output2;
+            output2.comments = comments;
+            output2.columnNames = columnNamesForReturning;
+            resolve9(rows);
+          } catch (error) {
+            reject2(error);
+          }
+        });
+      }
+    } else {
+      var { iteratorForFirst, rows } = rows.forkBy({
+        filters: {
+          firstElement: (line, index) => index === 0,
+          rows: (line, index) => index !== 0
+        }
+      });
+      const firstValue = next(rows);
+      if (firstValue == Stop) {
+        const output2 = [];
+        output2.rows = output2;
+        output2.comments = comments;
+        output2.columnNames = columnNames || [];
+        return output2;
+      }
+      const columnNamesFromInput = firstValue.map((each3) => `${each3}`);
+      const columnNamesForReturning = columnNamesFromInput || columnNames;
+      columnNamesForParsing = columnNames || columnNamesFromInput;
+      if (shouldReturnArray) {
+        rows = [...rows];
+      }
+      rows.rows = rows;
+      rows.comments = comments;
+      rows.columnNames = columnNamesForReturning;
+      return rows;
+    }
+  }
+}
+
+// esbuild_serve:http-import:https://deno.land/x/good@1.4.4.2/set.js
+function intersection2(...sets) {
+  const sortedSets = sets.sort((a, b) => (a.size || a.length) - (b.size || b.length));
+  const smallestCopy = new Set(sortedSets.shift());
+  for (const eachSet of sortedSets) {
+    if (smallestCopy.size == 0) {
+      break;
+    } else {
+      for (const eachCommonElement of smallestCopy) {
+        if (!eachSet.has(eachCommonElement)) {
+          smallestCopy.delete(eachCommonElement);
+        }
+      }
+    }
+  }
+  return smallestCopy;
+}
 
 // esbuild_serve:http-import:https://deno.land/x/ensure/src/compare.ts
 function isOutdated(minimumVersion, actualVersion) {
@@ -6643,8 +7532,8 @@ var WHITESPACE_ENCODINGS = {
   "\r": "%0D",
   " ": "%20"
 };
-function encodeWhitespace(string) {
-  return string.replaceAll(/[\s]/g, (c) => {
+function encodeWhitespace(string2) {
+  return string2.replaceAll(/[\s]/g, (c) => {
     return WHITESPACE_ENCODINGS[c] ?? c;
   });
 }
@@ -7898,8 +8787,8 @@ var WHITESPACE_ENCODINGS2 = {
   "\r": "%0D",
   " ": "%20"
 };
-function encodeWhitespace2(string) {
-  return string.replaceAll(/[\s]/g, (c) => {
+function encodeWhitespace2(string2) {
+  return string2.replaceAll(/[\s]/g, (c) => {
     return WHITESPACE_ENCODINGS2[c] ?? c;
   });
 }
@@ -9213,7 +10102,7 @@ async function copy(src, dest, options = {}) {
 }
 
 // esbuild_serve:http-import:https://deno.land/x/good@1.1.1.2/string.js
-var findAll3 = (regexPattern, sourceString) => {
+var findAll2 = (regexPattern, sourceString) => {
   var output2 = [];
   var match;
   var regexPatternWithGlobal = regexPattern.global ? regexPattern : RegExp(regexPattern, regexPattern.flags + "g");
@@ -9227,7 +10116,7 @@ var findAll3 = (regexPattern, sourceString) => {
 };
 
 // esbuild_serve:http-import:https://deno.land/x/good@1.1.1.2/value.js
-var typedArrayClasses = [
+var typedArrayClasses2 = [
   Uint16Array,
   Uint32Array,
   Uint8Array,
@@ -9240,63 +10129,63 @@ var typedArrayClasses = [
   globalThis.BigInt64Array,
   globalThis.BigUint64Array
 ].filter((each3) => each3);
-var copyableClasses = /* @__PURE__ */ new Set([RegExp, Date, URL, ...typedArrayClasses, globalThis.ArrayBuffer, globalThis.DataView]);
-var IteratorPrototype = Object.getPrototypeOf(Object.getPrototypeOf([][Symbol.iterator]()));
-var ArrayIterator = Object.getPrototypeOf([][Symbol.iterator]);
-var MapIterator = Object.getPrototypeOf((/* @__PURE__ */ new Map())[Symbol.iterator]);
-var SetIterator = Object.getPrototypeOf((/* @__PURE__ */ new Set())[Symbol.iterator]);
-var AsyncFunction = class {
+var copyableClasses2 = /* @__PURE__ */ new Set([RegExp, Date, URL, ...typedArrayClasses2, globalThis.ArrayBuffer, globalThis.DataView]);
+var IteratorPrototype2 = Object.getPrototypeOf(Object.getPrototypeOf([][Symbol.iterator]()));
+var ArrayIterator2 = Object.getPrototypeOf([][Symbol.iterator]);
+var MapIterator2 = Object.getPrototypeOf((/* @__PURE__ */ new Map())[Symbol.iterator]);
+var SetIterator2 = Object.getPrototypeOf((/* @__PURE__ */ new Set())[Symbol.iterator]);
+var AsyncFunction2 = class {
 };
-var GeneratorFunction = class {
+var GeneratorFunction2 = class {
 };
-var AsyncGeneratorFunction = class {
+var AsyncGeneratorFunction2 = class {
 };
-var SyncGenerator = class {
+var SyncGenerator2 = class {
 };
-var AsyncGenerator = class {
+var AsyncGenerator2 = class {
 };
 try {
-  AsyncFunction = eval("(async function(){}).constructor");
-  GeneratorFunction = eval("(function*(){}).constructor");
-  AsyncGeneratorFunction = eval("(async function*(){}).constructor");
-  SyncGenerator = eval("((function*(){})()).constructor");
-  AsyncGenerator = eval("((async function*(){})()).constructor");
+  AsyncFunction2 = eval("(async function(){}).constructor");
+  GeneratorFunction2 = eval("(function*(){}).constructor");
+  AsyncGeneratorFunction2 = eval("(async function*(){}).constructor");
+  SyncGenerator2 = eval("((function*(){})()).constructor");
+  AsyncGenerator2 = eval("((async function*(){})()).constructor");
 } catch (error) {
 }
-var isPrimitive = (value) => !(value instanceof Object);
-var isPureObject = (value) => value instanceof Object && Object.getPrototypeOf(value).constructor == Object;
-var isPracticallyPrimitive = (value) => isPrimitive(value) || value instanceof Date || value instanceof RegExp || value instanceof URL;
-var isBuiltInIterator = (value) => IteratorPrototype.isPrototypeOf(value);
-var isGeneratorType = (value) => {
+var isPrimitive2 = (value) => !(value instanceof Object);
+var isPureObject2 = (value) => value instanceof Object && Object.getPrototypeOf(value).constructor == Object;
+var isPracticallyPrimitive2 = (value) => isPrimitive2(value) || value instanceof Date || value instanceof RegExp || value instanceof URL;
+var isBuiltInIterator2 = (value) => IteratorPrototype2.isPrototypeOf(value);
+var isGeneratorType2 = (value) => {
   if (value instanceof Object) {
-    if (isBuiltInIterator(value)) {
+    if (isBuiltInIterator2(value)) {
       return true;
     }
     const constructor = value.constructor;
-    return constructor == SyncGenerator || constructor == AsyncGenerator;
+    return constructor == SyncGenerator2 || constructor == AsyncGenerator2;
   }
   return false;
 };
-var isAsyncIterable = function(value) {
+var isAsyncIterable2 = function(value) {
   return value && typeof value[Symbol.asyncIterator] === "function";
 };
-var isSyncIterable = function(value) {
+var isSyncIterable2 = function(value) {
   return value && typeof value[Symbol.iterator] === "function";
 };
-var isTechnicallyIterable = function(value) {
+var isTechnicallyIterable2 = function(value) {
   return value instanceof Object || typeof value == "string";
 };
-var isSyncIterableObjectOrContainer = function(value) {
+var isSyncIterableObjectOrContainer2 = function(value) {
   return value instanceof Object && typeof value[Symbol.iterator] == "function";
 };
-var deepCopySymbol = Symbol.for("deepCopy");
-var clonedFromSymbol = Symbol();
-var getThis = Symbol();
+var deepCopySymbol2 = Symbol.for("deepCopy");
+var clonedFromSymbol2 = Symbol();
+var getThis2 = Symbol();
 Object.getPrototypeOf(function() {
-})[getThis] = function() {
+})[getThis2] = function() {
   return this;
 };
-function deepCopyInner(value, valueChain = [], originalToCopyMap = /* @__PURE__ */ new Map()) {
+function deepCopyInner2(value, valueChain = [], originalToCopyMap = /* @__PURE__ */ new Map()) {
   valueChain.push(value);
   if (value == null) {
     return value;
@@ -9307,12 +10196,12 @@ function deepCopyInner(value, valueChain = [], originalToCopyMap = /* @__PURE__ 
   if (originalToCopyMap.has(value)) {
     return originalToCopyMap.get(value);
   }
-  if (value[deepCopySymbol] instanceof Function) {
-    const clonedValue = value[deepCopySymbol](originalToCopyMap);
+  if (value[deepCopySymbol2] instanceof Function) {
+    const clonedValue = value[deepCopySymbol2](originalToCopyMap);
     originalToCopyMap.set(value, clonedValue);
     return clonedValue;
   }
-  if (isGeneratorType(value)) {
+  if (isGeneratorType2(value)) {
     throw Error(`Sadly built-in generators cannot be deep copied.
 And I found a generator along this path:
 ${valueChain.reverse().map((each3) => `${each3},
@@ -9326,9 +10215,9 @@ ${valueChain.reverse().map((each3) => `${each3},
   } else if (value instanceof URL) {
     object = new URL(value);
   } else if (value instanceof Function) {
-    theThis = value[getThis]();
+    theThis = value[getThis2]();
     object = value.bind(theThis);
-  } else if (copyableClasses.has(value.constructor)) {
+  } else if (copyableClasses2.has(value.constructor)) {
     object = new value.constructor(value);
   } else if (value instanceof Array) {
     object = [];
@@ -9339,7 +10228,7 @@ ${valueChain.reverse().map((each3) => `${each3},
   }
   originalToCopyMap.set(value, object);
   if (object instanceof Function) {
-    thisCopy = deepCopyInner(theThis, valueChain, originalToCopyMap);
+    thisCopy = deepCopyInner2(theThis, valueChain, originalToCopyMap);
     object = object.bind(thisCopy);
   }
   const output2 = object;
@@ -9369,15 +10258,15 @@ ${valueChain.reverse().map((each3) => `${each3},
       }
       propertyDefinitions[key] = {
         ...options,
-        value: deepCopyInner(value2, valueChain, originalToCopyMap)
+        value: deepCopyInner2(value2, valueChain, originalToCopyMap)
       };
     }
   }
   Object.defineProperties(output2, propertyDefinitions);
   return output2;
 }
-var deepCopy = (value) => deepCopyInner(value);
-var shallowSortObject = (obj) => {
+var deepCopy2 = (value) => deepCopyInner2(value);
+var shallowSortObject2 = (obj) => {
   return Object.keys(obj).sort().reduce(
     (newObj, key) => {
       newObj[key] = obj[key];
@@ -9386,7 +10275,7 @@ var shallowSortObject = (obj) => {
     {}
   );
 };
-var deepSortObject = (obj, seen = /* @__PURE__ */ new Map()) => {
+var deepSortObject2 = (obj, seen = /* @__PURE__ */ new Map()) => {
   if (!(obj instanceof Object)) {
     return obj;
   } else if (seen.has(obj)) {
@@ -9396,23 +10285,23 @@ var deepSortObject = (obj, seen = /* @__PURE__ */ new Map()) => {
       const sortedChildren = [];
       seen.set(obj, sortedChildren);
       for (const each3 of obj) {
-        sortedChildren.push(deepSortObject(each3, seen));
+        sortedChildren.push(deepSortObject2(each3, seen));
       }
       return sortedChildren;
     } else {
       const sorted = {};
       seen.set(obj, sorted);
       for (const eachKey of Object.keys(obj).sort()) {
-        sorted[eachKey] = deepSortObject(obj[eachKey], seen);
+        sorted[eachKey] = deepSortObject2(obj[eachKey], seen);
       }
       return sorted;
     }
   }
 };
-var stableStringify = (value, ...args) => {
-  return JSON.stringify(deepSortObject(value), ...args);
+var stableStringify2 = (value, ...args) => {
+  return JSON.stringify(deepSortObject2(value), ...args);
 };
-var allKeys = function(obj) {
+var allKeys2 = function(obj) {
   let keys2 = [];
   if (obj == null) {
     return [];
@@ -9426,8 +10315,8 @@ var allKeys = function(obj) {
   }
   return keys2;
 };
-var ownKeyDescriptions = Object.getOwnPropertyDescriptors;
-var allKeyDescriptions = function(value, options = { includingBuiltin: false }) {
+var ownKeyDescriptions2 = Object.getOwnPropertyDescriptors;
+var allKeyDescriptions2 = function(value, options = { includingBuiltin: false }) {
   var { includingBuiltin } = { ...options };
   let descriptions = [];
   if (value == null) {
@@ -9655,8 +10544,8 @@ var WHITESPACE_ENCODINGS3 = {
   "\r": "%0D",
   " ": "%20"
 };
-function encodeWhitespace3(string) {
-  return string.replaceAll(/[\s]/g, (c) => {
+function encodeWhitespace3(string2) {
+  return string2.replaceAll(/[\s]/g, (c) => {
     return WHITESPACE_ENCODINGS3[c] ?? c;
   });
 }
@@ -11505,7 +12394,7 @@ var ItemInfo = class {
   }
 };
 var defaultOptionsHelper = (options) => ({
-  renameExtension: options.renameExtension || FileSystem2.defaultRenameExtension,
+  renameExtension: options.renameExtension || FileSystem.defaultRenameExtension,
   overwrite: options.overwrite
 });
 var fileLockSymbol = Symbol.for("fileLock");
@@ -11523,7 +12412,7 @@ var pathStandardize = (path4) => {
   }
   return path4;
 };
-var FileSystem2 = {
+var FileSystem = {
   denoExecutablePath: Deno.execPath(),
   parentPath: dirname3,
   dirname: dirname3,
@@ -11548,16 +12437,16 @@ var FileSystem2 = {
     Deno.chdir(value);
   },
   get cwd() {
-    return FileSystem2.workingDirectory;
+    return FileSystem.workingDirectory;
   },
   set cwd(value) {
-    return FileSystem2.workingDirectory = value;
+    return FileSystem.workingDirectory = value;
   },
   get pwd() {
-    return FileSystem2.cwd;
+    return FileSystem.cwd;
   },
   set pwd(value) {
-    return FileSystem2.cwd = value;
+    return FileSystem.cwd = value;
   },
   cd(path4) {
     Deno.chdir(path4);
@@ -11567,7 +12456,7 @@ var FileSystem2 = {
   },
   get thisFile() {
     const err = new Error();
-    const filePaths = findAll3(/^.+file:\/\/(\/[\w\W]*?):/gm, err.stack).map((each3) => each3[1]);
+    const filePaths = findAll2(/^.+file:\/\/(\/[\w\W]*?):/gm, err.stack).map((each3) => each3[1]);
     const firstPath = filePaths[0];
     if (firstPath) {
       try {
@@ -11581,7 +12470,7 @@ var FileSystem2 = {
   },
   get thisFolder() {
     const err = new Error();
-    const filePaths = findAll3(/^.+file:\/\/(\/[\w\W]*?):/gm, err.stack).map((each3) => each3[1]);
+    const filePaths = findAll2(/^.+file:\/\/(\/[\w\W]*?):/gm, err.stack).map((each3) => each3[1]);
     const firstPath = filePaths[0];
     if (firstPath) {
       try {
@@ -11664,35 +12553,35 @@ var FileSystem2 = {
   },
   async move({ item, newParentFolder, newName, force = true, overwrite = false, renameExtension = null }) {
     const oldPath = item.path || item;
-    const oldName = FileSystem2.basename(oldPath);
-    const itemInfo = item instanceof Object || await FileSystem2.info(oldPath);
+    const oldName = FileSystem.basename(oldPath);
+    const itemInfo = item instanceof Object || await FileSystem.info(oldPath);
     const newPath = `${newParentFolder}/${newName || oldName}`;
     if (itemInfo.isSymlink && !item.isBrokenLink) {
       const link = Deno.readLinkSync(itemInfo.path);
       if (!isAbsolute3(link)) {
-        const linkTargetBeforeMove = `${FileSystem2.parentPath(itemInfo.path)}/${link}`;
-        await FileSystem2.relativeLink({
+        const linkTargetBeforeMove = `${FileSystem.parentPath(itemInfo.path)}/${link}`;
+        await FileSystem.relativeLink({
           existingItem: linkTargetBeforeMove,
           newItem: newPath,
           force,
           overwrite,
           renameExtension
         });
-        await FileSystem2.remove(itemInfo);
+        await FileSystem.remove(itemInfo);
       }
     }
     if (force) {
-      FileSystem2.sync.clearAPathFor(newPath, { overwrite, renameExtension });
+      FileSystem.sync.clearAPathFor(newPath, { overwrite, renameExtension });
     }
     await move(oldPath, newPath);
   },
   async remove(fileOrFolder) {
     fileOrFolder = pathStandardize(fileOrFolder);
     if (fileOrFolder instanceof Array) {
-      return Promise.all(fileOrFolder.map(FileSystem2.remove));
+      return Promise.all(fileOrFolder.map(FileSystem.remove));
     }
     fileOrFolder = fileOrFolder.path || fileOrFolder;
-    const itemInfo = await FileSystem2.info(fileOrFolder);
+    const itemInfo = await FileSystem.info(fileOrFolder);
     if (itemInfo.isFile || itemInfo.isSymlink) {
       return Deno.remove(itemInfo.path.replace(/\/+$/, ""));
     } else if (itemInfo.exists) {
@@ -11711,33 +12600,33 @@ var FileSystem2 = {
     }
   },
   async finalTargetOf(path4, options = {}) {
-    const { _parentsHaveBeenChecked, cache: cache3 } = { _parentsHaveBeenChecked: false, cache: {}, ...options };
+    const { _parentsHaveBeenChecked, cache: cache4 } = { _parentsHaveBeenChecked: false, cache: {}, ...options };
     const originalWasItem = path4 instanceof ItemInfo;
     path4 = path4.path || path4;
     let result2 = await Deno.lstat(path4).catch(() => ({ doesntExist: true }));
     if (result2.doesntExist) {
       return null;
     }
-    path4 = await FileSystem2.makeHardPathTo(path4, { cache: cache3 });
+    path4 = await FileSystem.makeHardPathTo(path4, { cache: cache4 });
     const pathChain = [];
     while (result2.isSymlink) {
       const relativeOrAbsolutePath = await Deno.readLink(path4);
       if (isAbsolute3(relativeOrAbsolutePath)) {
         path4 = relativeOrAbsolutePath;
       } else {
-        path4 = `${FileSystem2.parentPath(path4)}/${relativeOrAbsolutePath}`;
+        path4 = `${FileSystem.parentPath(path4)}/${relativeOrAbsolutePath}`;
       }
       result2 = await Deno.lstat(path4).catch(() => ({ doesntExist: true }));
       if (result2.doesntExist) {
         return null;
       }
-      path4 = await FileSystem2.makeHardPathTo(path4, { cache: cache3 });
+      path4 = await FileSystem.makeHardPathTo(path4, { cache: cache4 });
       if (pathChain.includes(path4)) {
         return null;
       }
       pathChain.push(path4);
     }
-    path4 = FileSystem2.normalize(path4);
+    path4 = FileSystem.normalize(path4);
     if (originalWasItem) {
       return new ItemInfo({ path: path4 });
     } else {
@@ -11757,7 +12646,7 @@ var FileSystem2 = {
           return relativeOrAbsolutePath;
         }
       } else {
-        const path5 = `${await FileSystem2.makeHardPathTo(dirname3(item.path))}/${relativeOrAbsolutePath}`;
+        const path5 = `${await FileSystem.makeHardPathTo(dirname3(item.path))}/${relativeOrAbsolutePath}`;
         if (originalWasItem) {
           return new ItemInfo({ path: path5 });
         } else {
@@ -11774,34 +12663,34 @@ var FileSystem2 = {
   },
   async ensureIsFile(path4, options = { overwrite: false, renameExtension: null }) {
     const { overwrite, renameExtension } = defaultOptionsHelper(options);
-    await FileSystem2.ensureIsFolder(FileSystem2.parentPath(path4), { overwrite, renameExtension });
+    await FileSystem.ensureIsFolder(FileSystem.parentPath(path4), { overwrite, renameExtension });
     path4 = path4.path || path4;
-    const pathInfo = await FileSystem2.info(path4);
+    const pathInfo = await FileSystem.info(path4);
     if (pathInfo.isFile && !pathInfo.isDirectory) {
       return path4;
     } else {
-      await FileSystem2.write({ path: path4, data: "" });
+      await FileSystem.write({ path: path4, data: "" });
       return path4;
     }
   },
   async ensureIsFolder(path4, options = { overwrite: false, renameExtension: null }) {
     const { overwrite, renameExtension } = defaultOptionsHelper(options);
     path4 = path4.path || path4;
-    path4 = FileSystem2.makeAbsolutePath(path4);
+    path4 = FileSystem.makeAbsolutePath(path4);
     const parentPath = dirname3(path4);
     if (parentPath == path4) {
       return;
     }
-    const parent = await FileSystem2.info(parentPath);
+    const parent = await FileSystem.info(parentPath);
     if (!parent.isDirectory) {
-      FileSystem2.sync.ensureIsFolder(parentPath, { overwrite, renameExtension });
+      FileSystem.sync.ensureIsFolder(parentPath, { overwrite, renameExtension });
     }
-    let pathInfo = FileSystem2.sync.info(path4);
+    let pathInfo = FileSystem.sync.info(path4);
     if (pathInfo.exists && !pathInfo.isDirectory) {
       if (overwrite) {
-        await FileSystem2.remove(path4);
+        await FileSystem.remove(path4);
       } else {
-        await FileSystem2.moveOutOfTheWay(eachPath, { extension: renameExtension });
+        await FileSystem.moveOutOfTheWay(eachPath, { extension: renameExtension });
       }
     }
     await Deno.mkdir(path4, { recursive: true });
@@ -11829,14 +12718,14 @@ var FileSystem2 = {
       path4 = dirname3(path4);
     }
     for (const eachPath2 of paths.reverse()) {
-      const info = await FileSystem2.info(eachPath2);
+      const info = await FileSystem.info(eachPath2);
       if (!info.exists) {
         break;
       } else if (info.isFile) {
         if (overwrite) {
-          await FileSystem2.remove(eachPath2);
+          await FileSystem.remove(eachPath2);
         } else {
-          await FileSystem2.moveOutOfTheWay(eachPath2, { extension: renameExtension });
+          await FileSystem.moveOutOfTheWay(eachPath2, { extension: renameExtension });
         }
       }
     }
@@ -11844,11 +12733,11 @@ var FileSystem2 = {
     return originalPath;
   },
   async moveOutOfTheWay(path4, options = { extension: null }) {
-    const extension = options?.extension || FileSystem2.defaultRenameExtension;
-    const info = await FileSystem2.info(path4);
+    const extension = options?.extension || FileSystem.defaultRenameExtension;
+    const info = await FileSystem.info(path4);
     if (info.exists) {
       const newPath = path4 + extension;
-      await FileSystem2.moveOutOfTheWay(newPath, { extension });
+      await FileSystem.moveOutOfTheWay(newPath, { extension });
       await move(path4, newPath);
     }
   },
@@ -11860,7 +12749,7 @@ var FileSystem2 = {
    */
   allParentPaths(path4) {
     const pathStartsWithDotSlash = path4.startsWith("./");
-    path4 = FileSystem2.normalize(path4);
+    path4 = FileSystem.normalize(path4);
     if (path4 === ".") {
       return [];
     }
@@ -11869,7 +12758,7 @@ var FileSystem2 = {
     let allPaths = [];
     while (1) {
       previousPath = path4;
-      path4 = FileSystem2.parentPath(path4);
+      path4 = FileSystem.parentPath(path4);
       if (previousPath === path4) {
         break;
       }
@@ -11911,27 +12800,27 @@ but "from" didn't seem to exist
 `);
     }
     if (force) {
-      FileSystem2.sync.clearAPathFor(to, { overwrite, renameExtension });
+      FileSystem.sync.clearAPathFor(to, { overwrite, renameExtension });
     }
-    const fromInfo = await FileSystem2.info(from);
+    const fromInfo = await FileSystem.info(from);
     return copy(from, to, { force, preserveTimestamps: true });
   },
   async relativeLink({ existingItem, newItem, force = true, overwrite = false, allowNonExistingTarget = false, renameExtension = null }) {
     const existingItemPath = (existingItem.path || existingItem).replace(/\/+$/, "");
-    const newItemPath = FileSystem2.normalize((newItem.path || newItem).replace(/\/+$/, ""));
+    const newItemPath = FileSystem.normalize((newItem.path || newItem).replace(/\/+$/, ""));
     const existingItemDoesntExist = (await Deno.lstat(existingItemPath).catch(() => ({ doesntExist: true }))).doesntExist;
     if (!allowNonExistingTarget && existingItemDoesntExist) {
       throw Error(`
 Tried to create a relativeLink between existingItem:${existingItemPath}, newItem:${newItemPath}
 but existingItem didn't actually exist`);
     } else {
-      const parentOfNewItem = FileSystem2.parentPath(newItemPath);
-      await FileSystem2.ensureIsFolder(parentOfNewItem, { overwrite, renameExtension });
-      const hardPathToNewItem = `${await FileSystem2.makeHardPathTo(parentOfNewItem)}/${FileSystem2.basename(newItemPath)}`;
-      const hardPathToExistingItem = await FileSystem2.makeHardPathTo(existingItemPath);
+      const parentOfNewItem = FileSystem.parentPath(newItemPath);
+      await FileSystem.ensureIsFolder(parentOfNewItem, { overwrite, renameExtension });
+      const hardPathToNewItem = `${await FileSystem.makeHardPathTo(parentOfNewItem)}/${FileSystem.basename(newItemPath)}`;
+      const hardPathToExistingItem = await FileSystem.makeHardPathTo(existingItemPath);
       const pathFromNewToExisting = relative3(hardPathToNewItem, hardPathToExistingItem).replace(/^\.\.\//, "");
       if (force) {
-        FileSystem2.sync.clearAPathFor(hardPathToNewItem, { overwrite, renameExtension });
+        FileSystem.sync.clearAPathFor(hardPathToNewItem, { overwrite, renameExtension });
       }
       return Deno.symlink(
         pathFromNewToExisting,
@@ -11941,21 +12830,21 @@ but existingItem didn't actually exist`);
   },
   async absoluteLink({ existingItem, newItem, force = true, allowNonExistingTarget = false, overwrite = false, renameExtension = null }) {
     existingItem = (existingItem.path || existingItem).replace(/\/+$/, "");
-    const newItemPath = FileSystem2.normalize(newItem.path || newItem).replace(/\/+$/, "");
+    const newItemPath = FileSystem.normalize(newItem.path || newItem).replace(/\/+$/, "");
     const existingItemDoesntExist = (await Deno.lstat(existingItem).catch(() => ({ doesntExist: true }))).doesntExist;
     if (!allowNonExistingTarget && existingItemDoesntExist) {
       throw Error(`
 Tried to create a relativeLink between existingItem:${existingItem}, newItemPath:${newItemPath}
 but existingItem didn't actually exist`);
     } else {
-      const parentOfNewItem = FileSystem2.parentPath(newItemPath);
-      await FileSystem2.ensureIsFolder(parentOfNewItem, { overwrite, renameExtension });
-      const hardPathToNewItem = `${await FileSystem2.makeHardPathTo(parentOfNewItem)}/${FileSystem2.basename(newItemPath)}`;
+      const parentOfNewItem = FileSystem.parentPath(newItemPath);
+      await FileSystem.ensureIsFolder(parentOfNewItem, { overwrite, renameExtension });
+      const hardPathToNewItem = `${await FileSystem.makeHardPathTo(parentOfNewItem)}/${FileSystem.basename(newItemPath)}`;
       if (force) {
-        FileSystem2.sync.clearAPathFor(hardPathToNewItem, { overwrite, renameExtension });
+        FileSystem.sync.clearAPathFor(hardPathToNewItem, { overwrite, renameExtension });
       }
       return Deno.symlink(
-        FileSystem2.makeAbsolutePath(existingItem),
+        FileSystem.makeAbsolutePath(existingItem),
         newItemPath
       );
     }
@@ -11976,7 +12865,7 @@ but existingItem didn't actually exist`);
     return [folderList, result2.name, result2.ext];
   },
   async *iterateBasenamesIn(pathOrFileInfo) {
-    const info = pathOrFileInfo instanceof ItemInfo ? pathOrFileInfo : await FileSystem2.info(pathOrFileInfo);
+    const info = pathOrFileInfo instanceof ItemInfo ? pathOrFileInfo : await FileSystem.info(pathOrFileInfo);
     if (info.isFolder) {
       for await (const each3 of Deno.readDir(pathOrFileInfo.path)) {
         yield dirEntry.name;
@@ -11984,12 +12873,12 @@ but existingItem didn't actually exist`);
     }
   },
   listBasenamesIn(pathOrFileInfo) {
-    return asyncIteratorToList2(FileSystem2.iterateBasenamesIn(pathOrFileInfo));
+    return asyncIteratorToList2(FileSystem.iterateBasenamesIn(pathOrFileInfo));
   },
   async *iteratePathsIn(pathOrFileInfo, options = { recursively: false, shouldntInclude: null, shouldntExplore: null, searchOrder: "breadthFirstSearch", maxDepth: Infinity, dontFollowSymlinks: false, dontReturnSymlinks: false }) {
     let info;
     try {
-      info = pathOrFileInfo instanceof ItemInfo ? pathOrFileInfo : await FileSystem2.info(pathOrFileInfo);
+      info = pathOrFileInfo instanceof ItemInfo ? pathOrFileInfo : await FileSystem.info(pathOrFileInfo);
     } catch (error) {
       if (!error.message.match(/^PermissionDenied:/)) {
         throw error;
@@ -12035,7 +12924,7 @@ but existingItem didn't actually exist`);
         options.exclude = options.exclude instanceof Set ? options.exclude : new Set(options.exclude);
         if (!options.exclude.has(path4)) {
           const followSymlinks = !options.dontFollowSymlinks;
-          const absolutePathVersion = FileSystem2.makeAbsolutePath(path4);
+          const absolutePathVersion = FileSystem.makeAbsolutePath(path4);
           options.exclude.add(absolutePathVersion);
           options.maxDepth -= 1;
           const searchAfterwords = [];
@@ -12064,13 +12953,13 @@ but existingItem didn't actually exist`);
             if (useBreadthFirstSearch) {
               searchAfterwords.push(eachPath2);
             } else {
-              for await (const eachSubPath of FileSystem2.iteratePathsIn(eachPath2, options)) {
+              for await (const eachSubPath of FileSystem.iteratePathsIn(eachPath2, options)) {
                 yield eachSubPath;
               }
             }
           }
           for (const eachParentItem of searchAfterwords) {
-            for await (const eachSubPath of FileSystem2.iteratePathsIn(eachParentItem, options)) {
+            for await (const eachSubPath of FileSystem.iteratePathsIn(eachParentItem, options)) {
               yield eachSubPath;
             }
           }
@@ -12079,13 +12968,13 @@ but existingItem didn't actually exist`);
     }
   },
   listPathsIn(pathOrFileInfo, options) {
-    return asyncIteratorToList2(FileSystem2.iteratePathsIn(pathOrFileInfo, options));
+    return asyncIteratorToList2(FileSystem.iteratePathsIn(pathOrFileInfo, options));
   },
   async *iterateItemsIn(pathOrFileInfo, options = { recursively: false, shouldntInclude: null, shouldntExplore: null, searchOrder: "breadthFirstSearch", maxDepth: Infinity }) {
     options = { exclude: /* @__PURE__ */ new Set(), searchOrder: "breadthFirstSearch", maxDepth: Infinity, ...options };
     options.searchOrder = options.searchOrder || "breadthFirstSearch";
     const { shouldntExplore, shouldntInclude } = options;
-    const info = pathOrFileInfo instanceof ItemInfo ? pathOrFileInfo : await FileSystem2.info(pathOrFileInfo);
+    const info = pathOrFileInfo instanceof ItemInfo ? pathOrFileInfo : await FileSystem.info(pathOrFileInfo);
     const path4 = info.path;
     if (!["breadthFirstSearch", "depthFirstSearch"].includes(options.searchOrder)) {
       throw Error(`when calling FileSystem.iterateItemsIn('${path4}', { searchOrder: ${options.searchOrder} })
@@ -12098,12 +12987,12 @@ but existingItem didn't actually exist`);
     if (!shouldntExploreThis && options.maxDepth > 0 && info.isFolder) {
       options.exclude = options.exclude instanceof Set ? options.exclude : new Set(options.exclude);
       if (!options.exclude.has(path4)) {
-        const absolutePathVersion = FileSystem2.makeAbsolutePath(path4);
+        const absolutePathVersion = FileSystem.makeAbsolutePath(path4);
         options.exclude.add(absolutePathVersion);
         options.maxDepth -= 1;
         const searchAfterwords = [];
         for await (const entry of Deno.readDir(path4)) {
-          const eachItem = await FileSystem2.info(join4(path4, entry.name));
+          const eachItem = await FileSystem.info(join4(path4, entry.name));
           const shouldntIncludeThis = shouldntInclude && await shouldntInclude(eachItem);
           if (!shouldntIncludeThis) {
             yield eachItem;
@@ -12113,7 +13002,7 @@ but existingItem didn't actually exist`);
               if (useBreadthFirstSearch) {
                 searchAfterwords.push(eachItem);
               } else {
-                for await (const eachSubPath of FileSystem2.iterateItemsIn(eachItem, options)) {
+                for await (const eachSubPath of FileSystem.iterateItemsIn(eachItem, options)) {
                   yield eachSubPath;
                 }
               }
@@ -12121,7 +13010,7 @@ but existingItem didn't actually exist`);
           }
         }
         for (const eachParentItem of searchAfterwords) {
-          for await (const eachSubPath of FileSystem2.iterateItemsIn(eachParentItem, options)) {
+          for await (const eachSubPath of FileSystem.iterateItemsIn(eachParentItem, options)) {
             yield eachSubPath;
           }
         }
@@ -12130,15 +13019,15 @@ but existingItem didn't actually exist`);
   },
   async listItemsIn(pathOrFileInfo, options) {
     const outputPromises = [];
-    for await (const eachPath2 of FileSystem2.iteratePathsIn(pathOrFileInfo, options)) {
-      outputPromises.push(FileSystem2.info(eachPath2));
+    for await (const eachPath2 of FileSystem.iteratePathsIn(pathOrFileInfo, options)) {
+      outputPromises.push(FileSystem.info(eachPath2));
     }
     return Promise.all(outputPromises);
   },
   // includes symlinks if they link to files and pipes
   async listFileItemsIn(pathOrFileInfo, options = { treatAllSymlinksAsFiles: false }) {
     const { treatAllSymlinksAsFiles } = { treatAllSymlinksAsFiles: false, ...options };
-    const items = await FileSystem2.listItemsIn(pathOrFileInfo, options);
+    const items = await FileSystem.listItemsIn(pathOrFileInfo, options);
     if (treatAllSymlinksAsFiles) {
       return items.filter((eachItem) => eachItem.isFile || treatAllSymlinksAsFiles && eachItem.isSymlink);
     } else {
@@ -12146,14 +13035,14 @@ but existingItem didn't actually exist`);
     }
   },
   async listFilePathsIn(pathOrFileInfo, options = { treatAllSymlinksAsFiles: false }) {
-    return (await FileSystem2.listFileItemsIn(pathOrFileInfo, options)).map((each3) => each3.path);
+    return (await FileSystem.listFileItemsIn(pathOrFileInfo, options)).map((each3) => each3.path);
   },
   async listFileBasenamesIn(pathOrFileInfo, options = { treatAllSymlinksAsFiles: false }) {
-    return (await FileSystem2.listFileItemsIn(pathOrFileInfo, options)).map((each3) => each3.basename);
+    return (await FileSystem.listFileItemsIn(pathOrFileInfo, options)).map((each3) => each3.basename);
   },
   async listFolderItemsIn(pathOrFileInfo, options = { ignoreSymlinks: false }) {
     const { ignoreSymlinks } = { ignoreSymlinks: false, ...options };
-    const items = await FileSystem2.listItemsIn(pathOrFileInfo, options);
+    const items = await FileSystem.listItemsIn(pathOrFileInfo, options);
     if (ignoreSymlinks) {
       return items.filter((eachItem) => eachItem.isFolder && !eachItem.isSymlink);
     } else {
@@ -12161,10 +13050,10 @@ but existingItem didn't actually exist`);
     }
   },
   async listFolderPathsIn(pathOrFileInfo, options = { ignoreSymlinks: false }) {
-    return (await FileSystem2.listFolderItemsIn(pathOrFileInfo, options)).map((each3) => each3.path);
+    return (await FileSystem.listFolderItemsIn(pathOrFileInfo, options)).map((each3) => each3.path);
   },
   async listFolderBasenamesIn(pathOrFileInfo, options = { ignoreSymlinks: false }) {
-    return (await FileSystem2.listFolderItemsIn(pathOrFileInfo, options)).map((each3) => each3.basename);
+    return (await FileSystem.listFolderItemsIn(pathOrFileInfo, options)).map((each3) => each3.basename);
   },
   recursivelyIterateItemsIn(pathOrFileInfo, options = { onlyHardlinks: false, dontFollowSymlinks: false, searchOrder: "breadthFirstSearch", maxDepth: Infinity, shouldntExplore: null, shouldntInclude: null }) {
     options.recursively = true;
@@ -12184,7 +13073,7 @@ but existingItem didn't actually exist`);
         options.shouldntExplore = (each3) => each3.isSymlink;
       }
     }
-    return FileSystem2.iterateItemsIn(pathOrFileInfo, options);
+    return FileSystem.iterateItemsIn(pathOrFileInfo, options);
   },
   recursivelyIteratePathsIn(pathOrFileInfo, options = { onlyHardlinks: false, dontFollowSymlinks: false, searchOrder: "breadthFirstSearch", maxDepth: Infinity, shouldntExplore: null, shouldntInclude: null }) {
     options.recursively = true;
@@ -12196,21 +13085,21 @@ but existingItem didn't actually exist`);
         options.shouldntInclude = (each3) => each3.isSymlink;
       }
     }
-    return FileSystem2.iteratePathsIn(pathOrFileInfo, options);
+    return FileSystem.iteratePathsIn(pathOrFileInfo, options);
   },
   recursivelyListPathsIn(pathOrFileInfo, options = { onlyHardlinks: false, dontFollowSymlinks: false, searchOrder: "breadthFirstSearch", maxDepth: Infinity, shouldntExplore: null, shouldntInclude: null }) {
-    return asyncIteratorToList2(FileSystem2.recursivelyIteratePathsIn(pathOrFileInfo, options));
+    return asyncIteratorToList2(FileSystem.recursivelyIteratePathsIn(pathOrFileInfo, options));
   },
   recursivelyListItemsIn(pathOrFileInfo, options = { onlyHardlinks: false, dontFollowSymlinks: false, searchOrder: "breadthFirstSearch", maxDepth: Infinity, shouldntExplore: null, shouldntInclude: null }) {
-    return asyncIteratorToList2(FileSystem2.recursivelyIterateItemsIn(pathOrFileInfo, options));
+    return asyncIteratorToList2(FileSystem.recursivelyIterateItemsIn(pathOrFileInfo, options));
   },
   async *globIterator(pattern, options = { startPath: null }) {
     var { startPath, ...iteratePathsOptions } = options;
     startPath = startPath || ".";
-    const regex2 = pattern instanceof RegExp ? pattern : globToRegExp(pattern);
-    for await (const eachPath2 of FileSystem2.iteratePathsIn(startPath, { recursively: true, ...iteratePathsOptions })) {
-      if (eachPath2.match(regex2) || FileSystem2.makeAbsolutePath(eachPath2).match(regex2)) {
-        yield FileSystem2.makeRelativePath({
+    const regex3 = pattern instanceof RegExp ? pattern : globToRegExp(pattern);
+    for await (const eachPath2 of FileSystem.iteratePathsIn(startPath, { recursively: true, ...iteratePathsOptions })) {
+      if (eachPath2.match(regex3) || FileSystem.makeAbsolutePath(eachPath2).match(regex3)) {
+        yield FileSystem.makeRelativePath({
           from: startPath,
           to: eachPath2
         });
@@ -12218,7 +13107,7 @@ but existingItem didn't actually exist`);
     }
   },
   glob(pattern, options = { startPath: null }) {
-    return asyncIteratorToList2(FileSystem2.globIterator(pattern, options));
+    return asyncIteratorToList2(FileSystem.globIterator(pattern, options));
   },
   async getPermissions({ path: path4 }) {
     const { mode } = await Deno.lstat(path4);
@@ -12276,7 +13165,7 @@ but existingItem didn't actually exist`);
     let permissionNumber = 0;
     let fileInfo;
     if (!(Object.keys(permissions.owner).length === Object.keys(permissions.group).length === Object.keys(permissions.others).length === 3)) {
-      fileInfo = await FileSystem2.info(path4);
+      fileInfo = await FileSystem.info(path4);
       permissionNumber = fileInfo.lstat.mode & 511;
     }
     if (permissions.owner.canRead != null) {
@@ -12342,11 +13231,11 @@ but existingItem didn't actually exist`);
         permissionNumber &= 1022;
       }
     }
-    if (recursively == false || fileInfo instanceof Object && fileInfo.isFile || !(fileInfo instanceof Object) && (await FileSystem2.info(path4)).isFile) {
+    if (recursively == false || fileInfo instanceof Object && fileInfo.isFile || !(fileInfo instanceof Object) && (await FileSystem.info(path4)).isFile) {
       return Deno.chmod(path4.path || path4, permissionNumber);
     } else {
       const promises = [];
-      const paths = await FileSystem2.recursivelyListPathsIn(path4, { onlyHardlinks: false, dontFollowSymlinks: false, ...recursively });
+      const paths = await FileSystem.recursivelyListPathsIn(path4, { onlyHardlinks: false, dontFollowSymlinks: false, ...recursively });
       for (const eachPath2 of paths) {
         promises.push(
           Deno.chmod(eachPath2, permissionNumber).catch(console.error)
@@ -12362,20 +13251,20 @@ but existingItem didn't actually exist`);
   },
   // alias
   setPermissions(...args) {
-    return FileSystem2.addPermissions(...args);
+    return FileSystem.addPermissions(...args);
   },
   async write({ path: path4, data, force = true, overwrite = false, renameExtension = null }) {
     path4 = pathStandardize(path4);
     await grabPathLock(path4);
     if (force) {
-      FileSystem2.sync.ensureIsFolder(FileSystem2.parentPath(path4), { overwrite, renameExtension });
-      const info = FileSystem2.sync.info(path4);
+      FileSystem.sync.ensureIsFolder(FileSystem.parentPath(path4), { overwrite, renameExtension });
+      const info = FileSystem.sync.info(path4);
       if (info.isDirectory) {
-        FileSystem2.sync.remove(path4);
+        FileSystem.sync.remove(path4);
       }
     }
     let output2;
-    if (isGeneratorType(data) || data[Symbol.iterator] || data[Symbol.asyncIterator]) {
+    if (isGeneratorType2(data) || data[Symbol.iterator] || data[Symbol.asyncIterator]) {
       const file = await Deno.open(path4, { read: true, write: true, create: true, truncate: true });
       const encoder = new TextEncoder();
       const encode = encoder.encode.bind(encoder);
@@ -12402,10 +13291,10 @@ but existingItem didn't actually exist`);
     path4 = pathStandardize(path4);
     await grabPathLock(path4);
     if (force) {
-      FileSystem2.sync.ensureIsFolder(FileSystem2.parentPath(path4), { overwrite, renameExtension });
-      const info = await FileSystem2.info(path4);
+      FileSystem.sync.ensureIsFolder(FileSystem.parentPath(path4), { overwrite, renameExtension });
+      const info = await FileSystem.info(path4);
       if (info.isDirectory) {
-        await FileSystem2.remove(path4);
+        await FileSystem.remove(path4);
       }
     }
     const file = await Deno.open(path4, { read: true, write: true, create: true });
@@ -12419,44 +13308,44 @@ but existingItem didn't actually exist`);
     delete locker[path4];
   },
   async makeHardPathTo(path4, options = {}) {
-    var { cache: cache3 } = { cache: {}, ...options };
-    if (cache3[path4]) {
-      return cache3[path4];
+    var { cache: cache4 } = { cache: {}, ...options };
+    if (cache4[path4]) {
+      return cache4[path4];
     }
-    const [folders, name, extension] = FileSystem2.pathPieces(FileSystem2.makeAbsolutePath(path4));
+    const [folders, name, extension] = FileSystem.pathPieces(FileSystem.makeAbsolutePath(path4));
     let topDownPath = ``;
     for (const eachFolderName of folders) {
       topDownPath += `/${eachFolderName}`;
-      if (cache3[topDownPath]) {
-        topDownPath = cache3[topDownPath];
+      if (cache4[topDownPath]) {
+        topDownPath = cache4[topDownPath];
         continue;
       }
       const unchangedPath = topDownPath;
-      const info = await FileSystem2.info(topDownPath);
+      const info = await FileSystem.info(topDownPath);
       if (info.isSymlink) {
-        const absolutePathToIntermediate = await FileSystem2.finalTargetOf(info.path, { _parentsHaveBeenChecked: true, cache: cache3 });
+        const absolutePathToIntermediate = await FileSystem.finalTargetOf(info.path, { _parentsHaveBeenChecked: true, cache: cache4 });
         if (absolutePathToIntermediate == null) {
           return null;
         }
         topDownPath = topDownPath.slice(0, -(eachFolderName.length + 1));
-        const relativePath = FileSystem2.makeRelativePath({
+        const relativePath = FileSystem.makeRelativePath({
           from: topDownPath,
           to: absolutePathToIntermediate
         });
         topDownPath += `/${relativePath}`;
         topDownPath = normalize3(topDownPath);
       }
-      cache3[unchangedPath] = topDownPath;
+      cache4[unchangedPath] = topDownPath;
     }
     const hardPath = normalize3(`${topDownPath}/${name}${extension}`);
-    cache3[path4] = hardPath;
+    cache4[path4] = hardPath;
     return hardPath;
   },
   async walkUpImport(path4, start) {
-    const startPath = start || FileSystem2.pathOfCaller(1);
-    const nearestPath = await FileSystem2.walkUpUntil(path4, startPath);
+    const startPath = start || FileSystem.pathOfCaller(1);
+    const nearestPath = await FileSystem.walkUpUntil(path4, startPath);
     if (nearestPath) {
-      const absolutePath = FileSystem2.makeAbsolutePath(`${nearestPath}/${path4}`);
+      const absolutePath = FileSystem.makeAbsolutePath(`${nearestPath}/${path4}`);
       return import(toFileUrl3(absolutePath).href);
     } else {
       throw Error(`Tried to walkUpImport ${path4}, starting at ${startPath}, but was unable to find any files`);
@@ -12464,7 +13353,7 @@ but existingItem didn't actually exist`);
   },
   pathOfCaller(callerNumber = void 0) {
     const err = new Error();
-    let filePaths = findAll3(/^.+file:\/\/(\/[\w\W]*?):/gm, err.stack).map((each3) => each3[1]);
+    let filePaths = findAll2(/^.+file:\/\/(\/[\w\W]*?):/gm, err.stack).map((each3) => each3[1]);
     if (callerNumber) {
       filePaths = filePaths.slice(callerNumber);
     }
@@ -12514,7 +13403,7 @@ but existingItem didn't actually exist`);
     },
     remove(fileOrFolder) {
       if (fileOrFolder instanceof Array) {
-        return fileOrFolder.map(FileSystem2.sync.remove);
+        return fileOrFolder.map(FileSystem.sync.remove);
       }
       fileOrFolder = fileOrFolder.path || fileOrFolder;
       let exists2 = false;
@@ -12534,11 +13423,11 @@ but existingItem didn't actually exist`);
     },
     moveOutOfTheWay(path4, options = { extension: null }) {
       path4 = pathStandardize(path4);
-      const extension = options?.extension || FileSystem2.defaultRenameExtension;
-      const info = FileSystem2.sync.info(path4);
+      const extension = options?.extension || FileSystem.defaultRenameExtension;
+      const info = FileSystem.sync.info(path4);
       if (info.exists) {
         const newPath = path4 + extension;
-        FileSystem2.sync.moveOutOfTheWay(newPath, { extension });
+        FileSystem.sync.moveOutOfTheWay(newPath, { extension });
         moveSync(path4, newPath);
       }
     },
@@ -12546,21 +13435,21 @@ but existingItem didn't actually exist`);
       path4 = pathStandardize(path4);
       const { overwrite, renameExtension } = defaultOptionsHelper(options);
       path4 = path4.path || path4;
-      path4 = FileSystem2.makeAbsolutePath(path4);
+      path4 = FileSystem.makeAbsolutePath(path4);
       const parentPath = dirname3(path4);
       if (parentPath == path4) {
         return;
       }
-      const parent = FileSystem2.sync.info(parentPath);
+      const parent = FileSystem.sync.info(parentPath);
       if (!parent.isDirectory) {
-        FileSystem2.sync.ensureIsFolder(parentPath, { overwrite, renameExtension });
+        FileSystem.sync.ensureIsFolder(parentPath, { overwrite, renameExtension });
       }
-      let pathInfo = FileSystem2.sync.info(path4);
+      let pathInfo = FileSystem.sync.info(path4);
       if (pathInfo.exists && !pathInfo.isDirectory) {
         if (overwrite) {
-          FileSystem2.sync.remove(path4);
+          FileSystem.sync.remove(path4);
         } else {
-          FileSystem2.sync.moveOutOfTheWay(path4, { extension: renameExtension });
+          FileSystem.sync.moveOutOfTheWay(path4, { extension: renameExtension });
         }
       }
       Deno.mkdirSync(path4, { recursive: true });
@@ -12585,14 +13474,14 @@ but existingItem didn't actually exist`);
         path4 = dirname3(path4);
       }
       for (const eachPath2 of paths.reverse()) {
-        const info = FileSystem2.sync.info(eachPath2);
+        const info = FileSystem.sync.info(eachPath2);
         if (!info.exists) {
           break;
         } else if (info.isFile) {
           if (overwrite) {
-            FileSystem2.sync.remove(eachPath2);
+            FileSystem.sync.remove(eachPath2);
           } else {
-            FileSystem2.sync.moveOutOfTheWay(eachPath2, { extension: renameExtension });
+            FileSystem.sync.moveOutOfTheWay(eachPath2, { extension: renameExtension });
           }
         }
       }
@@ -12602,10 +13491,10 @@ but existingItem didn't actually exist`);
     append({ path: path4, data, force = true, overwrite = false, renameExtension = null }) {
       path4 = pathStandardize(path4);
       if (force) {
-        FileSystem2.sync.ensureIsFolder(FileSystem2.parentPath(path4), { overwrite, renameExtension });
-        const info = FileSystem2.sync.info(path4);
+        FileSystem.sync.ensureIsFolder(FileSystem.parentPath(path4), { overwrite, renameExtension });
+        const info = FileSystem.sync.info(path4);
         if (info.isDirectory) {
-          FileSystem2.sync.remove(path4);
+          FileSystem.sync.remove(path4);
         }
       }
       const file = Deno.openSync(path4, { read: true, write: true, create: true });
@@ -12619,7 +13508,292 @@ but existingItem didn't actually exist`);
     }
   }
 };
-var glob2 = FileSystem2.glob;
+var glob = FileSystem.glob;
+
+// esbuild_serve:http-import:https://deno.land/x/good@1.3.0.1/iterable.js
+var emptyIterator2 = /* @__PURE__ */ function* () {
+}();
+var makeIterable3 = (object) => {
+  if (object == null) {
+    return emptyIterator2;
+  }
+  if (object[Symbol.iterator] instanceof Function || object[Symbol.asyncIterator] instanceof Function) {
+    return object;
+  }
+  if (Object.getPrototypeOf(object).constructor == Object) {
+    return Object.entries(object);
+  }
+  return emptyIterator2;
+};
+var iter2 = (object) => {
+  const iterable = makeIterable3(object);
+  if (iterable[Symbol.asyncIterator]) {
+    return iterable[Symbol.asyncIterator]();
+  } else {
+    return iterable[Symbol.iterator]();
+  }
+};
+var Stop3 = Symbol("iterationStop");
+var zip3 = function* (...iterables) {
+  iterables = iterables.map((each3) => iter2(each3));
+  while (true) {
+    const nexts = iterables.map((each3) => each3.next());
+    if (nexts.every((each3) => each3.done)) {
+      break;
+    }
+    yield nexts.map((each3) => each3.value);
+  }
+};
+async function asyncIteratorToList3(asyncIterator) {
+  const results = [];
+  for await (const each3 of asyncIterator) {
+    results.push(each3);
+  }
+  return results;
+}
+var ERROR_WHILE_MAPPING_MESSAGE3 = "Threw while mapping.";
+function concurrentlyTransform3({ iterator, transformFunction, poolLimit = null, awaitAll = false }) {
+  poolLimit = poolLimit || concurrentlyTransform3.defaultPoolLimit;
+  const res = new TransformStream({
+    async transform(p, controller) {
+      try {
+        const s = await p;
+        controller.enqueue(s);
+      } catch (e) {
+        if (e instanceof AggregateError && e.message == ERROR_WHILE_MAPPING_MESSAGE3) {
+          controller.error(e);
+        }
+      }
+    }
+  });
+  const mainPromise = (async () => {
+    const writer = res.writable.getWriter();
+    const executing = [];
+    try {
+      let index = 0;
+      for await (const item of iterator) {
+        const p = Promise.resolve().then(() => transformFunction(item, index));
+        index++;
+        writer.write(p);
+        const e = p.then(() => executing.splice(executing.indexOf(e), 1));
+        executing.push(e);
+        if (executing.length >= poolLimit) {
+          await Promise.race(executing);
+        }
+      }
+      await Promise.all(executing);
+      writer.close();
+    } catch {
+      const errors = [];
+      for (const result2 of await Promise.allSettled(executing)) {
+        if (result2.status == "rejected") {
+          errors.push(result2.reason);
+        }
+      }
+      writer.write(Promise.reject(
+        new AggregateError(errors, ERROR_WHILE_MAPPING_MESSAGE3)
+      )).catch(() => {
+      });
+    }
+  })();
+  const asyncIterator = res.readable[Symbol.asyncIterator]();
+  if (!awaitAll) {
+    return asyncIterator;
+  } else {
+    return mainPromise.then(() => asyncIteratorToList3(asyncIterator));
+  }
+}
+concurrentlyTransform3.defaultPoolLimit = 40;
+
+// esbuild_serve:http-import:https://deno.land/x/good@1.3.0.1/string.js
+var indent2 = ({ string: string2, by = "    ", noLead = false }) => (noLead ? "" : by) + string2.replace(/\n/g, "\n" + by);
+var toString3 = (value) => {
+  if (typeof value == "symbol") {
+    return toRepresentation2(value);
+  } else if (!(value instanceof Object)) {
+    return value != null ? value.toString() : `${value}`;
+  } else {
+    return toRepresentation2(value);
+  }
+};
+var reprSymbol2 = Symbol.for("representation");
+var denoInspectSymbol2 = Symbol.for("Deno.customInspect");
+var toRepresentation2 = (item) => {
+  const alreadySeen = /* @__PURE__ */ new Set();
+  const recursionWrapper = (item2) => {
+    if (item2 instanceof Object) {
+      if (alreadySeen.has(item2)) {
+        return `[Self Reference]`;
+      } else {
+        alreadySeen.add(item2);
+      }
+    }
+    let output2;
+    if (item2 === void 0) {
+      output2 = "undefined";
+    } else if (item2 === null) {
+      output2 = "null";
+    } else if (typeof item2 == "string") {
+      output2 = JSON.stringify(item2);
+    } else if (typeof item2 == "symbol") {
+      if (!item2.description) {
+        output2 = "Symbol()";
+      } else {
+        const globalVersion = Symbol.for(item2.description);
+        if (globalVersion == item2) {
+          output2 = `Symbol.for(${JSON.stringify(item2.description)})`;
+        } else {
+          output2 = `Symbol(${JSON.stringify(item2.description)})`;
+        }
+      }
+    } else if (item2 instanceof Date) {
+      output2 = `new Date(${item2.getTime()})`;
+    } else if (item2 instanceof Array) {
+      output2 = `[${item2.map((each3) => recursionWrapper(each3)).join(",")}]`;
+    } else if (item2 instanceof Set) {
+      output2 = `new Set(${[...item2].map((each3) => recursionWrapper(each3)).join(",")})`;
+    } else if (item2 instanceof Object && item2.constructor == Object) {
+      output2 = pureObjectRepr(string);
+    } else if (item2 instanceof Map) {
+      let string2 = "new Map(";
+      for (const [key, value] of item2.entries()) {
+        const stringKey = recursionWrapper(key);
+        const stringValue = recursionWrapper(value);
+        if (!stringKey.match(/\n/g)) {
+          string2 += `
+  [${stringKey}, ${indent2({ string: stringValue, by: "  ", noLead: true })}],`;
+        } else {
+          string2 += `
+  [${indent2({ string: stringKey, by: "  ", noLead: true })},
+  ${indent2({ string: stringValue, by: "    ", noLead: true })}],`;
+        }
+      }
+      string2 += "\n)";
+      output2 = string2;
+    } else {
+      if (item2[reprSymbol2] instanceof Function) {
+        try {
+          output2 = item2[reprSymbol2]();
+          return output2;
+        } catch (error) {
+        }
+      }
+      if (item2[denoInspectSymbol2] instanceof Function) {
+        try {
+          output2 = item2[denoInspectSymbol2]();
+          return output2;
+        } catch (error) {
+        }
+      }
+      try {
+        output2 = item2.toString();
+        if (output2 !== "[object Object]") {
+          return output2;
+        }
+      } catch (error) {
+      }
+      try {
+        if (item2.constructor instanceof Function && item2.prototype && typeof item2.name == "string") {
+          output2 = `class ${item2.name} { /*...*/ }`;
+          return output2;
+        }
+      } catch (error) {
+      }
+      try {
+        if (item2.constructor instanceof Function && typeof item2.constructor.name == "string") {
+          output2 = `new ${item2.constructor.name}(${pureObjectRepr(item2)})`;
+          return output2;
+        }
+      } catch (error) {
+      }
+      return pureObjectRepr(item2);
+    }
+    return output2;
+  };
+  const pureObjectRepr = (item2) => {
+    let string2 = "{";
+    for (const [key, value] of Object.entries(item2)) {
+      const stringKey = recursionWrapper(key);
+      const stringValue = recursionWrapper(value);
+      string2 += `
+  ${stringKey}: ${indent2({ string: stringValue, by: "  ", noLead: true })},`;
+    }
+    string2 += "\n}";
+    return string2;
+  };
+  return recursionWrapper(item);
+};
+var findAll3 = (regexPattern, sourceString) => {
+  var output2 = [];
+  var match;
+  var regexPatternWithGlobal = regexPattern.global ? regexPattern : RegExp(regexPattern, regexPattern.flags + "g");
+  while (match = regexPatternWithGlobal.exec(sourceString)) {
+    output2.push(match);
+    if (match[0].length == 0) {
+      regexPatternWithGlobal.lastIndex += 1;
+    }
+  }
+  return output2;
+};
+function escapeRegexMatch2(string2) {
+  return string2.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+var proxyRegExp2;
+var regexProxyOptions2 = Object.freeze({
+  get(original, key) {
+    if (typeof key == "string" && key.match(/^[igymu]+$/)) {
+      return proxyRegExp2(original, key);
+    }
+    return original[key];
+  },
+  set(original, key, value) {
+    return original[key] = value;
+  }
+});
+proxyRegExp2 = (parent, flags) => {
+  const regex3 = new RegExp(parent, flags);
+  const output2 = new Proxy(regex3, regexProxyOptions2);
+  Object.setPrototypeOf(output2, Object.getPrototypeOf(regex3));
+  return output2;
+};
+function regexWithStripWarning2(shouldStrip) {
+  return (strings, ...values2) => {
+    let newRegexString = "";
+    for (const [string2, value] of zip3(strings, values2)) {
+      newRegexString += string2;
+      if (value instanceof RegExp) {
+        if (!shouldStrip && (value.ignoreCase || value.sticky || value.multiline || value.unicode)) {
+          console.warn(`Warning: flags inside of regex:
+    The RegExp trigging this warning is: ${value}
+    When calling the regex interpolater (e.g. regex\`something\${stuff}\`)
+    one of the \${} values (the one above) was a RegExp with a flag enabled
+    e.g. /stuff/i  <- i = ignoreCase flag enabled
+    When the /stuff/i gets interpolated, its going to loose its flags
+    (thats what I'm warning you about)
+    
+    To disable/ignore this warning do:
+        regex.stripFlags\`something\${/stuff/i}\`
+    If you want to add flags to the output of regex\`something\${stuff}\` do:
+        regex\`something\${stuff}\`.i   // ignoreCase
+        regex\`something\${stuff}\`.ig  // ignoreCase and global
+        regex\`something\${stuff}\`.gi  // functionally equivlent
+`);
+        }
+        const regexContent = `${value}`.slice(1).replace(/\/.*$/, "");
+        newRegexString += `(?:${regexContent})`;
+      } else if (value != null) {
+        newRegexString += escapeRegexMatch2(toString3(value));
+      }
+    }
+    return proxyRegExp2(newRegexString, "");
+  };
+}
+var regex2 = regexWithStripWarning2(false);
+regex2.stripFlags = regexWithStripWarning2(true);
+var textDecoder2 = new TextDecoder("utf-8");
+var textEncoder2 = new TextEncoder("utf-8");
+var utf8BytesToString2 = textDecoder2.decode.bind(textDecoder2);
+var stringToUtf8Bytes2 = textEncoder2.encode.bind(textEncoder2);
 
 // esbuild_serve:http-import:https://deno.land/x/quickr@0.6.32/main/file_system.js
 ensure({ denoVersion: "1.17.1" });
@@ -12807,7 +13981,7 @@ var ItemInfo2 = class {
   }
 };
 var defaultOptionsHelper2 = (options) => ({
-  renameExtension: options.renameExtension || FileSystem3.defaultRenameExtension,
+  renameExtension: options.renameExtension || FileSystem2.defaultRenameExtension,
   overwrite: options.overwrite
 });
 var fileLockSymbol2 = Symbol.for("fileLock");
@@ -12818,7 +13992,7 @@ var grabPathLock2 = async (path4) => {
   }
   locker2[path4] = true;
 };
-var FileSystem3 = {
+var FileSystem2 = {
   denoExecutablePath: Deno.execPath(),
   parentPath: dirname3,
   dirname: dirname3,
@@ -12843,16 +14017,16 @@ var FileSystem3 = {
     Deno.chdir(value);
   },
   get cwd() {
-    return FileSystem3.workingDirectory;
+    return FileSystem2.workingDirectory;
   },
   set cwd(value) {
-    return FileSystem3.workingDirectory = value;
+    return FileSystem2.workingDirectory = value;
   },
   get pwd() {
-    return FileSystem3.cwd;
+    return FileSystem2.cwd;
   },
   set pwd(value) {
-    return FileSystem3.cwd = value;
+    return FileSystem2.cwd = value;
   },
   cd(path4) {
     Deno.chdir(path4);
@@ -12862,7 +14036,7 @@ var FileSystem3 = {
   },
   get thisFile() {
     const err = new Error();
-    const filePaths = findAll3(/^.+file:\/\/(\/[\w\W]*?):/gm, err.stack).map((each3) => each3[1]);
+    const filePaths = findAll2(/^.+file:\/\/(\/[\w\W]*?):/gm, err.stack).map((each3) => each3[1]);
     const firstPath = filePaths[0];
     if (firstPath) {
       try {
@@ -12876,7 +14050,7 @@ var FileSystem3 = {
   },
   get thisFolder() {
     const err = new Error();
-    const filePaths = findAll3(/^.+file:\/\/(\/[\w\W]*?):/gm, err.stack).map((each3) => each3[1]);
+    const filePaths = findAll2(/^.+file:\/\/(\/[\w\W]*?):/gm, err.stack).map((each3) => each3[1]);
     const firstPath = filePaths[0];
     if (firstPath) {
       try {
@@ -12950,6 +14124,1447 @@ var FileSystem3 = {
   },
   async move({ item, newParentFolder, newName, force = true, overwrite = false, renameExtension = null }) {
     const oldPath = item.path || item;
+    const oldName = FileSystem2.basename(oldPath);
+    const itemInfo = item instanceof Object || await FileSystem2.info(oldPath);
+    const newPath = `${newParentFolder}/${newName || oldName}`;
+    if (itemInfo.isSymlink && !item.isBrokenLink) {
+      const link = Deno.readLinkSync(itemInfo.path);
+      if (!isAbsolute3(link)) {
+        const linkTargetBeforeMove = `${FileSystem2.parentPath(itemInfo.path)}/${link}`;
+        await FileSystem2.relativeLink({
+          existingItem: linkTargetBeforeMove,
+          newItem: newPath,
+          force,
+          overwrite,
+          renameExtension
+        });
+        await FileSystem2.remove(itemInfo);
+      }
+    }
+    if (force) {
+      FileSystem2.sync.clearAPathFor(newPath, { overwrite, renameExtension });
+    }
+    await move(oldPath, newPath);
+  },
+  async remove(fileOrFolder) {
+    if (fileOrFolder instanceof Array) {
+      return Promise.all(fileOrFolder.map(FileSystem2.remove));
+    }
+    fileOrFolder = fileOrFolder.path || fileOrFolder;
+    const itemInfo = await FileSystem2.info(fileOrFolder);
+    if (itemInfo.isFile || itemInfo.isSymlink) {
+      return Deno.remove(itemInfo.path.replace(/\/+$/, ""));
+    } else if (itemInfo.exists) {
+      return Deno.remove(itemInfo.path.replace(/\/+$/, ""), { recursive: true });
+    }
+  },
+  normalize: (path4) => normalize3(path4.path || path4).replace(/\/$/, ""),
+  isAbsolutePath: isAbsolute3,
+  isRelativePath: (...args) => !isAbsolute3(...args),
+  makeRelativePath: ({ from, to }) => relative3(from.path || from, to.path || to),
+  makeAbsolutePath: (path4) => {
+    if (!isAbsolute3(path4)) {
+      return normalize3(join4(Deno.cwd(), path4));
+    } else {
+      return normalize3(path4);
+    }
+  },
+  async finalTargetOf(path4, options = {}) {
+    const { _parentsHaveBeenChecked, cache: cache4 } = { _parentsHaveBeenChecked: false, cache: {}, ...options };
+    const originalWasItem = path4 instanceof ItemInfo2;
+    path4 = path4.path || path4;
+    let result2 = await Deno.lstat(path4).catch(() => ({ doesntExist: true }));
+    if (result2.doesntExist) {
+      return null;
+    }
+    path4 = await FileSystem2.makeHardPathTo(path4, { cache: cache4 });
+    const pathChain = [];
+    while (result2.isSymlink) {
+      const relativeOrAbsolutePath = await Deno.readLink(path4);
+      if (isAbsolute3(relativeOrAbsolutePath)) {
+        path4 = relativeOrAbsolutePath;
+      } else {
+        path4 = `${FileSystem2.parentPath(path4)}/${relativeOrAbsolutePath}`;
+      }
+      result2 = await Deno.lstat(path4).catch(() => ({ doesntExist: true }));
+      if (result2.doesntExist) {
+        return null;
+      }
+      path4 = await FileSystem2.makeHardPathTo(path4, { cache: cache4 });
+      if (pathChain.includes(path4)) {
+        return null;
+      }
+      pathChain.push(path4);
+    }
+    path4 = FileSystem2.normalize(path4);
+    if (originalWasItem) {
+      return new ItemInfo2({ path: path4 });
+    } else {
+      return path4;
+    }
+  },
+  async nextTargetOf(path4, options = {}) {
+    const originalWasItem = path4 instanceof ItemInfo2;
+    const item = originalWasItem ? path4 : new ItemInfo2({ path: path4 });
+    const lstat = item.lstat;
+    if (lstat.isSymlink) {
+      const relativeOrAbsolutePath = Deno.readLinkSync(item.path);
+      if (isAbsolute3(relativeOrAbsolutePath)) {
+        if (originalWasItem) {
+          return new ItemInfo2({ path: relativeOrAbsolutePath });
+        } else {
+          return relativeOrAbsolutePath;
+        }
+      } else {
+        const path5 = `${await FileSystem2.makeHardPathTo(dirname3(item.path))}/${relativeOrAbsolutePath}`;
+        if (originalWasItem) {
+          return new ItemInfo2({ path: path5 });
+        } else {
+          return path5;
+        }
+      }
+    } else {
+      if (originalWasItem) {
+        return item;
+      } else {
+        return item.path;
+      }
+    }
+  },
+  async ensureIsFile(path4, options = { overwrite: false, renameExtension: null }) {
+    const { overwrite, renameExtension } = defaultOptionsHelper2(options);
+    await FileSystem2.ensureIsFolder(FileSystem2.parentPath(path4), { overwrite, renameExtension });
+    path4 = path4.path || path4;
+    const pathInfo = await FileSystem2.info(path4);
+    if (pathInfo.isFile && !pathInfo.isDirectory) {
+      return path4;
+    } else {
+      await FileSystem2.write({ path: path4, data: "" });
+      return path4;
+    }
+  },
+  async ensureIsFolder(path4, options = { overwrite: false, renameExtension: null }) {
+    const { overwrite, renameExtension } = defaultOptionsHelper2(options);
+    path4 = path4.path || path4;
+    path4 = FileSystem2.makeAbsolutePath(path4);
+    const parentPath = dirname3(path4);
+    if (parentPath == path4) {
+      return;
+    }
+    const parent = await FileSystem2.info(parentPath);
+    if (!parent.isDirectory) {
+      FileSystem2.sync.ensureIsFolder(parentPath, { overwrite, renameExtension });
+    }
+    let pathInfo = FileSystem2.sync.info(path4);
+    if (pathInfo.exists && !pathInfo.isDirectory) {
+      if (overwrite) {
+        await FileSystem2.remove(path4);
+      } else {
+        await FileSystem2.moveOutOfTheWay(eachPath, { extension: renameExtension });
+      }
+    }
+    await Deno.mkdir(path4, { recursive: true });
+    return path4;
+  },
+  /**
+   * Move/Remove everything and Ensure parent folders
+   *
+   * @param path
+   * @param options.overwrite - if false, then things in the way will be moved instead of deleted
+   * @param options.renameExtension - the string to append when renaming files to get them out of the way
+   * 
+   * @note
+   *     very agressive: will change whatever is necessary to make sure a parent exists
+   * 
+   * @example
+   *     await FileSystem.clearAPathFor("./something")
+   */
+  async clearAPathFor(path4, options = { overwrite: false, renameExtension: null }) {
+    const { overwrite, renameExtension } = defaultOptionsHelper2(options);
+    const originalPath = path4;
+    const paths = [];
+    while (dirname3(path4) !== path4) {
+      paths.push(path4);
+      path4 = dirname3(path4);
+    }
+    for (const eachPath2 of paths.reverse()) {
+      const info = await FileSystem2.info(eachPath2);
+      if (!info.exists) {
+        break;
+      } else if (info.isFile) {
+        if (overwrite) {
+          await FileSystem2.remove(eachPath2);
+        } else {
+          await FileSystem2.moveOutOfTheWay(eachPath2, { extension: renameExtension });
+        }
+      }
+    }
+    await Deno.mkdir(dirname3(originalPath), { recursive: true });
+    return originalPath;
+  },
+  async moveOutOfTheWay(path4, options = { extension: null }) {
+    const extension = options?.extension || FileSystem2.defaultRenameExtension;
+    const info = await FileSystem2.info(path4);
+    if (info.exists) {
+      const newPath = path4 + extension;
+      await FileSystem2.moveOutOfTheWay(newPath, { extension });
+      await move(path4, newPath);
+    }
+  },
+  /**
+   * All Parent Paths
+   *
+   * @param {String} path - path doesnt need to exist
+   * @return {[String]} longest to shortest parent path
+   */
+  allParentPaths(path4) {
+    const pathStartsWithDotSlash = path4.startsWith("./");
+    path4 = FileSystem2.normalize(path4);
+    if (path4 === ".") {
+      return [];
+    }
+    const dotGotRemoved = pathStartsWithDotSlash && !path4.startsWith("./");
+    let previousPath = null;
+    let allPaths = [];
+    while (1) {
+      previousPath = path4;
+      path4 = FileSystem2.parentPath(path4);
+      if (previousPath === path4) {
+        break;
+      }
+      allPaths.push(path4);
+    }
+    allPaths.reverse();
+    allPaths = allPaths.filter((each3) => each3 != ".");
+    if (dotGotRemoved) {
+      allPaths.push(".");
+    }
+    return allPaths;
+  },
+  async walkUpUntil(fileToFind, startPath = null) {
+    let here = startPath || Deno.cwd();
+    if (!isAbsolute3(here)) {
+      here = join4(cwd, fileToFind);
+    }
+    while (1) {
+      let checkPath = join4(here, fileToFind);
+      const pathInfo = await Deno.lstat(checkPath).catch(() => ({ doesntExist: true }));
+      if (!pathInfo.doesntExist) {
+        return here;
+      }
+      if (here == dirname3(here)) {
+        return null;
+      } else {
+        here = dirname3(here);
+      }
+    }
+  },
+  // FIXME: make this work for folders with many options for how to handle symlinks
+  async copy({ from, to, preserveTimestamps = true, force = true, overwrite = false, renameExtension = null }) {
+    const existingItemDoesntExist = (await Deno.stat(from).catch(() => ({ doesntExist: true }))).doesntExist;
+    if (existingItemDoesntExist) {
+      throw Error(`
+Tried to copy from:${from}, to:${to}
+but "from" didn't seem to exist
+
+`);
+    }
+    if (force) {
+      FileSystem2.sync.clearAPathFor(to, { overwrite, renameExtension });
+    }
+    const fromInfo = await FileSystem2.info(from);
+    return copy(from, to, { force, preserveTimestamps: true });
+  },
+  async relativeLink({ existingItem, newItem, force = true, overwrite = false, allowNonExistingTarget = false, renameExtension = null }) {
+    const existingItemPath = (existingItem.path || existingItem).replace(/\/+$/, "");
+    const newItemPath = FileSystem2.normalize((newItem.path || newItem).replace(/\/+$/, ""));
+    const existingItemDoesntExist = (await Deno.lstat(existingItemPath).catch(() => ({ doesntExist: true }))).doesntExist;
+    if (!allowNonExistingTarget && existingItemDoesntExist) {
+      throw Error(`
+Tried to create a relativeLink between existingItem:${existingItemPath}, newItem:${newItemPath}
+but existingItem didn't actually exist`);
+    } else {
+      const parentOfNewItem = FileSystem2.parentPath(newItemPath);
+      await FileSystem2.ensureIsFolder(parentOfNewItem, { overwrite, renameExtension });
+      const hardPathToNewItem = `${await FileSystem2.makeHardPathTo(parentOfNewItem)}/${FileSystem2.basename(newItemPath)}`;
+      const hardPathToExistingItem = await FileSystem2.makeHardPathTo(existingItemPath);
+      const pathFromNewToExisting = relative3(hardPathToNewItem, hardPathToExistingItem).replace(/^\.\.\//, "");
+      if (force) {
+        FileSystem2.sync.clearAPathFor(hardPathToNewItem, { overwrite, renameExtension });
+      }
+      return Deno.symlink(
+        pathFromNewToExisting,
+        hardPathToNewItem
+      );
+    }
+  },
+  async absoluteLink({ existingItem, newItem, force = true, allowNonExistingTarget = false, overwrite = false, renameExtension = null }) {
+    existingItem = (existingItem.path || existingItem).replace(/\/+$/, "");
+    const newItemPath = FileSystem2.normalize(newItem.path || newItem).replace(/\/+$/, "");
+    const existingItemDoesntExist = (await Deno.lstat(existingItem).catch(() => ({ doesntExist: true }))).doesntExist;
+    if (!allowNonExistingTarget && existingItemDoesntExist) {
+      throw Error(`
+Tried to create a relativeLink between existingItem:${existingItem}, newItemPath:${newItemPath}
+but existingItem didn't actually exist`);
+    } else {
+      const parentOfNewItem = FileSystem2.parentPath(newItemPath);
+      await FileSystem2.ensureIsFolder(parentOfNewItem, { overwrite, renameExtension });
+      const hardPathToNewItem = `${await FileSystem2.makeHardPathTo(parentOfNewItem)}/${FileSystem2.basename(newItemPath)}`;
+      if (force) {
+        FileSystem2.sync.clearAPathFor(hardPathToNewItem, { overwrite, renameExtension });
+      }
+      return Deno.symlink(
+        FileSystem2.makeAbsolutePath(existingItem),
+        newItemPath
+      );
+    }
+  },
+  pathPieces(path4) {
+    path4 = path4.path || path4;
+    const result2 = parse3(path4);
+    const folderList = [];
+    let dirname9 = result2.dir;
+    while (true) {
+      folderList.push(basename3(dirname9));
+      if (dirname9 == dirname3(dirname9)) {
+        break;
+      }
+      dirname9 = dirname3(dirname9);
+    }
+    folderList.reverse();
+    return [folderList, result2.name, result2.ext];
+  },
+  async *iterateBasenamesIn(pathOrFileInfo) {
+    const info = pathOrFileInfo instanceof ItemInfo2 ? pathOrFileInfo : await FileSystem2.info(pathOrFileInfo);
+    if (info.isFolder) {
+      for await (const each3 of Deno.readDir(pathOrFileInfo.path)) {
+        yield dirEntry.name;
+      }
+    }
+  },
+  listBasenamesIn(pathOrFileInfo) {
+    return asyncIteratorToList2(FileSystem2.iterateBasenamesIn(pathOrFileInfo));
+  },
+  async *iteratePathsIn(pathOrFileInfo, options = { recursively: false, shouldntInclude: null, shouldntExplore: null, searchOrder: "breadthFirstSearch", maxDepth: Infinity, dontFollowSymlinks: false, dontReturnSymlinks: false }) {
+    let info;
+    try {
+      info = pathOrFileInfo instanceof ItemInfo2 ? pathOrFileInfo : await FileSystem2.info(pathOrFileInfo);
+    } catch (error) {
+      if (!error.message.match(/^PermissionDenied:/)) {
+        throw error;
+      }
+    }
+    const path4 = info.path;
+    if (!options.recursively) {
+      if (info.isFolder) {
+        if (!options.shouldntInclude) {
+          for await (const each3 of Deno.readDir(path4)) {
+            if (options.dontReturnSymlinks && each3.isSymlink) {
+              continue;
+            }
+            yield join4(path4, each3.name);
+          }
+        } else {
+          const shouldntInclude = options.shouldntInclude;
+          for await (const each3 of Deno.readDir(path4)) {
+            const eachPath2 = join4(path4, each3.name);
+            if (options.dontReturnSymlinks && each3.isSymlink) {
+              continue;
+            }
+            const shouldntIncludeThis = shouldntInclude && await shouldntInclude(eachPath2);
+            if (!shouldntIncludeThis) {
+              yield eachPath2;
+            }
+          }
+        }
+      }
+    } else {
+      options = { exclude: /* @__PURE__ */ new Set(), searchOrder: "breadthFirstSearch", maxDepth: Infinity, ...options };
+      options.searchOrder = options.searchOrder || "breadthFirstSearch";
+      const { shouldntExplore, shouldntInclude } = options;
+      if (!["breadthFirstSearch", "depthFirstSearch"].includes(options.searchOrder)) {
+        throw Error(`when calling FileSystem.iterateItemsIn('${path4}', { searchOrder: ${options.searchOrder} })
+
+    The searchOrder currently can only be 'depthFirstSearch' or 'breadthFirstSearch'
+    However, it was not either of those: ${options.searchOrder}`);
+      }
+      const useBreadthFirstSearch = options.searchOrder == "breadthFirstSearch";
+      const shouldntExploreThis = shouldntExplore && await shouldntExplore(info.path, info);
+      if (!shouldntExploreThis && options.maxDepth > 0 && info.isFolder) {
+        options.exclude = options.exclude instanceof Set ? options.exclude : new Set(options.exclude);
+        if (!options.exclude.has(path4)) {
+          const followSymlinks = !options.dontFollowSymlinks;
+          const absolutePathVersion = FileSystem2.makeAbsolutePath(path4);
+          options.exclude.add(absolutePathVersion);
+          options.maxDepth -= 1;
+          const searchAfterwords = [];
+          for await (const entry of Deno.readDir(path4)) {
+            const eachPath2 = join4(path4, entry.name);
+            if (options.dontReturnSymlinks && each.isSymlink) {
+              continue;
+            }
+            const shouldntIncludeThis = shouldntInclude && await shouldntInclude(eachPath2);
+            if (!shouldntIncludeThis) {
+              yield eachPath2;
+            }
+            if (entry.isFile) {
+              continue;
+            }
+            if (followSymlinks && !entry.isDirectory) {
+              let isSymlinkToDirectory = false;
+              try {
+                isSymlinkToDirectory = (await Deno.stat(eachPath2)).isDirectory;
+              } catch (error) {
+              }
+              if (!isSymlinkToDirectory) {
+                continue;
+              }
+            }
+            if (useBreadthFirstSearch) {
+              searchAfterwords.push(eachPath2);
+            } else {
+              for await (const eachSubPath of FileSystem2.iteratePathsIn(eachPath2, options)) {
+                yield eachSubPath;
+              }
+            }
+          }
+          for (const eachParentItem of searchAfterwords) {
+            for await (const eachSubPath of FileSystem2.iteratePathsIn(eachParentItem, options)) {
+              yield eachSubPath;
+            }
+          }
+        }
+      }
+    }
+  },
+  listPathsIn(pathOrFileInfo, options) {
+    return asyncIteratorToList2(FileSystem2.iteratePathsIn(pathOrFileInfo, options));
+  },
+  async *iterateItemsIn(pathOrFileInfo, options = { recursively: false, shouldntInclude: null, shouldntExplore: null, searchOrder: "breadthFirstSearch", maxDepth: Infinity }) {
+    options = { exclude: /* @__PURE__ */ new Set(), searchOrder: "breadthFirstSearch", maxDepth: Infinity, ...options };
+    options.searchOrder = options.searchOrder || "breadthFirstSearch";
+    const { shouldntExplore, shouldntInclude } = options;
+    const info = pathOrFileInfo instanceof ItemInfo2 ? pathOrFileInfo : await FileSystem2.info(pathOrFileInfo);
+    const path4 = info.path;
+    if (!["breadthFirstSearch", "depthFirstSearch"].includes(options.searchOrder)) {
+      throw Error(`when calling FileSystem.iterateItemsIn('${path4}', { searchOrder: ${options.searchOrder} })
+
+    The searchOrder currently can only be 'depthFirstSearch' or 'breadthFirstSearch'
+    However, it was not either of those: ${options.searchOrder}`);
+    }
+    const useBreadthFirstSearch = options.searchOrder == "breadthFirstSearch";
+    const shouldntExploreThis = shouldntExplore && await shouldntExplore(info);
+    if (!shouldntExploreThis && options.maxDepth > 0 && info.isFolder) {
+      options.exclude = options.exclude instanceof Set ? options.exclude : new Set(options.exclude);
+      if (!options.exclude.has(path4)) {
+        const absolutePathVersion = FileSystem2.makeAbsolutePath(path4);
+        options.exclude.add(absolutePathVersion);
+        options.maxDepth -= 1;
+        const searchAfterwords = [];
+        for await (const entry of Deno.readDir(path4)) {
+          const eachItem = await FileSystem2.info(join4(path4, entry.name));
+          const shouldntIncludeThis = shouldntInclude && await shouldntInclude(eachItem);
+          if (!shouldntIncludeThis) {
+            yield eachItem;
+          }
+          if (options.recursively) {
+            if (eachItem.isFolder) {
+              if (useBreadthFirstSearch) {
+                searchAfterwords.push(eachItem);
+              } else {
+                for await (const eachSubPath of FileSystem2.iterateItemsIn(eachItem, options)) {
+                  yield eachSubPath;
+                }
+              }
+            }
+          }
+        }
+        for (const eachParentItem of searchAfterwords) {
+          for await (const eachSubPath of FileSystem2.iterateItemsIn(eachParentItem, options)) {
+            yield eachSubPath;
+          }
+        }
+      }
+    }
+  },
+  async listItemsIn(pathOrFileInfo, options) {
+    const outputPromises = [];
+    for await (const eachPath2 of FileSystem2.iteratePathsIn(pathOrFileInfo, options)) {
+      outputPromises.push(FileSystem2.info(eachPath2));
+    }
+    return Promise.all(outputPromises);
+  },
+  // includes symlinks if they link to files and pipes
+  async listFileItemsIn(pathOrFileInfo, options = { treatAllSymlinksAsFiles: false }) {
+    const { treatAllSymlinksAsFiles } = { treatAllSymlinksAsFiles: false, ...options };
+    const items = await FileSystem2.listItemsIn(pathOrFileInfo, options);
+    if (treatAllSymlinksAsFiles) {
+      return items.filter((eachItem) => eachItem.isFile || treatAllSymlinksAsFiles && eachItem.isSymlink);
+    } else {
+      return items.filter((eachItem) => eachItem.isFile);
+    }
+  },
+  async listFilePathsIn(pathOrFileInfo, options = { treatAllSymlinksAsFiles: false }) {
+    return (await FileSystem2.listFileItemsIn(pathOrFileInfo, options)).map((each3) => each3.path);
+  },
+  async listFileBasenamesIn(pathOrFileInfo, options = { treatAllSymlinksAsFiles: false }) {
+    return (await FileSystem2.listFileItemsIn(pathOrFileInfo, options)).map((each3) => each3.basename);
+  },
+  async listFolderItemsIn(pathOrFileInfo, options = { ignoreSymlinks: false }) {
+    const { ignoreSymlinks } = { ignoreSymlinks: false, ...options };
+    const items = await FileSystem2.listItemsIn(pathOrFileInfo, options);
+    if (ignoreSymlinks) {
+      return items.filter((eachItem) => eachItem.isFolder && !eachItem.isSymlink);
+    } else {
+      return items.filter((eachItem) => eachItem.isFolder);
+    }
+  },
+  async listFolderPathsIn(pathOrFileInfo, options = { ignoreSymlinks: false }) {
+    return (await FileSystem2.listFolderItemsIn(pathOrFileInfo, options)).map((each3) => each3.path);
+  },
+  async listFolderBasenamesIn(pathOrFileInfo, options = { ignoreSymlinks: false }) {
+    return (await FileSystem2.listFolderItemsIn(pathOrFileInfo, options)).map((each3) => each3.basename);
+  },
+  recursivelyIterateItemsIn(pathOrFileInfo, options = { onlyHardlinks: false, dontFollowSymlinks: false, searchOrder: "breadthFirstSearch", maxDepth: Infinity, shouldntExplore: null, shouldntInclude: null }) {
+    options.recursively = true;
+    if (options.onlyHardlinks) {
+      if (options.shouldntInclude) {
+        const originalshouldntInclude = options.shouldntInclude;
+        options.shouldntInclude = (each3) => each3.isSymlink || originalshouldntInclude(each3);
+      } else {
+        options.shouldntInclude = (each3) => each3.isSymlink;
+      }
+    }
+    if (options.dontFollowSymlinks) {
+      if (options.shouldntExplore) {
+        const originalShouldntExplore = options.shouldntInclude;
+        options.shouldntExplore = (each3) => each3.isSymlink || originalShouldntExplore(each3);
+      } else {
+        options.shouldntExplore = (each3) => each3.isSymlink;
+      }
+    }
+    return FileSystem2.iterateItemsIn(pathOrFileInfo, options);
+  },
+  recursivelyIteratePathsIn(pathOrFileInfo, options = { onlyHardlinks: false, dontFollowSymlinks: false, searchOrder: "breadthFirstSearch", maxDepth: Infinity, shouldntExplore: null, shouldntInclude: null }) {
+    options.recursively = true;
+    if (options.onlyHardlinks) {
+      if (options.shouldntInclude) {
+        const originalshouldntInclude = options.shouldntInclude;
+        options.shouldntInclude = (each3) => each3.isSymlink || originalshouldntInclude(each3);
+      } else {
+        options.shouldntInclude = (each3) => each3.isSymlink;
+      }
+    }
+    return FileSystem2.iteratePathsIn(pathOrFileInfo, options);
+  },
+  recursivelyListPathsIn(pathOrFileInfo, options = { onlyHardlinks: false, dontFollowSymlinks: false, searchOrder: "breadthFirstSearch", maxDepth: Infinity, shouldntExplore: null, shouldntInclude: null }) {
+    return asyncIteratorToList2(FileSystem2.recursivelyIteratePathsIn(pathOrFileInfo, options));
+  },
+  recursivelyListItemsIn(pathOrFileInfo, options = { onlyHardlinks: false, dontFollowSymlinks: false, searchOrder: "breadthFirstSearch", maxDepth: Infinity, shouldntExplore: null, shouldntInclude: null }) {
+    return asyncIteratorToList2(FileSystem2.recursivelyIterateItemsIn(pathOrFileInfo, options));
+  },
+  async *globIterator(pattern, options = { startPath: null }) {
+    var { startPath, ...iteratePathsOptions } = options;
+    startPath = startPath || ".";
+    const regex3 = pattern instanceof RegExp ? pattern : globToRegExp(pattern);
+    for await (const eachPath2 of FileSystem2.iteratePathsIn(startPath, { recursively: true, ...iteratePathsOptions })) {
+      if (eachPath2.match(regex3) || FileSystem2.makeAbsolutePath(eachPath2).match(regex3)) {
+        yield FileSystem2.makeRelativePath({
+          from: startPath,
+          to: eachPath2
+        });
+      }
+    }
+  },
+  glob(pattern, options = { startPath: null }) {
+    return asyncIteratorToList2(FileSystem2.globIterator(pattern, options));
+  },
+  async getPermissions({ path: path4 }) {
+    const { mode } = await Deno.lstat(path4);
+    return {
+      owner: {
+        //          rwxrwxrwx
+        canRead: !!(256 & mode),
+        canWrite: !!(128 & mode),
+        canExecute: !!(64 & mode)
+      },
+      group: {
+        canRead: !!(32 & mode),
+        canWrite: !!(16 & mode),
+        canExecute: !!(8 & mode)
+      },
+      others: {
+        canRead: !!(4 & mode),
+        canWrite: !!(2 & mode),
+        canExecute: !!(1 & mode)
+      }
+    };
+  },
+  /**
+  * Add/set file permissions
+  *
+  * @param {String} args.path - 
+  * @param {Object|Boolean} args.recursively - 
+  * @param {Object} args.permissions - 
+  * @param {Object} args.permissions.owner - 
+  * @param {Boolean} args.permissions.owner.canRead - 
+  * @param {Boolean} args.permissions.owner.canWrite - 
+  * @param {Boolean} args.permissions.owner.canExecute - 
+  * @param {Object} args.permissions.group - 
+  * @param {Boolean} args.permissions.group.canRead - 
+  * @param {Boolean} args.permissions.group.canWrite - 
+  * @param {Boolean} args.permissions.group.canExecute - 
+  * @param {Object} args.permissions.others - 
+  * @param {Boolean} args.permissions.others.canRead - 
+  * @param {Boolean} args.permissions.others.canWrite - 
+  * @param {Boolean} args.permissions.others.canExecute - 
+  * @return {null} 
+  *
+  * @example
+  *  await FileSystem.addPermissions({
+  *      path: fileOrFolderPath,
+  *      permissions: {
+  *          owner: {
+  *              canExecute: true,
+  *          },
+  *      }
+  *  })
+  */
+  async addPermissions({ path: path4, permissions = { owner: {}, group: {}, others: {} }, recursively = false }) {
+    permissions = { owner: {}, group: {}, others: {}, ...permissions };
+    let permissionNumber = 0;
+    let fileInfo;
+    if (!(Object.keys(permissions.owner).length === Object.keys(permissions.group).length === Object.keys(permissions.others).length === 3)) {
+      fileInfo = await FileSystem2.info(path4);
+      permissionNumber = fileInfo.lstat.mode & 511;
+    }
+    if (permissions.owner.canRead != null) {
+      if (permissions.owner.canRead) {
+        permissionNumber |= 256;
+      } else {
+        permissionNumber &= 767;
+      }
+    }
+    if (permissions.owner.canWrite != null) {
+      if (permissions.owner.canWrite) {
+        permissionNumber |= 128;
+      } else {
+        permissionNumber &= 895;
+      }
+    }
+    if (permissions.owner.canExecute != null) {
+      if (permissions.owner.canExecute) {
+        permissionNumber |= 64;
+      } else {
+        permissionNumber &= 959;
+      }
+    }
+    if (permissions.group.canRead != null) {
+      if (permissions.group.canRead) {
+        permissionNumber |= 32;
+      } else {
+        permissionNumber &= 991;
+      }
+    }
+    if (permissions.group.canWrite != null) {
+      if (permissions.group.canWrite) {
+        permissionNumber |= 16;
+      } else {
+        permissionNumber &= 1007;
+      }
+    }
+    if (permissions.group.canExecute != null) {
+      if (permissions.group.canExecute) {
+        permissionNumber |= 8;
+      } else {
+        permissionNumber &= 1015;
+      }
+    }
+    if (permissions.others.canRead != null) {
+      if (permissions.others.canRead) {
+        permissionNumber |= 4;
+      } else {
+        permissionNumber &= 1019;
+      }
+    }
+    if (permissions.others.canWrite != null) {
+      if (permissions.others.canWrite) {
+        permissionNumber |= 2;
+      } else {
+        permissionNumber &= 1021;
+      }
+    }
+    if (permissions.others.canExecute != null) {
+      if (permissions.others.canExecute) {
+        permissionNumber |= 1;
+      } else {
+        permissionNumber &= 1022;
+      }
+    }
+    if (recursively == false || fileInfo instanceof Object && fileInfo.isFile || !(fileInfo instanceof Object) && (await FileSystem2.info(path4)).isFile) {
+      return Deno.chmod(path4.path || path4, permissionNumber);
+    } else {
+      const promises = [];
+      const paths = await FileSystem2.recursivelyListPathsIn(path4, { onlyHardlinks: false, dontFollowSymlinks: false, ...recursively });
+      for (const eachPath2 of paths) {
+        promises.push(
+          Deno.chmod(eachPath2, permissionNumber).catch(console.error)
+        );
+      }
+      return new Promise(async (resolve9, reject2) => {
+        for (const each3 of promises) {
+          await each3;
+        }
+        resolve9();
+      });
+    }
+  },
+  // alias
+  setPermissions(...args) {
+    return FileSystem2.addPermissions(...args);
+  },
+  async write({ path: path4, data, force = true, overwrite = false, renameExtension = null }) {
+    await grabPathLock2(path4);
+    if (force) {
+      await FileSystem2.ensureIsFolder(FileSystem2.parentPath(path4), { overwrite, renameExtension });
+      const info = await FileSystem2.info(path4);
+      if (info.isDirectory) {
+        await FileSystem2.remove(path4);
+      }
+    }
+    let output2;
+    if (isGeneratorType2(data) || data[Symbol.iterator] || data[Symbol.asyncIterator]) {
+      const file = await Deno.open(path4, { read: true, write: true, create: true, truncate: true });
+      const encoder = new TextEncoder();
+      const encode = encoder.encode.bind(encoder);
+      try {
+        let index = 0;
+        for await (let packet of data) {
+          if (typeof packet == "string") {
+            packet = encode(packet);
+          }
+          await Deno.write(file.rid, packet);
+        }
+      } finally {
+        Deno.close(file.rid);
+      }
+    } else if (typeof data == "string") {
+      output2 = await Deno.writeTextFile(path4, data);
+    } else {
+      output2 = await Deno.writeFile(path4, data);
+    }
+    delete locker2[path4];
+    return output2;
+  },
+  async append({ path: path4, data, force = true, overwrite = false, renameExtension = null }) {
+    await grabPathLock2(path4);
+    if (force) {
+      FileSystem2.sync.ensureIsFolder(FileSystem2.parentPath(path4), { overwrite, renameExtension });
+      const info = await FileSystem2.info(path4);
+      if (info.isDirectory) {
+        await FileSystem2.remove(path4);
+      }
+    }
+    const file = await Deno.open(path4, { read: true, write: true, create: true });
+    await file.seek(0, Deno.SeekMode.End);
+    if (typeof data == "string") {
+      await file.write(new TextEncoder().encode(data));
+    } else {
+      await file.write(data);
+    }
+    await file.close();
+    delete locker2[path4];
+  },
+  async makeHardPathTo(path4, options = {}) {
+    var { cache: cache4 } = { cache: {}, ...options };
+    if (cache4[path4]) {
+      return cache4[path4];
+    }
+    const [folders, name, extension] = FileSystem2.pathPieces(FileSystem2.makeAbsolutePath(path4));
+    let topDownPath = ``;
+    for (const eachFolderName of folders) {
+      topDownPath += `/${eachFolderName}`;
+      if (cache4[topDownPath]) {
+        topDownPath = cache4[topDownPath];
+        continue;
+      }
+      const unchangedPath = topDownPath;
+      const info = await FileSystem2.info(topDownPath);
+      if (info.isSymlink) {
+        const absolutePathToIntermediate = await FileSystem2.finalTargetOf(info.path, { _parentsHaveBeenChecked: true, cache: cache4 });
+        if (absolutePathToIntermediate == null) {
+          return null;
+        }
+        topDownPath = topDownPath.slice(0, -(eachFolderName.length + 1));
+        const relativePath = FileSystem2.makeRelativePath({
+          from: topDownPath,
+          to: absolutePathToIntermediate
+        });
+        topDownPath += `/${relativePath}`;
+        topDownPath = normalize3(topDownPath);
+      }
+      cache4[unchangedPath] = topDownPath;
+    }
+    const hardPath = normalize3(`${topDownPath}/${name}${extension}`);
+    cache4[path4] = hardPath;
+    return hardPath;
+  },
+  async walkUpImport(path4, start) {
+    const startPath = start || FileSystem2.pathOfCaller(1);
+    const nearestPath = await FileSystem2.walkUpUntil(path4, startPath);
+    if (nearestPath) {
+      const absolutePath = FileSystem2.makeAbsolutePath(`${nearestPath}/${path4}`);
+      return import(toFileUrl3(absolutePath).href);
+    } else {
+      throw Error(`Tried to walkUpImport ${path4}, starting at ${startPath}, but was unable to find any files`);
+    }
+  },
+  pathOfCaller(callerNumber = void 0) {
+    const err = new Error();
+    let filePaths = findAll2(/^.+file:\/\/(\/[\w\W]*?):/gm, err.stack).map((each3) => each3[1]);
+    if (callerNumber) {
+      filePaths = filePaths.slice(callerNumber);
+    }
+    try {
+      const secondPath = filePaths[1];
+      if (secondPath) {
+        try {
+          if (Deno.statSync(secondPath).isFile) {
+            return secondPath;
+          }
+        } catch (error) {
+        }
+      }
+    } catch (error) {
+    }
+    return Deno.cwd();
+  },
+  sync: {
+    info(fileOrFolderPath, _cachedLstat = null) {
+      let lstat = _cachedLstat;
+      try {
+        lstat = Deno.lstatSync(fileOrFolderPath);
+      } catch (error) {
+        lstat = { doesntExist: true };
+      }
+      let stat = {};
+      if (!lstat.isSymlink) {
+        stat = {
+          isBrokenLink: false,
+          isLoopOfLinks: false
+        };
+      } else {
+        try {
+          stat = Deno.statSync(fileOrFolderPath);
+        } catch (error) {
+          if (error.message.match(/^Too many levels of symbolic links/)) {
+            stat.isBrokenLink = true;
+            stat.isLoopOfLinks = true;
+          } else if (error.message.match(/^No such file or directory/)) {
+            stat.isBrokenLink = true;
+          } else {
+            throw error;
+          }
+        }
+      }
+      return new ItemInfo2({ path: fileOrFolderPath, _lstatData: lstat, _statData: stat });
+    },
+    remove(fileOrFolder) {
+      if (fileOrFolder instanceof Array) {
+        return fileOrFolder.map(FileSystem2.sync.remove);
+      }
+      fileOrFolder = fileOrFolder.path || fileOrFolder;
+      let exists2 = false;
+      let item;
+      try {
+        item = Deno.lstatSync(fileOrFolder);
+        exists2 = true;
+      } catch (error) {
+      }
+      if (exists2) {
+        if (item.isFile || item.isSymlink) {
+          return Deno.removeSync(fileOrFolder.replace(/\/+$/, ""));
+        } else {
+          return Deno.removeSync(fileOrFolder.replace(/\/+$/, ""), { recursive: true });
+        }
+      }
+    },
+    moveOutOfTheWay(path4, options = { extension: null }) {
+      const extension = options?.extension || FileSystem2.defaultRenameExtension;
+      const info = FileSystem2.sync.info(path4);
+      if (info.exists) {
+        const newPath = path4 + extension;
+        FileSystem2.sync.moveOutOfTheWay(newPath, { extension });
+        moveSync(path4, newPath);
+      }
+    },
+    ensureIsFolder(path4, options = { overwrite: false, renameExtension: null }) {
+      const { overwrite, renameExtension } = defaultOptionsHelper2(options);
+      path4 = path4.path || path4;
+      path4 = FileSystem2.makeAbsolutePath(path4);
+      const parentPath = dirname3(path4);
+      if (parentPath == path4) {
+        return;
+      }
+      const parent = FileSystem2.sync.info(parentPath);
+      if (!parent.isDirectory) {
+        FileSystem2.sync.ensureIsFolder(parentPath, { overwrite, renameExtension });
+      }
+      let pathInfo = FileSystem2.sync.info(path4);
+      if (pathInfo.exists && !pathInfo.isDirectory) {
+        if (overwrite) {
+          FileSystem2.sync.remove(path4);
+        } else {
+          FileSystem2.sync.moveOutOfTheWay(path4, { extension: renameExtension });
+        }
+      }
+      Deno.mkdirSync(path4, { recursive: true });
+      return path4;
+    },
+    /**
+     * Move/Remove everything and Ensure parent folders
+     *
+     * @param path
+     * @param options.overwrite - if false, then things in the way will be moved instead of deleted
+     * @param options.extension - the string to append when renaming files to get them out of the way
+     * 
+     * @example
+     *     FileSystem.sync.clearAPathFor("./something")
+     */
+    clearAPathFor(path4, options = { overwrite: false, renameExtension: null }) {
+      const { overwrite, renameExtension } = defaultOptionsHelper2(options);
+      const originalPath = path4;
+      const paths = [];
+      while (dirname3(path4) !== path4) {
+        paths.push(path4);
+        path4 = dirname3(path4);
+      }
+      for (const eachPath2 of paths.reverse()) {
+        const info = FileSystem2.sync.info(eachPath2);
+        if (!info.exists) {
+          break;
+        } else if (info.isFile) {
+          if (overwrite) {
+            FileSystem2.sync.remove(eachPath2);
+          } else {
+            FileSystem2.sync.moveOutOfTheWay(eachPath2, { extension: renameExtension });
+          }
+        }
+      }
+      Deno.mkdirSync(dirname3(originalPath), { recursive: true });
+      return originalPath;
+    },
+    append({ path: path4, data, force = true, overwrite = false, renameExtension = null }) {
+      if (force) {
+        FileSystem2.sync.ensureIsFolder(FileSystem2.parentPath(path4), { overwrite, renameExtension });
+        const info = FileSystem2.sync.info(path4);
+        if (info.isDirectory) {
+          FileSystem2.sync.remove(path4);
+        }
+      }
+      const file = Deno.openSync(path4, { read: true, write: true, create: true });
+      file.seekSync(0, Deno.SeekMode.End);
+      if (typeof data == "string") {
+        file.writeSync(new TextEncoder().encode(data));
+      } else {
+        file.writeSync(data);
+      }
+      file.close();
+    }
+  }
+};
+var glob2 = FileSystem2.glob;
+
+// generic_tools/fasta_parser.js
+function parseFasta(incomingString) {
+  const accession = `(?<accession>[^\\| ]+)`;
+  const name = `(?<name>[^\\| ]+)`;
+  const integer = `(?<integer>-?\\d+)`;
+  const sequenceNumber = `(?<sequenceNumber>[^\\| ]+)`;
+  const applicationNumber = `(?<applicationNumber>[^\\| ]+)`;
+  const database = `(?<database>[^\\| ]+)`;
+  const country = `(?<country>[^\\| ]+)`;
+  const locus = `(?<locus>[^\\| ]+)`;
+  const entry = `(?<entry>[^\\| ]+)`;
+  const chain2 = `(?<chain>[^\\| ]+)`;
+  const patent = `(?<patent>[^\\| ]+)`;
+  const string2 = `(?<string>[^\\| ]+)`;
+  const ncbiIdentifierDefinitions = {
+    [`tr\\|${accession}\\|${name}`]: { name: "TrEMBL                                                                        ", example: ["tr|Q90RT2|Q90RT2_9HIV1"] },
+    [`tpg\\|${accession}\\|${name}`]: { name: "third-party GenBank https://www.ncbi.nlm.nih.gov/Genbank/index.html           ", example: ["tpg|BK003456|"] },
+    [`tpe\\|${accession}\\|${name}`]: { name: "third-party EMBL http://www.embl-heidelberg.de                                ", example: ["tpe|BN000123|"] },
+    [`tpd\\|${accession}\\|${name}`]: { name: "third-party DDBJ http://www.ddbj.nig.ac.jp                                    ", example: ["tpd|FAA00017|"] },
+    [`sp\\|${accession}\\|${name}`]: { name: "SWISS-PROT http://www.ebi.ac.uk/swissprot                                     ", example: ["sp|P01013|OVAX_CHICK"] },
+    [`ref\\|${accession}\\|${name}`]: { name: "RefSeq https://www.ncbi.nlm.nih.gov/projects/RefSeq                           ", example: ["ref|NM_010450.1|"] },
+    [`prf\\|${accession}\\|${name}`]: { name: "PRF http://www.prf.or.jp                                                      ", example: ["prf||0806162C"] },
+    [`pir\\|${accession}\\|${name}`]: { name: "PIR https://web.archive.org/web/20140312021627/http://pir.georgetown.edu/     ", example: ["pir||G36364"] },
+    [`pgp\\|${country}\\|${applicationNumber}\\|${sequenceNumber}`]: { name: "pre-grant patent                                                              ", example: ["pgp|EP|0238993|7"] },
+    [`pdb\\|${entry}\\|${chain2}`]: { name: "PDB https://web.archive.org/web/20080828002005/http://www.rcsb.org./pdb       ", example: ["pdb|1I4L|D"] },
+    [`pat\\|${country}\\|${patent}\\|${sequenceNumber}`]: { name: "patent                                                                        ", example: ["pat|US|RE33188|1"] },
+    [`lcl\\|(${integer}|${string2})`]: { name: "local (i.e. no database reference)                                            ", example: ["lcl|123", "lcl|hmm271"] },
+    [`gnl\\|${database}\\|(${integer}|${string2})`]: { name: "general database reference(a reference to a database that's not in this list) ", example: ["gnl|taxon|9606", "gnl|PID|e1632"] },
+    [`gim\\|${integer}`]: { name: "GenInfo import ID                                                             ", example: ["gim|123"] },
+    [`gi\\|${integer}`]: { name: "GenInfo integrated database                                                   ", example: ["gi|21434723"] },
+    [`gb\\|${accession}\\|${locus}`]: { name: "GenBank https://www.ncbi.nlm.nih.gov/Genbank/index.html                       ", example: ["gb|M73307|AGMA13GT"] },
+    [`emb\\|${accession}\\|${locus}`]: { name: "EMBL http://www.embl-heidelberg.de                                            ", example: ["emb|CAM43271.1|"] },
+    [`dbj\\|${accession}\\|${locus}`]: { name: "DDBJ http://www.ddbj.nig.ac.jp                                                ", example: ["dbj|BAC85684.1|"] },
+    [`bbs\\|${integer}`]: { name: "GenInfo backbone seqid                                                        ", example: ["bbs|123"] },
+    [`bbm\\|${integer}`]: { name: "GenInfo backbone moltype                                                      ", example: ["bbm|123"] }
+  };
+  const oneOfNcbiIdentifiers = `(${Object.keys(ncbiIdentifierDefinitions).join("|")})`.replace(/\(\?\<\w+>/g, "(");
+  const prefixPattern = new RegExp(`^${oneOfNcbiIdentifiers}+`);
+  const recordStrings = incomingString.split(/(^|\r?\n)>/g);
+  const records = [];
+  let index = 0;
+  for (const each3 of recordStrings) {
+    const isBlankLine = !each3.trim();
+    if (isBlankLine) {
+      continue;
+    }
+    const record = {
+      index: index++,
+      hasIdentifiers: false,
+      comment: "",
+      rawComment: "",
+      aminoAcidsString: "",
+      ncbiIdentifiers: []
+    };
+    var [rawComment, ...aminoAcidsStrings] = each3.split(/\n/g);
+    record.comment = rawComment;
+    record.rawComment = rawComment;
+    record.aminoAcidsString = aminoAcidsStrings.join("");
+    const ncbiIdentifiersMatch = rawComment.match(prefixPattern);
+    if (ncbiIdentifiersMatch) {
+      record.comment = rawComment.slice(ncbiIdentifiersMatch[0].length).trim();
+      record.hasIdentifiers = true;
+      var remaining = ncbiIdentifiersMatch[0];
+      var extraction = true;
+      while (extraction && remaining.length > 0) {
+        var { remaining, extraction } = extractFirst({ pattern: new RegExp(oneOfNcbiIdentifiers), from: remaining });
+        for (const [key, value] of Object.entries(ncbiIdentifierDefinitions)) {
+          const pattern = new RegExp(key);
+          const match = extraction.match(pattern);
+          if (match) {
+            record.ncbiIdentifiers.push({
+              args: match.groups,
+              info: value
+              // link to ncbi information
+            });
+            break;
+          }
+        }
+      }
+    }
+    records.push(record);
+  }
+  return records;
+}
+
+// specific_tools/load_mixed_examples.js
+async function loadMixedExamples({ filePath, aminoMatchPattern, windowPadding, skipEntryIf }) {
+  const mixedString = await FileSystem2.read(filePath);
+  function getWindows(string2) {
+    let output2 = [];
+    const windowSize = windowPadding * 2 + 1;
+    for (const each3 of findAll3(aminoMatchPattern, string2)) {
+      const min2 = each3.index - windowPadding >= 0 ? each3.index - windowPadding : 0;
+      const slice2 = string2.slice(min2, each3.index + windowPadding + 1);
+      if (slice2.length === windowSize) {
+        output2.push({ index: min2, slice: slice2 });
+      }
+    }
+    return output2;
+  }
+  const summaryData2 = {
+    sCounts: 0,
+    aminoAcidCount: 0,
+    styCounts: 0
+  };
+  const geneIds2 = /* @__PURE__ */ new Set();
+  const geneList = parseFasta(mixedString);
+  const geneData2 = {};
+  const mixedExamples2 = [];
+  for (const eachGene of geneList) {
+    const geneName = eachGene.ncbiIdentifiers[0].args.name;
+    const uniprotGeneId = eachGene.ncbiIdentifiers[0].args.accession;
+    eachGene.abbreviatedGeneSpecies = geneName;
+    eachGene.uniprotGeneId = uniprotGeneId;
+    eachGene.phosWindows = getWindows(eachGene.aminoAcidsString);
+    if (skipEntryIf({ ...eachGene, uniprotGeneId })) {
+      continue;
+    }
+    geneIds2.add(uniprotGeneId);
+    geneData2[uniprotGeneId] = eachGene;
+    summaryData2.aminoAcidCount += eachGene.aminoAcidsString.length;
+    if (eachGene.aminoAcidsString.match(/S/g)) {
+      summaryData2.sCounts += eachGene.aminoAcidsString.match(/S/g).length;
+    }
+    if (eachGene.aminoAcidsString.match(/S|T|Y/g)) {
+      summaryData2.styCounts += eachGene.aminoAcidsString.match(/S|T|Y/g).length;
+    }
+    for (const { index, slice: slice2 } of eachGene.phosWindows) {
+      mixedExamples2.push({
+        siteId: `${uniprotGeneId}|${index}`,
+        indexRelativeToGene: index,
+        aminoAcids: slice2,
+        isPhosSite: 0,
+        geneInfo: eachGene
+      });
+    }
+  }
+  return {
+    mixedExamples: mixedExamples2,
+    summaryData: summaryData2,
+    geneIds: geneIds2,
+    geneData: geneData2
+  };
+}
+
+// esbuild_serve:http-import:https://deno.land/x/quickr@0.6.38/main/file_system.js
+ensure({ denoVersion: "1.17.1" });
+var cache3 = {};
+var ItemInfo3 = class {
+  constructor({ path: path4, _lstatData, _statData }) {
+    this.path = path4;
+    this._lstat = _lstatData;
+    this._data = _statData;
+  }
+  // 
+  // core data sources
+  // 
+  refresh() {
+    this._lstat = null;
+    this._data = null;
+  }
+  get lstat() {
+    if (!this._lstat) {
+      try {
+        this._lstat = Deno.lstatSync(this.path);
+      } catch (error) {
+        this._lstat = { doesntExist: true };
+      }
+    }
+    return this._lstat;
+  }
+  get stat() {
+    if (!this._stat) {
+      const lstat = this.lstat;
+      if (!lstat.isSymlink) {
+        this._stat = {
+          isBrokenLink: false,
+          isLoopOfLinks: false
+        };
+      } else {
+        try {
+          this._stat = Deno.statSync(this.path);
+        } catch (error) {
+          this._stat = {};
+          if (error.message.match(/^Too many levels of symbolic links/)) {
+            this._stat.isBrokenLink = true;
+            this._stat.isLoopOfLinks = true;
+          } else if (error.message.match(/^No such file or directory/)) {
+            this._stat.isBrokenLink = true;
+          } else {
+            throw error;
+          }
+        }
+      }
+    }
+    return this._stat;
+  }
+  // 
+  // main attributes
+  // 
+  get exists() {
+    const lstat = this.lstat;
+    return !lstat.doesntExist;
+  }
+  get name() {
+    return parse3(this.path).name;
+  }
+  get extension() {
+    return parse3(this.path).ext;
+  }
+  get basename() {
+    return this.path && basename3(this.path);
+  }
+  get parentPath() {
+    return this.path && dirname3(this.path);
+  }
+  relativePathFrom(parentPath) {
+    return relative3(parentPath, this.path);
+  }
+  get link() {
+    const lstat = this.lstat;
+    if (lstat.isSymlink) {
+      return Deno.readLinkSync(this.path);
+    } else {
+      return null;
+    }
+  }
+  get isSymlink() {
+    const lstat = this.lstat;
+    return !!lstat.isSymlink;
+  }
+  get isRelativeSymlink() {
+    const lstat = this.lstat;
+    const isNotSymlink = !lstat.isSymlink;
+    if (isNotSymlink) {
+      return false;
+    }
+    const relativeOrAbsolutePath = Deno.readLinkSync(this.path);
+    return !isAbsolute3(relativeOrAbsolutePath);
+  }
+  get isAbsoluteSymlink() {
+    const lstat = this.lstat;
+    const isNotSymlink = !lstat.isSymlink;
+    if (isNotSymlink) {
+      return false;
+    }
+    const relativeOrAbsolutePath = Deno.readLinkSync(this.path);
+    return isAbsolute3(relativeOrAbsolutePath);
+  }
+  get isBrokenLink() {
+    const stat = this.stat;
+    return !!stat.isBrokenLink;
+  }
+  get isLoopOfLinks() {
+    const stat = this.stat;
+    return !!stat.isLoopOfLinks;
+  }
+  get isFile() {
+    const lstat = this.lstat;
+    if (lstat.doesntExist) {
+      return false;
+    }
+    if (!lstat.isSymlink) {
+      return lstat.isFile;
+    } else {
+      return !!this.stat.isFile;
+    }
+  }
+  get isFolder() {
+    const lstat = this.lstat;
+    if (lstat.doesntExist) {
+      return false;
+    }
+    if (!lstat.isSymlink) {
+      return lstat.isDirectory;
+    } else {
+      return !!this.stat.isDirectory;
+    }
+  }
+  get sizeInBytes() {
+    const lstat = this.lstat;
+    return lstat.size;
+  }
+  get permissions() {
+    const { mode } = this.lstat;
+    return {
+      owner: {
+        //          rwxrwxrwx
+        canRead: !!(256 & mode),
+        canWrite: !!(128 & mode),
+        canExecute: !!(64 & mode)
+      },
+      group: {
+        canRead: !!(32 & mode),
+        canWrite: !!(16 & mode),
+        canExecute: !!(8 & mode)
+      },
+      others: {
+        canRead: !!(4 & mode),
+        canWrite: !!(2 & mode),
+        canExecute: !!(1 & mode)
+      }
+    };
+  }
+  // aliases
+  get isDirectory() {
+    return this.isFolder;
+  }
+  get dirname() {
+    return this.parentPath;
+  }
+  toJSON() {
+    return {
+      exists: this.exists,
+      name: this.name,
+      extension: this.extension,
+      basename: this.basename,
+      parentPath: this.parentPath,
+      isSymlink: this.isSymlink,
+      isBrokenLink: this.isBrokenLink,
+      isLoopOfLinks: this.isLoopOfLinks,
+      isFile: this.isFile,
+      isFolder: this.isFolder,
+      sizeInBytes: this.sizeInBytes,
+      permissions: this.permissions,
+      isDirectory: this.isDirectory,
+      dirname: this.dirname
+    };
+  }
+};
+var defaultOptionsHelper3 = (options) => ({
+  renameExtension: options.renameExtension || FileSystem3.defaultRenameExtension,
+  overwrite: options.overwrite
+});
+var fileLockSymbol3 = Symbol.for("fileLock");
+var locker3 = globalThis[fileLockSymbol3] || {};
+var grabPathLock3 = async (path4) => {
+  while (locker3[path4]) {
+    await new Promise((resolve9) => setTimeout(resolve9, 70));
+  }
+  locker3[path4] = true;
+};
+var pathStandardize2 = (path4) => {
+  path4 = path4.path || path4;
+  if (typeof path4 == "string" && path4.startsWith("file:///")) {
+    path4 = fromFileUrl3(path4);
+  }
+  return path4;
+};
+var FileSystem3 = {
+  denoExecutablePath: Deno.execPath(),
+  parentPath: dirname3,
+  dirname: dirname3,
+  basename: basename3,
+  extname: extname3,
+  join: join4,
+  defaultRenameExtension: ".old",
+  get home() {
+    if (!cache3.home) {
+      if (Deno.build.os != "windows") {
+        cache3.home = Deno.env.get("HOME");
+      } else {
+        cache3.home = Deno.env.get("HOMEPATH");
+      }
+    }
+    return cache3.home;
+  },
+  get workingDirectory() {
+    return Deno.cwd();
+  },
+  set workingDirectory(value) {
+    Deno.chdir(value);
+  },
+  get cwd() {
+    return FileSystem3.workingDirectory;
+  },
+  set cwd(value) {
+    return FileSystem3.workingDirectory = value;
+  },
+  get pwd() {
+    return FileSystem3.cwd;
+  },
+  set pwd(value) {
+    return FileSystem3.cwd = value;
+  },
+  cd(path4) {
+    Deno.chdir(path4);
+  },
+  changeDirectory(path4) {
+    Deno.chdir(path4);
+  },
+  get thisFile() {
+    const err = new Error();
+    const filePaths = findAll2(/^.+file:\/\/(\/[\w\W]*?):/gm, err.stack).map((each3) => each3[1]);
+    const firstPath = filePaths[0];
+    if (firstPath) {
+      try {
+        if (Deno.statSync(firstPath).isFile) {
+          return firstPath;
+        }
+      } catch (error) {
+      }
+    }
+    return ":<interpreter>:";
+  },
+  get thisFolder() {
+    const err = new Error();
+    const filePaths = findAll2(/^.+file:\/\/(\/[\w\W]*?):/gm, err.stack).map((each3) => each3[1]);
+    const firstPath = filePaths[0];
+    if (firstPath) {
+      try {
+        if (Deno.statSync(firstPath).isFile) {
+          return dirname3(firstPath);
+        }
+      } catch (error) {
+      }
+    }
+    return Deno.cwd();
+  },
+  async read(path4) {
+    path4 = pathStandardize2(path4);
+    await grabPathLock3(path4);
+    let output2;
+    try {
+      output2 = await Deno.readTextFile(path4);
+    } catch (error) {
+    }
+    delete locker3[path4];
+    return output2;
+  },
+  async readBytes(path4) {
+    path4 = pathStandardize2(path4);
+    await grabPathLock3(path4);
+    let output2;
+    try {
+      output2 = await Deno.readFile(path4);
+    } catch (error) {
+    }
+    delete locker3[path4];
+    return output2;
+  },
+  async *readLinesIteratively(path4) {
+    path4 = pathStandardize2(path4);
+    await grabPathLock3(path4);
+    try {
+      const file = await Deno.open(path4);
+      try {
+        yield* readLines(file);
+      } finally {
+        Deno.close(file.rid);
+      }
+    } finally {
+      delete locker3[path4];
+    }
+  },
+  async info(fileOrFolderPath, _cachedLstat = null) {
+    fileOrFolderPath = pathStandardize2(fileOrFolderPath);
+    await grabPathLock3(fileOrFolderPath);
+    try {
+      const lstat = _cachedLstat || await Deno.lstat(fileOrFolderPath).catch(() => ({ doesntExist: true }));
+      let stat = {};
+      if (!lstat.isSymlink) {
+        stat = {
+          isBrokenLink: false,
+          isLoopOfLinks: false
+        };
+      } else {
+        try {
+          stat = await Deno.stat(fileOrFolderPath);
+        } catch (error) {
+          if (error.message.match(/^Too many levels of symbolic links/)) {
+            stat.isBrokenLink = true;
+            stat.isLoopOfLinks = true;
+          } else if (error.message.match(/^No such file or directory/)) {
+            stat.isBrokenLink = true;
+          } else {
+            if (!error.message.match(/^PermissionDenied:/)) {
+              return { doesntExist: true, permissionDenied: true };
+            }
+            throw error;
+          }
+        }
+      }
+      return new ItemInfo3({ path: fileOrFolderPath, _lstatData: lstat, _statData: stat });
+    } finally {
+      delete locker3[fileOrFolderPath];
+    }
+  },
+  async move({ item, newParentFolder, newName, force = true, overwrite = false, renameExtension = null }) {
+    const oldPath = item.path || item;
     const oldName = FileSystem3.basename(oldPath);
     const itemInfo = item instanceof Object || await FileSystem3.info(oldPath);
     const newPath = `${newParentFolder}/${newName || oldName}`;
@@ -12973,6 +15588,7 @@ var FileSystem3 = {
     await move(oldPath, newPath);
   },
   async remove(fileOrFolder) {
+    fileOrFolder = pathStandardize2(fileOrFolder);
     if (fileOrFolder instanceof Array) {
       return Promise.all(fileOrFolder.map(FileSystem3.remove));
     }
@@ -12984,7 +15600,7 @@ var FileSystem3 = {
       return Deno.remove(itemInfo.path.replace(/\/+$/, ""), { recursive: true });
     }
   },
-  normalize: (path4) => normalize3(path4.path || path4).replace(/\/$/, ""),
+  normalize: (path4) => normalize3(pathStandardize2(path4)).replace(/\/$/, ""),
   isAbsolutePath: isAbsolute3,
   isRelativePath: (...args) => !isAbsolute3(...args),
   makeRelativePath: ({ from, to }) => relative3(from.path || from, to.path || to),
@@ -12996,14 +15612,14 @@ var FileSystem3 = {
     }
   },
   async finalTargetOf(path4, options = {}) {
-    const { _parentsHaveBeenChecked, cache: cache3 } = { _parentsHaveBeenChecked: false, cache: {}, ...options };
-    const originalWasItem = path4 instanceof ItemInfo2;
+    const { _parentsHaveBeenChecked, cache: cache4 } = { _parentsHaveBeenChecked: false, cache: {}, ...options };
+    const originalWasItem = path4 instanceof ItemInfo3;
     path4 = path4.path || path4;
     let result2 = await Deno.lstat(path4).catch(() => ({ doesntExist: true }));
     if (result2.doesntExist) {
       return null;
     }
-    path4 = await FileSystem3.makeHardPathTo(path4, { cache: cache3 });
+    path4 = await FileSystem3.makeHardPathTo(path4, { cache: cache4 });
     const pathChain = [];
     while (result2.isSymlink) {
       const relativeOrAbsolutePath = await Deno.readLink(path4);
@@ -13016,7 +15632,7 @@ var FileSystem3 = {
       if (result2.doesntExist) {
         return null;
       }
-      path4 = await FileSystem3.makeHardPathTo(path4, { cache: cache3 });
+      path4 = await FileSystem3.makeHardPathTo(path4, { cache: cache4 });
       if (pathChain.includes(path4)) {
         return null;
       }
@@ -13024,27 +15640,27 @@ var FileSystem3 = {
     }
     path4 = FileSystem3.normalize(path4);
     if (originalWasItem) {
-      return new ItemInfo2({ path: path4 });
+      return new ItemInfo3({ path: path4 });
     } else {
       return path4;
     }
   },
   async nextTargetOf(path4, options = {}) {
-    const originalWasItem = path4 instanceof ItemInfo2;
-    const item = originalWasItem ? path4 : new ItemInfo2({ path: path4 });
+    const originalWasItem = path4 instanceof ItemInfo3;
+    const item = originalWasItem ? path4 : new ItemInfo3({ path: path4 });
     const lstat = item.lstat;
     if (lstat.isSymlink) {
       const relativeOrAbsolutePath = Deno.readLinkSync(item.path);
       if (isAbsolute3(relativeOrAbsolutePath)) {
         if (originalWasItem) {
-          return new ItemInfo2({ path: relativeOrAbsolutePath });
+          return new ItemInfo3({ path: relativeOrAbsolutePath });
         } else {
           return relativeOrAbsolutePath;
         }
       } else {
         const path5 = `${await FileSystem3.makeHardPathTo(dirname3(item.path))}/${relativeOrAbsolutePath}`;
         if (originalWasItem) {
-          return new ItemInfo2({ path: path5 });
+          return new ItemInfo3({ path: path5 });
         } else {
           return path5;
         }
@@ -13058,7 +15674,7 @@ var FileSystem3 = {
     }
   },
   async ensureIsFile(path4, options = { overwrite: false, renameExtension: null }) {
-    const { overwrite, renameExtension } = defaultOptionsHelper2(options);
+    const { overwrite, renameExtension } = defaultOptionsHelper3(options);
     await FileSystem3.ensureIsFolder(FileSystem3.parentPath(path4), { overwrite, renameExtension });
     path4 = path4.path || path4;
     const pathInfo = await FileSystem3.info(path4);
@@ -13070,7 +15686,7 @@ var FileSystem3 = {
     }
   },
   async ensureIsFolder(path4, options = { overwrite: false, renameExtension: null }) {
-    const { overwrite, renameExtension } = defaultOptionsHelper2(options);
+    const { overwrite, renameExtension } = defaultOptionsHelper3(options);
     path4 = path4.path || path4;
     path4 = FileSystem3.makeAbsolutePath(path4);
     const parentPath = dirname3(path4);
@@ -13106,7 +15722,7 @@ var FileSystem3 = {
    *     await FileSystem.clearAPathFor("./something")
    */
   async clearAPathFor(path4, options = { overwrite: false, renameExtension: null }) {
-    const { overwrite, renameExtension } = defaultOptionsHelper2(options);
+    const { overwrite, renameExtension } = defaultOptionsHelper3(options);
     const originalPath = path4;
     const paths = [];
     while (dirname3(path4) !== path4) {
@@ -13261,7 +15877,7 @@ but existingItem didn't actually exist`);
     return [folderList, result2.name, result2.ext];
   },
   async *iterateBasenamesIn(pathOrFileInfo) {
-    const info = pathOrFileInfo instanceof ItemInfo2 ? pathOrFileInfo : await FileSystem3.info(pathOrFileInfo);
+    const info = pathOrFileInfo instanceof ItemInfo3 ? pathOrFileInfo : await FileSystem3.info(pathOrFileInfo);
     if (info.isFolder) {
       for await (const each3 of Deno.readDir(pathOrFileInfo.path)) {
         yield dirEntry.name;
@@ -13274,7 +15890,7 @@ but existingItem didn't actually exist`);
   async *iteratePathsIn(pathOrFileInfo, options = { recursively: false, shouldntInclude: null, shouldntExplore: null, searchOrder: "breadthFirstSearch", maxDepth: Infinity, dontFollowSymlinks: false, dontReturnSymlinks: false }) {
     let info;
     try {
-      info = pathOrFileInfo instanceof ItemInfo2 ? pathOrFileInfo : await FileSystem3.info(pathOrFileInfo);
+      info = pathOrFileInfo instanceof ItemInfo3 ? pathOrFileInfo : await FileSystem3.info(pathOrFileInfo);
     } catch (error) {
       if (!error.message.match(/^PermissionDenied:/)) {
         throw error;
@@ -13370,7 +15986,7 @@ but existingItem didn't actually exist`);
     options = { exclude: /* @__PURE__ */ new Set(), searchOrder: "breadthFirstSearch", maxDepth: Infinity, ...options };
     options.searchOrder = options.searchOrder || "breadthFirstSearch";
     const { shouldntExplore, shouldntInclude } = options;
-    const info = pathOrFileInfo instanceof ItemInfo2 ? pathOrFileInfo : await FileSystem3.info(pathOrFileInfo);
+    const info = pathOrFileInfo instanceof ItemInfo3 ? pathOrFileInfo : await FileSystem3.info(pathOrFileInfo);
     const path4 = info.path;
     if (!["breadthFirstSearch", "depthFirstSearch"].includes(options.searchOrder)) {
       throw Error(`when calling FileSystem.iterateItemsIn('${path4}', { searchOrder: ${options.searchOrder} })
@@ -13492,9 +16108,9 @@ but existingItem didn't actually exist`);
   async *globIterator(pattern, options = { startPath: null }) {
     var { startPath, ...iteratePathsOptions } = options;
     startPath = startPath || ".";
-    const regex2 = pattern instanceof RegExp ? pattern : globToRegExp(pattern);
+    const regex3 = pattern instanceof RegExp ? pattern : globToRegExp(pattern);
     for await (const eachPath2 of FileSystem3.iteratePathsIn(startPath, { recursively: true, ...iteratePathsOptions })) {
-      if (eachPath2.match(regex2) || FileSystem3.makeAbsolutePath(eachPath2).match(regex2)) {
+      if (eachPath2.match(regex3) || FileSystem3.makeAbsolutePath(eachPath2).match(regex3)) {
         yield FileSystem3.makeRelativePath({
           from: startPath,
           to: eachPath2
@@ -13650,16 +16266,17 @@ but existingItem didn't actually exist`);
     return FileSystem3.addPermissions(...args);
   },
   async write({ path: path4, data, force = true, overwrite = false, renameExtension = null }) {
-    await grabPathLock2(path4);
+    path4 = pathStandardize2(path4);
+    await grabPathLock3(path4);
     if (force) {
-      await FileSystem3.ensureIsFolder(FileSystem3.parentPath(path4), { overwrite, renameExtension });
-      const info = await FileSystem3.info(path4);
+      FileSystem3.sync.ensureIsFolder(FileSystem3.parentPath(path4), { overwrite, renameExtension });
+      const info = FileSystem3.sync.info(path4);
       if (info.isDirectory) {
-        await FileSystem3.remove(path4);
+        FileSystem3.sync.remove(path4);
       }
     }
     let output2;
-    if (isGeneratorType(data) || data[Symbol.iterator] || data[Symbol.asyncIterator]) {
+    if (isGeneratorType2(data) || data[Symbol.iterator] || data[Symbol.asyncIterator]) {
       const file = await Deno.open(path4, { read: true, write: true, create: true, truncate: true });
       const encoder = new TextEncoder();
       const encode = encoder.encode.bind(encoder);
@@ -13679,11 +16296,12 @@ but existingItem didn't actually exist`);
     } else {
       output2 = await Deno.writeFile(path4, data);
     }
-    delete locker2[path4];
+    delete locker3[path4];
     return output2;
   },
   async append({ path: path4, data, force = true, overwrite = false, renameExtension = null }) {
-    await grabPathLock2(path4);
+    path4 = pathStandardize2(path4);
+    await grabPathLock3(path4);
     if (force) {
       FileSystem3.sync.ensureIsFolder(FileSystem3.parentPath(path4), { overwrite, renameExtension });
       const info = await FileSystem3.info(path4);
@@ -13699,25 +16317,25 @@ but existingItem didn't actually exist`);
       await file.write(data);
     }
     await file.close();
-    delete locker2[path4];
+    delete locker3[path4];
   },
   async makeHardPathTo(path4, options = {}) {
-    var { cache: cache3 } = { cache: {}, ...options };
-    if (cache3[path4]) {
-      return cache3[path4];
+    var { cache: cache4 } = { cache: {}, ...options };
+    if (cache4[path4]) {
+      return cache4[path4];
     }
     const [folders, name, extension] = FileSystem3.pathPieces(FileSystem3.makeAbsolutePath(path4));
     let topDownPath = ``;
     for (const eachFolderName of folders) {
       topDownPath += `/${eachFolderName}`;
-      if (cache3[topDownPath]) {
-        topDownPath = cache3[topDownPath];
+      if (cache4[topDownPath]) {
+        topDownPath = cache4[topDownPath];
         continue;
       }
       const unchangedPath = topDownPath;
       const info = await FileSystem3.info(topDownPath);
       if (info.isSymlink) {
-        const absolutePathToIntermediate = await FileSystem3.finalTargetOf(info.path, { _parentsHaveBeenChecked: true, cache: cache3 });
+        const absolutePathToIntermediate = await FileSystem3.finalTargetOf(info.path, { _parentsHaveBeenChecked: true, cache: cache4 });
         if (absolutePathToIntermediate == null) {
           return null;
         }
@@ -13729,10 +16347,10 @@ but existingItem didn't actually exist`);
         topDownPath += `/${relativePath}`;
         topDownPath = normalize3(topDownPath);
       }
-      cache3[unchangedPath] = topDownPath;
+      cache4[unchangedPath] = topDownPath;
     }
     const hardPath = normalize3(`${topDownPath}/${name}${extension}`);
-    cache3[path4] = hardPath;
+    cache4[path4] = hardPath;
     return hardPath;
   },
   async walkUpImport(path4, start) {
@@ -13747,7 +16365,7 @@ but existingItem didn't actually exist`);
   },
   pathOfCaller(callerNumber = void 0) {
     const err = new Error();
-    let filePaths = findAll3(/^.+file:\/\/(\/[\w\W]*?):/gm, err.stack).map((each3) => each3[1]);
+    let filePaths = findAll2(/^.+file:\/\/(\/[\w\W]*?):/gm, err.stack).map((each3) => each3[1]);
     if (callerNumber) {
       filePaths = filePaths.slice(callerNumber);
     }
@@ -13793,7 +16411,7 @@ but existingItem didn't actually exist`);
           }
         }
       }
-      return new ItemInfo2({ path: fileOrFolderPath, _lstatData: lstat, _statData: stat });
+      return new ItemInfo3({ path: fileOrFolderPath, _lstatData: lstat, _statData: stat });
     },
     remove(fileOrFolder) {
       if (fileOrFolder instanceof Array) {
@@ -13816,6 +16434,7 @@ but existingItem didn't actually exist`);
       }
     },
     moveOutOfTheWay(path4, options = { extension: null }) {
+      path4 = pathStandardize2(path4);
       const extension = options?.extension || FileSystem3.defaultRenameExtension;
       const info = FileSystem3.sync.info(path4);
       if (info.exists) {
@@ -13825,7 +16444,8 @@ but existingItem didn't actually exist`);
       }
     },
     ensureIsFolder(path4, options = { overwrite: false, renameExtension: null }) {
-      const { overwrite, renameExtension } = defaultOptionsHelper2(options);
+      path4 = pathStandardize2(path4);
+      const { overwrite, renameExtension } = defaultOptionsHelper3(options);
       path4 = path4.path || path4;
       path4 = FileSystem3.makeAbsolutePath(path4);
       const parentPath = dirname3(path4);
@@ -13858,7 +16478,7 @@ but existingItem didn't actually exist`);
      *     FileSystem.sync.clearAPathFor("./something")
      */
     clearAPathFor(path4, options = { overwrite: false, renameExtension: null }) {
-      const { overwrite, renameExtension } = defaultOptionsHelper2(options);
+      const { overwrite, renameExtension } = defaultOptionsHelper3(options);
       const originalPath = path4;
       const paths = [];
       while (dirname3(path4) !== path4) {
@@ -13881,6 +16501,7 @@ but existingItem didn't actually exist`);
       return originalPath;
     },
     append({ path: path4, data, force = true, overwrite = false, renameExtension = null }) {
+      path4 = pathStandardize2(path4);
       if (force) {
         FileSystem3.sync.ensureIsFolder(FileSystem3.parentPath(path4), { overwrite, renameExtension });
         const info = FileSystem3.sync.info(path4);
@@ -13896,155 +16517,42 @@ but existingItem didn't actually exist`);
         file.writeSync(data);
       }
       file.close();
+    },
+    write({ path: path4, data, force = true, overwrite = false, renameExtension = null, _isInternalCall = false }) {
+      path4 = pathStandardize2(path4);
+      if (force) {
+        FileSystem3.sync.ensureIsFolder(FileSystem3.parentPath(path4), { overwrite, renameExtension });
+        const info = FileSystem3.sync.info(path4);
+        if (info.isDirectory) {
+          FileSystem3.sync.remove(path4);
+        }
+      }
+      let output2;
+      if (isGeneratorType2(data) || data[Symbol.iterator]) {
+        const file = Deno.openSync(path4, { read: true, write: true, create: true, truncate: true });
+        const encoder = new TextEncoder();
+        const encode = encoder.encode.bind(encoder);
+        try {
+          let index = 0;
+          for (let packet of data) {
+            if (typeof packet == "string") {
+              packet = encode(packet);
+            }
+            Deno.writeSync(file.rid, packet);
+          }
+        } finally {
+          Deno.close(file.rid);
+        }
+      } else if (typeof data == "string") {
+        output2 = Deno.writeTextFileSync(path4, data);
+      } else {
+        output2 = Deno.writeFileSync(path4, data);
+      }
+      return output2;
     }
   }
 };
 var glob3 = FileSystem3.glob;
-
-// generic_tools/fasta_parser.js
-function parseFasta(incomingString) {
-  const accession = `(?<accession>[^\\| ]+)`;
-  const name = `(?<name>[^\\| ]+)`;
-  const integer = `(?<integer>-?\\d+)`;
-  const sequenceNumber = `(?<sequenceNumber>[^\\| ]+)`;
-  const applicationNumber = `(?<applicationNumber>[^\\| ]+)`;
-  const database = `(?<database>[^\\| ]+)`;
-  const country = `(?<country>[^\\| ]+)`;
-  const locus = `(?<locus>[^\\| ]+)`;
-  const entry = `(?<entry>[^\\| ]+)`;
-  const chain2 = `(?<chain>[^\\| ]+)`;
-  const patent = `(?<patent>[^\\| ]+)`;
-  const string = `(?<string>[^\\| ]+)`;
-  const ncbiIdentifierDefinitions = {
-    [`tr\\|${accession}\\|${name}`]: { name: "TrEMBL                                                                        ", example: ["tr|Q90RT2|Q90RT2_9HIV1"] },
-    [`tpg\\|${accession}\\|${name}`]: { name: "third-party GenBank https://www.ncbi.nlm.nih.gov/Genbank/index.html           ", example: ["tpg|BK003456|"] },
-    [`tpe\\|${accession}\\|${name}`]: { name: "third-party EMBL http://www.embl-heidelberg.de                                ", example: ["tpe|BN000123|"] },
-    [`tpd\\|${accession}\\|${name}`]: { name: "third-party DDBJ http://www.ddbj.nig.ac.jp                                    ", example: ["tpd|FAA00017|"] },
-    [`sp\\|${accession}\\|${name}`]: { name: "SWISS-PROT http://www.ebi.ac.uk/swissprot                                     ", example: ["sp|P01013|OVAX_CHICK"] },
-    [`ref\\|${accession}\\|${name}`]: { name: "RefSeq https://www.ncbi.nlm.nih.gov/projects/RefSeq                           ", example: ["ref|NM_010450.1|"] },
-    [`prf\\|${accession}\\|${name}`]: { name: "PRF http://www.prf.or.jp                                                      ", example: ["prf||0806162C"] },
-    [`pir\\|${accession}\\|${name}`]: { name: "PIR https://web.archive.org/web/20140312021627/http://pir.georgetown.edu/     ", example: ["pir||G36364"] },
-    [`pgp\\|${country}\\|${applicationNumber}\\|${sequenceNumber}`]: { name: "pre-grant patent                                                              ", example: ["pgp|EP|0238993|7"] },
-    [`pdb\\|${entry}\\|${chain2}`]: { name: "PDB https://web.archive.org/web/20080828002005/http://www.rcsb.org./pdb       ", example: ["pdb|1I4L|D"] },
-    [`pat\\|${country}\\|${patent}\\|${sequenceNumber}`]: { name: "patent                                                                        ", example: ["pat|US|RE33188|1"] },
-    [`lcl\\|(${integer}|${string})`]: { name: "local (i.e. no database reference)                                            ", example: ["lcl|123", "lcl|hmm271"] },
-    [`gnl\\|${database}\\|(${integer}|${string})`]: { name: "general database reference(a reference to a database that's not in this list) ", example: ["gnl|taxon|9606", "gnl|PID|e1632"] },
-    [`gim\\|${integer}`]: { name: "GenInfo import ID                                                             ", example: ["gim|123"] },
-    [`gi\\|${integer}`]: { name: "GenInfo integrated database                                                   ", example: ["gi|21434723"] },
-    [`gb\\|${accession}\\|${locus}`]: { name: "GenBank https://www.ncbi.nlm.nih.gov/Genbank/index.html                       ", example: ["gb|M73307|AGMA13GT"] },
-    [`emb\\|${accession}\\|${locus}`]: { name: "EMBL http://www.embl-heidelberg.de                                            ", example: ["emb|CAM43271.1|"] },
-    [`dbj\\|${accession}\\|${locus}`]: { name: "DDBJ http://www.ddbj.nig.ac.jp                                                ", example: ["dbj|BAC85684.1|"] },
-    [`bbs\\|${integer}`]: { name: "GenInfo backbone seqid                                                        ", example: ["bbs|123"] },
-    [`bbm\\|${integer}`]: { name: "GenInfo backbone moltype                                                      ", example: ["bbm|123"] }
-  };
-  const oneOfNcbiIdentifiers = `(${Object.keys(ncbiIdentifierDefinitions).join("|")})`.replace(/\(\?\<\w+>/g, "(");
-  const prefixPattern = new RegExp(`^${oneOfNcbiIdentifiers}+`);
-  const recordStrings = incomingString.split(/(^|\r?\n)>/g);
-  const records = [];
-  let index = 0;
-  for (const each3 of recordStrings) {
-    const isBlankLine = !each3.trim();
-    if (isBlankLine) {
-      continue;
-    }
-    const record = {
-      index: index++,
-      hasIdentifiers: false,
-      comment: "",
-      rawComment: "",
-      aminoAcidsString: "",
-      ncbiIdentifiers: []
-    };
-    var [rawComment, ...aminoAcidsStrings] = each3.split(/\n/g);
-    record.comment = rawComment;
-    record.rawComment = rawComment;
-    record.aminoAcidsString = aminoAcidsStrings.join("");
-    const ncbiIdentifiersMatch = rawComment.match(prefixPattern);
-    if (ncbiIdentifiersMatch) {
-      record.comment = rawComment.slice(ncbiIdentifiersMatch[0].length).trim();
-      record.hasIdentifiers = true;
-      var remaining = ncbiIdentifiersMatch[0];
-      var extraction = true;
-      while (extraction && remaining.length > 0) {
-        var { remaining, extraction } = extractFirst({ pattern: new RegExp(oneOfNcbiIdentifiers), from: remaining });
-        for (const [key, value] of Object.entries(ncbiIdentifierDefinitions)) {
-          const pattern = new RegExp(key);
-          const match = extraction.match(pattern);
-          if (match) {
-            record.ncbiIdentifiers.push({
-              args: match.groups,
-              info: value
-              // link to ncbi information
-            });
-            break;
-          }
-        }
-      }
-    }
-    records.push(record);
-  }
-  return records;
-}
-
-// specific_tools/load_mixed_examples.js
-async function loadMixedExamples({ filePath, aminoMatchPattern, windowPadding, skipEntryIf }) {
-  const mixedString = await FileSystem3.read(filePath);
-  function getWindows(string) {
-    let output2 = [];
-    const windowSize = windowPadding * 2 + 1;
-    for (const each3 of findAll(aminoMatchPattern, string)) {
-      const min2 = each3.index - windowPadding >= 0 ? each3.index - windowPadding : 0;
-      const slice2 = string.slice(min2, each3.index + windowPadding + 1);
-      if (slice2.length === windowSize) {
-        output2.push({ index: min2, slice: slice2 });
-      }
-    }
-    return output2;
-  }
-  const summaryData2 = {
-    sCounts: 0,
-    aminoAcidCount: 0,
-    styCounts: 0
-  };
-  const geneIds2 = /* @__PURE__ */ new Set();
-  const geneList = parseFasta(mixedString);
-  const geneData2 = {};
-  const mixedExamples2 = [];
-  for (const eachGene of geneList) {
-    const geneName = eachGene.ncbiIdentifiers[0].args.name;
-    const uniprotGeneId = eachGene.ncbiIdentifiers[0].args.accession;
-    eachGene.abbreviatedGeneSpecies = geneName;
-    eachGene.uniprotGeneId = uniprotGeneId;
-    eachGene.phosWindows = getWindows(eachGene.aminoAcidsString);
-    if (skipEntryIf({ ...eachGene, uniprotGeneId })) {
-      continue;
-    }
-    geneIds2.add(uniprotGeneId);
-    geneData2[uniprotGeneId] = eachGene;
-    summaryData2.aminoAcidCount += eachGene.aminoAcidsString.length;
-    if (eachGene.aminoAcidsString.match(/S/g)) {
-      summaryData2.sCounts += eachGene.aminoAcidsString.match(/S/g).length;
-    }
-    if (eachGene.aminoAcidsString.match(/S|T|Y/g)) {
-      summaryData2.styCounts += eachGene.aminoAcidsString.match(/S|T|Y/g).length;
-    }
-    for (const { index, slice: slice2 } of eachGene.phosWindows) {
-      mixedExamples2.push({
-        siteId: `${uniprotGeneId}|${index}`,
-        indexRelativeToGene: index,
-        aminoAcids: slice2,
-        isPhosSite: 0,
-        geneInfo: eachGene
-      });
-    }
-  }
-  return {
-    mixedExamples: mixedExamples2,
-    summaryData: summaryData2,
-    geneIds: geneIds2,
-    geneData: geneData2
-  };
-}
 
 // specific_tools/load_positive_examples.js
 async function loadPositiveExamples({ filePath, geneData: geneData2, skipEntryIf }) {
@@ -14055,9 +16563,9 @@ async function loadPositiveExamples({ filePath, geneData: geneData2, skipEntryIf
   const geneIds2 = /* @__PURE__ */ new Set();
   const haveSeenPhosSite = /* @__PURE__ */ new Set();
   const positiveExamples2 = [];
-  for (const eachPath2 of await glob(filePath)) {
+  for (const eachPath2 of await glob3(filePath)) {
     const csvData = parseCsv({
-      input: await FileSystem.readLinesIteratively(eachPath2),
+      input: await FileSystem3.readLinesIteratively(eachPath2),
       separator: "	",
       columnNames: [
         "abbreviatedGeneSpecies",
@@ -14100,7 +16608,7 @@ async function loadPositiveExamples({ filePath, geneData: geneData2, skipEntryIf
       });
     }
   }
-  const commonGeneIds2 = intersection(
+  const commonGeneIds2 = intersection2(
     geneIdsFromNegativeData,
     new Set(geneIds2)
   );
@@ -14338,16 +16846,16 @@ var HuffmanCoder = class _HuffmanCoder {
     this.isFrozen = false;
     Object.assign(this, values2);
   }
-  addData(string) {
+  addData(string2) {
     if (this.isFrozen) {
       throw Error(`Sorry, this coder has been frozen. Data can only be added BEFORE freezeing`);
     }
-    const stringLength = string.length;
+    const stringLength = string2.length;
     let startIndex = -1;
     while (startIndex < stringLength - 1) {
       startIndex++;
       let substring = "";
-      for (const character of string.slice(startIndex)) {
+      for (const character of string2.slice(startIndex)) {
         substring += character;
         this.effectiveFrequencyTable[substring] = (this.effectiveFrequencyTable[substring] || 0) + 1;
       }
@@ -14548,9 +17056,9 @@ function isBoolean2(value) {
 function isObject2(value) {
   return value !== null && typeof value === "object";
 }
-function repeat2(str2, count) {
+function repeat2(str2, count2) {
   let result2 = "";
-  for (let cycle = 0; cycle < count; cycle++) {
+  for (let cycle = 0; cycle < count2; cycle++) {
     result2 += str2;
   }
   return result2;
@@ -14568,14 +17076,14 @@ var Mark = class {
     this.line = line;
     this.column = column;
   }
-  getSnippet(indent2 = 4, maxLength = 75) {
+  getSnippet(indent3 = 4, maxLength2 = 75) {
     if (!this.buffer)
       return null;
     let head2 = "";
     let start = this.position;
     while (start > 0 && "\0\r\n\x85\u2028\u2029".indexOf(this.buffer.charAt(start - 1)) === -1) {
       start -= 1;
-      if (this.position - start > maxLength / 2 - 1) {
+      if (this.position - start > maxLength2 / 2 - 1) {
         head2 = " ... ";
         start += 5;
         break;
@@ -14585,17 +17093,17 @@ var Mark = class {
     let end = this.position;
     while (end < this.buffer.length && "\0\r\n\x85\u2028\u2029".indexOf(this.buffer.charAt(end)) === -1) {
       end += 1;
-      if (end - this.position > maxLength / 2 - 1) {
+      if (end - this.position > maxLength2 / 2 - 1) {
         tail2 = " ... ";
         end -= 5;
         break;
       }
     }
     const snippet = this.buffer.slice(start, end);
-    return `${repeat2(" ", indent2)}${head2}${snippet}${tail2}
+    return `${repeat2(" ", indent3)}${head2}${snippet}${tail2}
 ${repeat2(
       " ",
-      indent2 + this.position - start + head2.length
+      indent3 + this.position - start + head2.length
     )}^`;
   }
   toString(compact2) {
@@ -15884,11 +18392,11 @@ function testDocumentSeparator(state) {
   }
   return false;
 }
-function writeFoldedLines(state, count) {
-  if (count === 1) {
+function writeFoldedLines(state, count2) {
+  if (count2 === 1) {
     state.result += " ";
-  } else if (count > 1) {
-    state.result += repeat2("\n", count - 1);
+  } else if (count2 > 1) {
+    state.result += repeat2("\n", count2 - 1);
   }
 }
 function readPlainScalar(state, nodeIndent, withinFlowCollection) {
@@ -16821,12 +19329,12 @@ function parse9(content, options) {
 }
 
 // main/generate_data.js
-var configData = parse9(await FileSystem2.read(`${FileSystem2.thisFolder}/../config.yaml`));
+var configData = parse9(await FileSystem.read(`${FileSystem.thisFolder}/../config.yaml`));
 var project = configData["(project)"];
 var pathTo = project["(path_to)"];
 var config = project["(profiles)"]["(default)"];
 var parameters = config["generate_data"];
-var infoForAllData = await FileSystem2.info(pathTo.all_negative_examples);
+var infoForAllData = await FileSystem.info(pathTo.all_negative_examples);
 var shouldGenerateAllDataFile = !infoForAllData.isFile;
 var pathToHuffmanCoder = pathTo["huffman_coder"];
 parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern);
@@ -16885,7 +19393,7 @@ if (parameters.preprocessing.shouldUseSimplifier) {
   }
 }
 function* preprocess(examples) {
-  let count = 0;
+  let count2 = 0;
   for (let { aminoAcids } of examples) {
     if (parameters.preprocessing.shouldUseSimplifier) {
       for (const [key, value] of Object.entries(aminoAcidSimplifier)) {
@@ -16899,12 +19407,12 @@ var coder;
 if (parameters.useHuffmanEncoding) {
   coder = new HuffmanCoder({ softCap: parameters.huffmanEncoderCap });
   console.debug(`building huffman coder`);
-  let count = 0;
+  let count2 = 0;
   coder.addData("UGBTEVNYT".slice(0, parameters.windowPadding));
   for (const [start, end, aminoAcidString] of preprocess(positiveExamples)) {
-    count += 1;
-    if (count % 2e3 == 0) {
-      console.log(`    on ${count}/${parameters.datasetSize * 2}: ${Math.round(count / (parameters.datasetSize * 2) * 100)}%`);
+    count2 += 1;
+    if (count2 % 2e3 == 0) {
+      console.log(`    on ${count2}/${parameters.datasetSize * 2}: ${Math.round(count2 / (parameters.datasetSize * 2) * 100)}%`);
     }
     coder.addData(start);
     coder.addData(end);
@@ -16912,7 +19420,7 @@ if (parameters.useHuffmanEncoding) {
   coder.freeze();
   coder.numberToVector = createOneHot(coder.numberToSubstring).objToOneHot;
   console.debug(`saving huffman coder`);
-  FileSystem2.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder, 0, 2) }).then(() => console.debug(`saved huffman coder`));
+  FileSystem.write({ path: pathToHuffmanCoder, data: JSON.stringify(coder, 0, 2) }).then(() => console.debug(`saved huffman coder`));
 }
 var featureNames = [];
 function* encodeExamples(examples) {
@@ -16951,8 +19459,8 @@ function* encodeExamples(examples) {
         if (index == centerIndex) {
           continue;
         }
-        for (const eachBool of aminoToOneHot[eachAminoChar]) {
-          featureNames.push(`${eachAminoChar}@${index}`);
+        for (const [eachBool, aminoAcidName] of zip(aminoToOneHot[eachAminoChar], Object.keys(amnioEncoding))) {
+          featureNames.push(`${aminoAcidName}@${index}`);
           featureVector.push(eachBool);
         }
       }
@@ -17006,21 +19514,21 @@ function* getGenes(examples) {
 }
 if (shouldGenerateAllDataFile) {
   await Promise.all([
-    FileSystem2.write({ path: pathTo.all_positive_examples, data: generateLinesFor(encodeExamples(positiveExamples)) }),
-    FileSystem2.write({ path: pathTo.all_positive_examples_genes, data: generateLinesFor(getGenes(positiveExamples)) }),
-    FileSystem2.write({ path: pathTo.all_negative_examples, data: generateLinesFor(encodeExamples(negativeExamples)) }),
-    FileSystem2.write({ path: pathTo.all_negative_examples_genes, data: generateLinesFor(getGenes(negativeExamples)) })
+    FileSystem.write({ path: pathTo.all_positive_examples, data: generateLinesFor(encodeExamples(positiveExamples)) }),
+    FileSystem.write({ path: pathTo.all_positive_examples_genes, data: generateLinesFor(getGenes(positiveExamples)) }),
+    FileSystem.write({ path: pathTo.all_negative_examples, data: generateLinesFor(encodeExamples(negativeExamples)) }),
+    FileSystem.write({ path: pathTo.all_negative_examples_genes, data: generateLinesFor(getGenes(negativeExamples)) })
   ]);
 } else {
   await Promise.all([
-    FileSystem2.write({ path: "positive_examples.json", data: generateLinesFor(encodeExamples(positiveExamples)) }),
-    FileSystem2.write({ path: "positive_examples_genes.json", data: generateLinesFor(getGenes(positiveExamples)) }),
-    FileSystem2.write({ path: "negative_examples.json", data: generateLinesFor(encodeExamples(negativeExamples)) }),
-    FileSystem2.write({ path: "negative_examples_genes.json", data: generateLinesFor(getGenes(negativeExamples)) })
+    FileSystem.write({ path: "positive_examples.json", data: generateLinesFor(encodeExamples(positiveExamples)) }),
+    FileSystem.write({ path: "positive_examples_genes.json", data: generateLinesFor(getGenes(positiveExamples)) }),
+    FileSystem.write({ path: "negative_examples.json", data: generateLinesFor(encodeExamples(negativeExamples)) }),
+    FileSystem.write({ path: "negative_examples_genes.json", data: generateLinesFor(getGenes(negativeExamples)) })
   ]);
 }
 console.log("done writing data");
-await FileSystem2.write({
+await FileSystem.write({
   data: JSON.stringify(
     {
       featureNames,
