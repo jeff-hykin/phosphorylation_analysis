@@ -252,7 +252,7 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
                     if (index == centerIndex) {
                         continue
                     }
-                    for (const eachBool of aminoToOneHot[eachAminoChar]) {
+                    for (const [index, eachBool] of enumerate(aminoToOneHot[eachAminoChar])) {
                         featureNames.push(`${eachAminoChar}@${index}`)
                         featureVector.push(eachBool)
                     }
