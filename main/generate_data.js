@@ -252,8 +252,8 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
                     if (index == centerIndex) {
                         continue
                     }
-                    for (const [index, eachBool] of enumerate(aminoToOneHot[eachAminoChar])) {
-                        featureNames.push(`${eachAminoChar}@${index}`)
+                    for (const [ eachBool, aminoAcidName ] of zip(aminoToOneHot[eachAminoChar], Object.keys(amnioEncoding))) {
+                        featureNames.push(`${aminoAcidName}@${index}`)
                         featureVector.push(eachBool)
                     }
                 }
