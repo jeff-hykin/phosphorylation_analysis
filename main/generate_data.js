@@ -28,8 +28,9 @@ const project = configData["(project)"]
 const pathTo = project["(path_to)"]
 const config = project["(profiles)"]["(default)"]
 
-
 const parameters = config["generate_data"]
+const infoForAllData = await FileSystem.info(pathTo.all_negative_examples)
+const shouldGenerateAllDataFile = !infoForAllData.isFile
 const pathToHuffmanCoder = pathTo["huffman_coder"]
 parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
 
@@ -87,14 +88,19 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
 // shrink
 // 
 // 
-    // const maxCommonSize = Math.min(positiveExamples.length, negativeExamples.length)
-    positiveExamples = positiveExamples.slice(-parameters.datasetSize)
-    negativeExamples = negativeExamples.slice(-parameters.datasetSize)
-    if (negativeExamples.length != positiveExamples.length) {
-        let max = Math.min(positiveExamples.length, negativeExamples.length)
-        console.error(`parameters.datasetSize was too big needs to be: ${max}`)
-        positiveExamples = positiveExamples.slice(0, max)
-        negativeExamples = negativeExamples.slice(0, max)
+    if (!shouldGenerateAllDataFile) {
+        const maxCommonSize = Math.min(positiveExamples.length, negativeExamples.length)
+        positiveExamples = positiveExamples.slice(-parameters.datasetSize)
+        negativeExamples = negativeExamples.slice(-parameters.datasetSize)
+        if (negativeExamples.length != positiveExamples.length) {
+            let max = Math.min(positiveExamples.length, negativeExamples.length)
+            console.error(`parameters.datasetSize was too big needs to be: ${max}`)
+            positiveExamples = positiveExamples.slice(0, max)
+            negativeExamples = negativeExamples.slice(0, max)
+        }
+    } else {
+        console.log(`generating an "all data" dump because it is necessary and missing`)
+        parameters.featureToInclude = { normalPositionalData: true }
     }
     console.debug(`negativeExamples.length is:`,negativeExamples.length)
     console.debug(`positiveExamples.length is:`,positiveExamples.length)
@@ -317,12 +323,21 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
     // 
     // save examples
     // 
-    await Promise.all([
-        FileSystem.write({ path: "positive_examples.json"     , data: generateLinesFor(   encodeExamples(positiveExamples)   ), }),
-        FileSystem.write({ path: "positive_examples_genes.json", data: generateLinesFor(   getGenes(positiveExamples)         ), }),
-        FileSystem.write({ path: "negative_examples.json"     , data: generateLinesFor(   encodeExamples(negativeExamples)   ), }),
-        FileSystem.write({ path: "negative_examples_genes.json", data: generateLinesFor(   getGenes(negativeExamples)         ), }),
-    ])
+    if (shouldGenerateAllDataFile) {
+        await Promise.all([
+            FileSystem.write({ path: pathTo.all_positive_examples, data: generateLinesFor(   encodeExamples(positiveExamples)   ), }),
+            FileSystem.write({ path: pathTo.all_positive_examples_genes, data: generateLinesFor(   getGenes(positiveExamples)         ), }),
+            FileSystem.write({ path: pathTo.all_negative_examples, data: generateLinesFor(   encodeExamples(negativeExamples)   ), }),
+            FileSystem.write({ path: pathTo.all_negative_examples_genes, data: generateLinesFor(   getGenes(negativeExamples)         ), }),
+        ])
+    } else {
+        await Promise.all([
+            FileSystem.write({ path: "positive_examples.json"     , data: generateLinesFor(   encodeExamples(positiveExamples)   ), }),
+            FileSystem.write({ path: "positive_examples_genes.json", data: generateLinesFor(   getGenes(positiveExamples)         ), }),
+            FileSystem.write({ path: "negative_examples.json"     , data: generateLinesFor(   encodeExamples(negativeExamples)   ), }),
+            FileSystem.write({ path: "negative_examples_genes.json", data: generateLinesFor(   getGenes(negativeExamples)         ), }),
+        ])
+    }
     console.log("done writing data")
 
     // record most recent parameters 
@@ -337,4 +352,3 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
         ),
         path: pathTo.prev_parameters,
     })
-    
