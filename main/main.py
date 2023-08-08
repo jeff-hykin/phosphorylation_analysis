@@ -150,6 +150,7 @@ def read_filtered_data():
     
     negative_genes = new_negative_genes
     
+    truncate_size = info.config.classifier_truncate_sample
     X     = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
     y     = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
     genes = negative_genes[0:truncate_size] + positive_genes[0:truncate_size]
