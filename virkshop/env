@@ -7,7 +7,7 @@ import { FileSystem } from "https://deno.land/x/quickr@0.6.36/main/file_system.j
 import { Console, cyan, blue } from "https://deno.land/x/quickr@0.6.36/main/console.js"
 import { virkshop } from "./support/virkshop.js"
 import { Args } from "./support/parse_args.js"
-import { recursivelyAllKeysOf, get, set, remove, merge, compareProperty } from "https://deno.land/x/good@0.7.8/object.js"
+import { recursivelyAllKeysOf, get, set, remove, merge, compareProperty } from "https://deno.land/x/good@1.4.4.2/object.js"
 
 const executableName = "virkshop/env"
 const args = new Args({

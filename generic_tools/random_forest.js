@@ -1,5 +1,5 @@
-import { capitalize, indent, toCamelCase, digitsToEnglishArray, toPascalCase, toKebabCase, toSnakeCase, toScreamingtoKebabCase, toScreamingtoSnakeCase, toRepresentation, toString, regex, escapeRegexMatch, escapeRegexReplace, extractFirst, isValidIdentifier } from "https://deno.land/x/good@1.3.0.4/string.js"
-import { enumerate, zip } from "https://deno.land/x/good@1.3.0.4/iterable.js"
+import { capitalize, indent, toCamelCase, digitsToEnglishArray, toPascalCase, toKebabCase, toSnakeCase, toScreamingtoKebabCase, toScreamingtoSnakeCase, toRepresentation, toString, regex, escapeRegexMatch, escapeRegexReplace, extractFirst, isValidIdentifier } from "https://deno.land/x/good@1.4.4.2/string.js"
+import { enumerate, zip } from "https://deno.land/x/good@1.4.4.2/iterable.js"
 import { frequencyCount } from "../generic_tools/misc.js"
 
 const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))

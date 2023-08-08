@@ -1,4 +1,4 @@
-import { indent, findAll, extractFirst, stringToUtf8Bytes, toRepresentation } from "https://deno.land/x/good@1.3.0.1/string.js"
+import { indent, findAll, extractFirst, stringToUtf8Bytes, toRepresentation } from "https://deno.land/x/good@1.4.4.2/string.js"
 
 const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
 

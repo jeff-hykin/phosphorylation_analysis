@@ -1,10 +1,6 @@
-import { RandomForestClassifier } from "https://esm.sh/random-forest-classifier@0.6.0"
-import { parseCsv, createCsv } from "https://deno.land/x/good@1.3.0.1/csv.js"
-import { intersection } from "https://deno.land/x/good@1.3.0.1/set.js"
-import { flatten, asyncIteratorToList } from "https://deno.land/x/good@1.3.0.1/iterable.js"
-import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno.land/x/good@1.3.0.1/string.js"
-import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.32/main/file_system.js"
-import { parseFasta } from "../generic_tools/fasta_parser.js"
+// import { parseCsv } from "https://deno.land/x/good@1.4.4.2/csv.js"
+// import { intersection } from "https://deno.land/x/good@1.4.4.2/set.js"
+// import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.38/main/file_system.js"
 
 export async function loadPositiveExamples({ filePath, geneData, skipEntryIf }) {
     const geneIdsFromNegativeData = new Set(Object.keys(geneData))

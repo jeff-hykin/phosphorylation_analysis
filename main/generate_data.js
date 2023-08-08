@@ -9,17 +9,16 @@ echo "1.31.3"; : --% ' |out-null <#';};v="$(dv)";d="$HOME/.deno/$v/bin/deno";if 
 import { RandomForestClassifier } from "../generic_tools/random_forest.js"
 import { crossValidation } from "../generic_tools/cross_validation.js"
 import { frequencyCount, generateLinesFor, createOneHot } from "../generic_tools/misc.js"
-import { parseCsv, createCsv } from "https://deno.land/x/good@1.3.0.4/csv.js"
-import { intersection } from "https://deno.land/x/good@1.3.0.4/set.js"
-import { flatten, asyncIteratorToList, enumerate, zip, Iterable } from "https://deno.land/x/good@1.3.0.4/iterable.js"
-import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno.land/x/good@1.3.0.4/string.js"
+import { parseCsv, createCsv } from "https://deno.land/x/good@1.4.4.2/csv.js"
+import { intersection } from "https://deno.land/x/good@1.4.4.2/set.js"
+import { asyncIteratorToList, enumerate, zip, Iterable } from "https://deno.land/x/good@1.4.4.2/iterable.js"
+import { indent, findAll, extractFirst, stringToUtf8Bytes,  } from "https://deno.land/x/good@1.4.4.2/string.js"
 import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.35/main/file_system.js"
 import { loadMixedExamples } from "../specific_tools/load_mixed_examples.js"
 import { loadPositiveExamples } from "../specific_tools/load_positive_examples.js"
 import { amnioEncoding, aminoAcidSimplifier, aminoToOneHot, oneHotToAmino, physicochemicalCategories, physicochemicalToOneHot, oneHotToPhysicochemical, aminoToPhysicochemical } from "../specific_tools/amino_acid_to_feature_vector.js"
 import { HuffmanCoder } from "../generic_tools/huffman_code.js"
-import { encode, decode, NotSerializable } from 'https://raw.githubusercontent.com/jeff-hykin/es-codec/0523dfcff5c95ef52cc12f5eb6eeb8d2b07b4839/es-codec.js'
-const _ = (await import('https://cdn.skypack.dev/lodash@4.17.21'))
+// import { encode, decode, NotSerializable } from 'https://raw.githubusercontent.com/jeff-hykin/es-codec/0523dfcff5c95ef52cc12f5eb6eeb8d2b07b4839/es-codec.js'
 
 import * as yaml from "https://deno.land/std@0.168.0/encoding/yaml.ts"
 const configData = yaml.parse(await FileSystem.read(`${FileSystem.thisFolder}/../config.yaml`))

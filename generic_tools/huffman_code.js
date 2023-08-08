@@ -1,6 +1,6 @@
 import { frequencyCount } from "./misc.js"
-import { recursivelyAllKeysOf, get, set, remove, merge, compareProperty, compare } from "https://deno.land/x/good@1.3.0.4/object.js"
-import { toRepresentation } from "https://deno.land/x/good@1.3.0.4/string.js"
+import { recursivelyAllKeysOf, get, set, remove, merge, compareProperty, compare } from "https://deno.land/x/good@1.4.4.2/object.js"
+import { toRepresentation } from "https://deno.land/x/good@1.4.4.2/string.js"
 import {
   ascend,
   BinaryHeap,
