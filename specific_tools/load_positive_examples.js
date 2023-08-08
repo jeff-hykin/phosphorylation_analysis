@@ -1,6 +1,6 @@
-// import { parseCsv } from "https://deno.land/x/good@1.4.4.2/csv.js"
-// import { intersection } from "https://deno.land/x/good@1.4.4.2/set.js"
-// import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.38/main/file_system.js"
+import { parseCsv } from "https://deno.land/x/good@1.4.4.2/csv.js"
+import { intersection } from "https://deno.land/x/good@1.4.4.2/set.js"
+import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.38/main/file_system.js"
 
 export async function loadPositiveExamples({ filePath, geneData, skipEntryIf }) {
     const geneIdsFromNegativeData = new Set(Object.keys(geneData))
