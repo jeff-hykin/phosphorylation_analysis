@@ -23,7 +23,7 @@ from __dependencies__.quik_config import find_and_load
 from __dependencies__.informative_iterator import ProgressBar
 from __dependencies__.cool_cache import cache, super_hash
 from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure, print, LazyDict, super_hash, drop_end, linear_steps, arg_max
-from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential
+from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential, core
 from generic_tools.cross_validation import cross_validation
 
 
@@ -124,13 +124,13 @@ def read_filtered_data():
     print("read_full_basic_data")
     # positives must come from the full dataset
     _, _, positive_inputs, _, _, _ = read_full_basic_data()
-    positive_feature_tensors = torch.tensor(positive_inputs)
+    positive_feature_tensors = torch.tensor(positive_inputs).to(core.default_device)
     print("read_full_basic_data: done")
     
     # negatives can come from local dataset
     print("read_basic_data")
     negative_inputs, negative_outputs, positive_inputs, positive_outputs, negative_genes, positive_genes = read_basic_data()
-    negative_feature_tensors = torch.tensor(negative_inputs)
+    negative_feature_tensors = torch.tensor(negative_inputs).to(core.default_device)
     print("read_basic_data: done")
     
     # multiplied by 2 because if one boolean feature is different, then another is necessairly different (one-hot encoding)
