@@ -155,6 +155,8 @@ def read_filtered_data():
     y     = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
     genes = negative_genes[0:truncate_size] + positive_genes[0:truncate_size]
     
+    sample_size = len(X)
+    
     return X, y, genes, sample_size
 
 FS.ensure_is_folder(info.absolute_path_to.results_folder)
