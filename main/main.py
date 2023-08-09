@@ -133,17 +133,23 @@ def read_with_min_distances():
     print("read_basic_data: done")
     
     print("computing min distances")
-    index = 0
-    step_size = 256 # doing it all at once would require terrabytes
-    min_distances = None
-    for _ in ProgressBar(math.ceil(len(negative_inputs)/step_size)):
-        chunk = positive_feature_tensors.sub(torch.tensor(negative_inputs[index:index+step_size])[:, None]).abs_().sum(dim=2).min(dim=1).values
-        if type(min_distances) == type(None):
-            min_distances = chunk
-        else:
-            min_distances = torch.concat((min_distances, chunk))
-        index += step_size
-    print("computing min distances: done")
+    step_size = 32 # doing it all at once would require terrabytes
+    if step_size >= 128:
+        index = 0
+        min_distances = None
+        for _ in ProgressBar(math.ceil(len(negative_inputs)/step_size)):
+            chunk = positive_feature_tensors.sub(torch.tensor(negative_inputs[index:index+step_size])[:, None]).abs_().sum(dim=2).min(dim=1).values
+            if type(min_distances) == type(None):
+                min_distances = chunk
+            else:
+                min_distances = torch.concat((min_distances, chunk))
+            index += step_size
+    else:
+        min_distances = [0]*len(negative_inputs)
+        negative_feature_tensors = torch.tensor(negative_inputs)
+        for progress, (each_negative_tensor, negative_gene) in ProgressBar(tuple(zip(negative_feature_tensors, negative_genes))):
+            min_distances[progress.index] = (positive_feature_tensors - each_negative_tensor).abs().sum(dim=1).min().item()
+        min_distances = to_tensor(min_distances)
     
     return min_distances, negative_inputs, negative_outputs, positive_inputs, positive_outputs, negative_genes, positive_genes
     
