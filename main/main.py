@@ -123,14 +123,13 @@ def read_data():
 def read_with_min_distances():
     print("read_full_basic_data")
     # positives must come from the full dataset
-    # _, _, positive_inputs, _, _, _ = read_full_basic_data()
-    # positive_feature_tensors = torch.tensor(positive_inputs)
+    _, _, positive_inputs, _, _, _ = read_full_basic_data()
+    positive_feature_tensors = torch.tensor(positive_inputs)
     print("read_full_basic_data: done")
     
     # negatives can come from local dataset
     print("read_basic_data")
     negative_inputs, negative_outputs, positive_inputs, positive_outputs, negative_genes, positive_genes = read_basic_data()
-    positive_feature_tensors = torch.tensor(positive_inputs) # FIXME: <- debugging only
     print("read_basic_data: done")
     
     print("computing min distances")
