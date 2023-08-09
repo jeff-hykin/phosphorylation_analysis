@@ -140,9 +140,9 @@ def read_filtered_data():
     negative_inputs = []
     new_negative_genes = []
     for progress, (each_negative_tensor, negative_gene) in ProgressBar(tuple(zip(negative_feature_tensors, negative_genes))):
-        values, indicies = (positive_feature_tensors - each_negative_tensor).abs().sum(dim=1).sort()
+        values = (positive_feature_tensors - each_negative_tensor).abs().sum(dim=1)
         # skip those above the threshold
-        if torch.any(values > similarity_threshold):
+        if torch.any(values <= similarity_threshold):
             continue
         negative_inputs.append(each_negative_tensor)
         new_negative_genes.append(negative_gene)
@@ -152,7 +152,7 @@ def read_filtered_data():
     
     truncate_size = info.config.classifier_truncate_sample
     X     = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
-    y     = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
+    y     = (negative_label,)*len(negative_inputs) + positive_outputs[0:truncate_size]
     genes = negative_genes[0:truncate_size] + positive_genes[0:truncate_size]
     
     sample_size = len(X)
@@ -177,13 +177,21 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
         
         positive_test_inputs  = tuple(each_input   for each_input, each_output in zip(X_test, y_test) if each_output == 1)
         positive_test_outputs = tuple(each_output  for each_input, each_output in zip(X_test, y_test) if each_output == 1)
-        positive_accuracy = accuracy_score(positive_test_outputs, predict(positive_test_inputs))
-        print("Positive Accuracy:", positive_accuracy)
+        if len(positive_test_inputs) == 0:
+            positive_accuracy = 0
+            print("There were no positive test cases for some reason")
+        else:
+            positive_accuracy = accuracy_score(positive_test_outputs, predict(positive_test_inputs))
+            print("Positive Accuracy:", positive_accuracy)
         
         negative_test_inputs  = tuple(each_input   for each_input, each_output in zip(X_test, y_test) if each_output == -1)
         negative_test_outputs = tuple(each_output  for each_input, each_output in zip(X_test, y_test) if each_output == -1)
-        negative_accuracy = accuracy_score(negative_test_outputs, predict(negative_test_inputs))
-        print("Negative Accuracy:", negative_accuracy)
+        if len(negative_test_inputs) == 0:
+            negative_accuracy = 0
+            print("There were no positive test cases for some reason")
+        else:
+            negative_accuracy = accuracy_score(negative_test_outputs, predict(negative_test_inputs))
+            print("Negative Accuracy:", negative_accuracy)
         
         gene_info_for = {}
         all_x, all_y, all_genes, sample_size = read_full_data()
@@ -429,7 +437,13 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
 
 if __name__ == '__main__':
     X, y, genes, sample_size = read_filtered_data()
-
+    
+    # import code; code.interact(local={**globals(),**locals()})
+    # X = to_tensor(X)
+    # y = to_tensor(y)
+    # print(f'''X.shape = {X.shape}''')
+    # print(f'''y.shape = {y.shape}''')
+    
     number_of_folds = 4
     folds = cross_validation(
         X,
@@ -437,6 +451,12 @@ if __name__ == '__main__':
         genes,
         number_of_folds=number_of_folds,
     )
+    print(f'''to_tensor(y).sum() = {to_tensor(y).sum()} / {len(y)}''')
+    for index, each in enumerate(folds):
+        X_train, y_train, genes_train = each["train"]
+        X_test, y_test, genes_test = each["test"]
+        print(f'''{index}: to_tensor(y_test).sum() = {to_tensor(y_test).sum()} / {len(y_test)}''')
+        print(f'''{index}: to_tensor(y_train).sum() = {to_tensor(y_train).sum()} / {len(y_train)}''')
 
     rows_of_output = []
     for progress, each in ProgressBar(folds):
