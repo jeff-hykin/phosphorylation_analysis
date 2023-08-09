@@ -139,12 +139,13 @@ def read_filtered_data():
     print("filtering simlarity")
     negative_inputs = []
     new_negative_genes = []
-    for progress, (each_negative_tensor, negative_gene) in ProgressBar(tuple(zip(negative_feature_tensors, negative_genes))):
-        values = (positive_feature_tensors - each_negative_tensor).abs().sum(dim=1)
+    too_close_values = positive_feature_tensors.sub(negative_feature_tensors[:, None]).abs_().sum(dim=2).le_(similarity_threshold).any(dim=1)
+    # distances = positive_feature_tensors.sub(negative_feature_tensors[:, None]).abs().sum(dim=2)
+    for progress, (each_is_too_close, each_negative_input, negative_gene) in ProgressBar(zip(too_close_values, negative_inputs, negative_genes), iterations=len(too_close_values)):
         # skip those above the threshold
-        if torch.any(values <= similarity_threshold):
+        if each_is_too_close:
             continue
-        negative_inputs.append(each_negative_tensor)
+        negative_inputs.append(each_negative_input)
         new_negative_genes.append(negative_gene)
     print("filtering simlarity: done")
     
@@ -443,6 +444,7 @@ if __name__ == '__main__':
     # y = to_tensor(y)
     # print(f'''X.shape = {X.shape}''')
     # print(f'''y.shape = {y.shape}''')
+    
     
     number_of_folds = 4
     folds = cross_validation(
