@@ -533,11 +533,7 @@
             "shouldUseSimplifier": false
         },
         "featureToInclude": {
-            "normalPositionalData": true,
-            "positionInvariantHuffman": false,
-            "positionInvariantPhysicochemicalCategories": false,
-            "physicochemicalCategories": false,
-            "handCodedMotifs": false
+            "normalPositionalData": true
         }
     }
 }
