@@ -53,7 +53,7 @@ parameters.aminoMatchPattern = new RegExp(parameters.aminoMatchPattern)
     } = await loadPositiveExamples({
         filePath: /.\/data\/phosphorylation@0\d+.tsv/,
         skipEntryIf: ({ uniprotGeneId, aminoAcidsString, })=>(
-            !geneIds.has(uniprotGeneId)
+            (!shouldGenerateAllDataFile && !geneIds.has(uniprotGeneId))
             || !aminoAcidsString[parameters.windowPadding].match(parameters.aminoMatchPattern)
             || (parameters.useHuffmanEncoding && aminoAcidsString.match(/SSS+/)) // done to improve huffman code, eliminates a few outliers
         ),
