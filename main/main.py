@@ -119,36 +119,54 @@ def read_data():
     # Split the data into training and testing sets
     return X, y, genes, sample_size
 
-@cache(watch_filepaths=lambda *args: [ info.absolute_path_to.negative_examples, info.absolute_path_to.positive_examples ], depends_on=lambda *args: [ info.config.classifier_truncate_sample, info.config.negative_example_too_similar_threshold ])
-def read_filtered_data():
+@cache(watch_filepaths=lambda *args: [ info.absolute_path_to.negative_examples, info.absolute_path_to.positive_examples ], depends_on=lambda *args: [ info.config.classifier_truncate_sample ])
+def read_with_min_distances():
     print("read_full_basic_data")
     # positives must come from the full dataset
-    _, _, positive_inputs, _, _, _ = read_full_basic_data()
-    positive_feature_tensors = torch.tensor(positive_inputs).to(core.default_device)
+    # _, _, positive_inputs, _, _, _ = read_full_basic_data()
+    # positive_feature_tensors = torch.tensor(positive_inputs)
     print("read_full_basic_data: done")
     
     # negatives can come from local dataset
     print("read_basic_data")
     negative_inputs, negative_outputs, positive_inputs, positive_outputs, negative_genes, positive_genes = read_basic_data()
-    negative_feature_tensors = torch.tensor(negative_inputs).to(core.default_device)
+    positive_feature_tensors = torch.tensor(positive_inputs) # FIXME: <- debugging only
     print("read_basic_data: done")
     
+    print("computing min distances")
+    index = 0
+    step_size = 256 # doing it all at once would require terrabytes
+    min_distances = None
+    for _ in ProgressBar(math.ceil(len(negative_inputs)/step_size)):
+        chunk = positive_feature_tensors.sub(torch.tensor(negative_inputs[index:index+step_size])[:, None]).abs_().sum(dim=2).min(dim=1).values
+        if type(min_distances) == type(None):
+            min_distances = chunk
+        else:
+            min_distances = torch.concat((min_distances, chunk))
+        index += step_size
+    print("computing min distances: done")
+    
+    return min_distances, negative_inputs, negative_outputs, positive_inputs, positive_outputs, negative_genes, positive_genes
+    
+@cache(watch_filepaths=lambda *args: [ info.absolute_path_to.negative_examples, info.absolute_path_to.positive_examples ], depends_on=lambda *args: [ info.config.classifier_truncate_sample, info.config.negative_example_too_similar_threshold ])
+def read_filtered_data():
     # multiplied by 2 because if one boolean feature is different, then another is necessairly different (one-hot encoding)
     similarity_threshold = 2 * info.config.negative_example_too_similar_threshold
     
-    print("filtering simlarity")
-    negative_inputs = []
+    min_distances, negative_inputs, negative_outputs, positive_inputs, positive_outputs, negative_genes, positive_genes = read_with_min_distances()
+    
     new_negative_genes = []
-    too_close_values = positive_feature_tensors.sub(negative_feature_tensors[:, None]).abs_().sum(dim=2).le_(similarity_threshold).any(dim=1)
+    new_negative_inputs = []
     # distances = positive_feature_tensors.sub(negative_feature_tensors[:, None]).abs().sum(dim=2)
-    for progress, (each_is_too_close, each_negative_input, negative_gene) in ProgressBar(zip(too_close_values, negative_inputs, negative_genes), iterations=len(too_close_values)):
+    for progress, (each_distance, each_negative_input, negative_gene) in ProgressBar(zip(min_distances, negative_inputs, negative_genes), iterations=len(min_distances)):
         # skip those above the threshold
-        if each_is_too_close:
+        if each_distance <= similarity_threshold:
             continue
-        negative_inputs.append(each_negative_input)
+        new_negative_inputs.append(each_negative_input)
         new_negative_genes.append(negative_gene)
     print("filtering simlarity: done")
     
+    negative_inputs = new_negative_inputs
     negative_genes = new_negative_genes
     
     truncate_size = info.config.classifier_truncate_sample
