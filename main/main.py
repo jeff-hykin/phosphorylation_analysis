@@ -124,7 +124,7 @@ def read_with_min_distances():
     print("read_full_basic_data")
     # positives must come from the full dataset
     _, _, positive_inputs, _, _, _ = read_full_basic_data()
-    positive_feature_tensors = torch.tensor(positive_inputs)
+    positive_feature_tensors = torch.tensor(positive_inputs).to(core.default_device)
     print("read_full_basic_data: done")
     
     # negatives can come from local dataset
@@ -133,12 +133,12 @@ def read_with_min_distances():
     print("read_basic_data: done")
     
     print("computing min distances")
-    step_size = 32 # doing it all at once would require terrabytes
-    if step_size >= 128:
+    step_size = 75 # doing it all at once would require terrabytes of ram
+    if step_size >= 32:
         index = 0
         min_distances = None
         for _ in ProgressBar(math.ceil(len(negative_inputs)/step_size)):
-            chunk = positive_feature_tensors.sub(torch.tensor(negative_inputs[index:index+step_size])[:, None]).abs_().sum(dim=2).min(dim=1).values
+            chunk = positive_feature_tensors.sub(torch.tensor(negative_inputs[index:index+step_size], device=core.default_device)[:, None]).abs_().sum(dim=2).min(dim=1).values
             if type(min_distances) == type(None):
                 min_distances = chunk
             else:
