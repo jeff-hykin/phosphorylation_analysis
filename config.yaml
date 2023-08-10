@@ -26,14 +26,24 @@
         autoencoder_losses: ./results/autoencoder_losses.csv
     
     todo:
-        - do autoencoder:
-            - how many layers? 50 units, 20 units
-            - latent space: 2 latent, 5, 10,
-            - Relu
-        - maybe switch to protien level prediction:
-            - maybe evaluate if 
-            - maybe use HMM's
-            - LSTM
+        - Done: fix the gene evaluation metric
+        - Done: create the spreadsheet analysis for the fixed data
+        - Done-ish: filter out too-close negative examples
+            - Done: efficient-ish method for generating the distance per value
+            - Done: run classifiers on filtered data
+            - try the huffman features after filtering out too-similar ones:
+                - create a script for converting the fasta file to a tsv
+                - update generate_data.js to use the tsv
+                - create a python script for adding the min-distances to the tsv
+                - generate new huffman data with filtering
+                - train on it
+            - try the autoencoder features after filtering out too-similar ones
+        - filter out positive sites with only one citation, redo the similarity-filter with this
+        - bias the classifiers towards correctly classifing negative examples, then evaluate gene classification error
+        - look up papers on when a gene is considered to be "phosphorylated" (does it just need one site, or many)
+        - try a conv 1d approach for the NN classifier with the autoencoder
+        - try a conv 1d approach for the autoencoder
+        
     # example profiles
     (profiles):
         (default):
@@ -42,6 +52,7 @@
             positive_label: 1
             gene_classification_threshold: 3
             negative_example_too_similar_threshold: 5 # if only 5 (of 20) or fewer amino acids are different, then its "too" similar to a positive phosphorylation example
+            bias_towards_negative: 0.1
             generate_data:
                 windowPadding: 10 # + or - 10 amino acids
                 aminoMatchPattern: "S"
