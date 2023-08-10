@@ -698,10 +698,10 @@ class AutoEncoderHelpers:
                         
                         if average_validation_loss*(1 - hyperparameters.validation_threshold) > average_training_loss:
                             print(f'''    stopping training early: epoch_index:{epoch_index}, batch_index:{batch_index}''')
-                            number_of_epochs_before_stopping[-1] = epoch_index+1
+                            number_of_epochs_before_stopping[-1] = epoch_index # note: equivlent to -1, which is good cause early stopping means we've gone too far
                             break
                     
-                best_run_within_fold = arg_max(args=metrics, values=tuple(average_validation_loss for (average_training_loss, average_validation_loss,) in metrics))
+                best_run_within_fold = arg_max(args=metrics, values=tuple(-average_validation_loss for (average_training_loss, average_validation_loss,) in metrics))
                 # add them to aggregate_metrics
                 for (each_key, each_list), each_new_value in zip(aggregate_metrics.items(), best_run_within_fold):
                     each_list.append(each_new_value)
