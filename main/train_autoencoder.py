@@ -29,14 +29,9 @@ from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save
 from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential
 from generic_tools.cross_validation import cross_validation
 
-ProgressBar.layout = [ 'bar', 'title', 'percent', 'spacer', 'fraction', 'spacer', 'remaining_time', 'spacer', 'end_time', 'spacer', 'duration', 'spacer', ]
+from main import read_filtered_data, info, read_data, read_full_data
 
-info = find_and_load(
-    "config.yaml", # walks up folders until it finds a file with this name
-    cd_to_filepath=True, # helpful if using relative paths
-    fully_parse_args=True, # if you already have argparse, use parse_args=True instead
-    show_help_for_no_args=False, # change if you want
-)
+ProgressBar.layout = [ 'bar', 'title', 'percent', 'spacer', 'fraction', 'spacer', 'remaining_time', 'spacer', 'end_time', 'spacer', 'duration', 'spacer', ]
 
 default_seed = 10275023948
 torch.manual_seed(default_seed)
@@ -856,29 +851,8 @@ class AutoEncoderHelpers:
 # read data
 # 
 if True:
-    @cache(watch_filepaths=lambda *args: [ info.absolute_path_to.negative_examples, info.absolute_path_to.positive_examples ])
-    def read_data():
-        with open(info.absolute_path_to.negative_examples, 'r') as in_file:
-            negative_inputs = json.load(in_file)
-            negative_outputs = tuple(-1 for each in negative_inputs)
-            print("loaded negative_examples")
-        with open(info.absolute_path_to.positive_examples, 'r') as in_file:
-            positive_inputs = json.load(in_file)
-            positive_outputs = tuple(1 for each in positive_inputs)
-            print("loaded positive_examples")
-
-
-        return negative_inputs, negative_outputs, positive_inputs, positive_outputs
-    
-    negative_inputs, negative_outputs, positive_inputs, positive_outputs = read_data()
-    truncate_size = info.config.classifier_truncate_sample
-    full_x = negative_inputs+positive_inputs
-    shuffle(full_x)
-    X = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
-    y = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
-    sample_size = len(X)
-    print(f'''len(y) = {len(y)}''')
-    print(f'''sum(y) = {sum(y)}''')
+    full_x, *_ = read_full_data()
+    X, y, genes, sample_size = read_filtered_data()
 
 #
 # evaluate 
@@ -937,14 +911,6 @@ if True:
     from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential, core
     from generic_tools.cross_validation import cross_validation
 
-
-    info = find_and_load(
-        "config.yaml", # walks up folders until it finds a file with this name
-        cd_to_filepath=True, # helpful if using relative paths
-        fully_parse_args=True, # if you already have argparse, use parse_args=True instead
-        show_help_for_no_args=False, # change if you want
-    )
-
     positive_label = info.config.positive_label
     negative_label = info.config.negative_label
 
@@ -953,47 +919,6 @@ if True:
         with open(path, 'w') as outfile:
             json.dump(data, outfile)
         
-    @cache(watch_filepaths=lambda *args: [ info.absolute_path_to.negative_examples, info.absolute_path_to.positive_examples ], depends_on=lambda *args: [ AutoEncoderHelpers.transform_phos_data, ])
-    def read_data():
-        # 
-        # read data
-        # 
-        with open(info.absolute_path_to.negative_examples, 'r') as in_file:
-            negative_inputs = json.load(in_file)
-            negative_outputs = tuple(negative_label for each in negative_inputs)
-            print("loaded negative_examples")
-        with open(info.absolute_path_to.positive_examples, 'r') as in_file:
-            positive_inputs = json.load(in_file)
-            positive_outputs = tuple(positive_label for each in positive_inputs)
-            print("loaded positive_examples")
-        with open(info.absolute_path_to.negative_examples_genes, 'r') as in_file:
-            negative_genes = json.load(in_file)
-            print("loaded negative_examples_genes")
-        with open(info.absolute_path_to.positive_examples_genes, 'r') as in_file:
-            positive_genes = json.load(in_file)
-            print("loaded positive_examples_genes")
-
-        truncate_size = info.config.classifier_truncate_sample
-        X     = negative_inputs[0:truncate_size] + positive_inputs[0:truncate_size]
-        y     = negative_outputs[0:truncate_size] + positive_outputs[0:truncate_size]
-        genes = negative_genes[0:truncate_size] + positive_genes[0:truncate_size]
-
-        sample_size = len(X)
-        print(f'''len(y) = {len(y)}''')
-        print(f'''sum(y) = {sum(y)}''')
-
-        # Assuming you have your data and labels ready, let's call them X and y respectively
-        # Split the data into training and testing sets
-        print("splitting up the data")
-        # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=45)
-        
-        # get autoencoded parameters
-        X = AutoEncoderHelpers.transform_phos_data(X, X)
-        
-        return X, y, genes, sample_size
-
-    FS.ensure_is_folder(info.absolute_path_to.results_folder)
-
     def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
         # 
         # helper
@@ -1244,8 +1169,9 @@ if True:
             nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy, nn_0_fallback_gene_accuracy,
             nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy, nn_1_fallback_gene_accuracy,
         )
-
-    X, y, genes, sample_size = read_data()
+    
+    # encode X
+    X = AutoEncoderHelpers.transform_phos_data(X, full_x)
 
     number_of_folds = 4
     folds = cross_validation(
