@@ -28,7 +28,7 @@
     todo:
         - Done: fix the gene evaluation metric
         - Done: create the spreadsheet analysis for the fixed data
-        - Done-ish: filter out too-close negative examples
+        - Done-ish filter out too-close negative examples:
             - Done: efficient-ish method for generating the distance per value
             - Done: run classifiers on filtered data
             - try the huffman features after filtering out too-similar ones:
