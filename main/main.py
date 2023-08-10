@@ -400,7 +400,7 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
             combined_probabilites = [ sum(each)/2.0 for each in zip(*probs)]
             best_label = None
             max_probability = -1
-            for label_index, probability in enumerate(combined_probabilites):
+            for label_index, probability in zip((negative_label, positive_label), combined_probabilites):
                 if probability > max_probability:
                     max_probability = probability
                     best_label = label_index
@@ -411,6 +411,29 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
     
     average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy, average_ensemble_gene_info, average_ensemble_gene_accuracy = test_accuracy_of(predict)
     pandas.DataFrame.from_dict(average_ensemble_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_average_ensemble.csv")
+    
+    bias_towards_negative = info.config.bias_towards_negative
+    def predict(X):
+        rf_predictions = rf_classifier.predict_proba(X)
+        mlp_predictions = mlp_classifier.predict_proba(X)
+        predictions = [0]*len(rf_predictions)
+        for index, probs in enumerate(zip( rf_predictions, mlp_predictions )):
+            combined_probabilites = [ sum(each)/2.0 for each in zip(*probs)]
+            best_label = None
+            max_probability = -1
+            for label_index, probability in zip((negative_label, positive_label), combined_probabilites):
+                if label_index == negative_label:
+                    probability += bias_towards_negative
+                if probability > max_probability:
+                    max_probability = probability
+                    best_label = label_index
+                    
+            predictions[index] = best_label
+                
+        return predictions
+    
+    biased_ensemble_accuracy, biased_ensemble_positive_accuracy, biased_ensemble_negative_accuracy, biased_ensemble_gene_info, biased_ensemble_gene_accuracy = test_accuracy_of(predict)
+    pandas.DataFrame.from_dict(biased_ensemble_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_biased_ensemble.csv")
     
     negative_shift_amount = 0.1
     def predict(X):
@@ -460,7 +483,7 @@ def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
     )
 
 if __name__ == '__main__':
-    X, y, genes, sample_size = read_filtered_data()
+    X, y, genes, sample_size = read_data()
     
     # import code; code.interact(local={**globals(),**locals()})
     # X = to_tensor(X)
