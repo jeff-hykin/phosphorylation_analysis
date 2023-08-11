@@ -26,7 +26,7 @@ from __dependencies__.quik_config import find_and_load
 from __dependencies__.informative_iterator import ProgressBar
 from __dependencies__.cool_cache import cache
 from __dependencies__.blissful_basics import Csv, FS, product, large_pickle_save, large_pickle_load, to_pure, print, LazyDict, super_hash, drop_end, linear_steps, arg_max
-from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential
+from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential, core
 from generic_tools.cross_validation import cross_validation
 
 from main import read_filtered_data, info, read_data, read_full_data, main
