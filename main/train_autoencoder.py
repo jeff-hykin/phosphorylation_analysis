@@ -707,19 +707,19 @@ class AutoEncoderHelpers:
                 # save
                 pandas.DataFrame(aggregate_metrics).to_csv(info.absolute_path_to.autoencoder_losses)
         
-        from statistics import mean as average
+        from statistics import median
         # train using ideal number of epochs on whole dataset
         for epoch_index, batch_index, each_loss in model.fit(
             dataset=dataset,
-            max_epochs=round(average(number_of_epochs_before_stopping)),
+            max_epochs=round(median(number_of_epochs_before_stopping)),
             batch_size=hyperparameters.batch_size,
             shuffle=True,
         ):
             pass
         
-        large_pickle_save(coder.to_serial_form(), info.absolute_path_to.prev_autoencoder)
+        large_pickle_save(model.to_serial_form(), info.absolute_path_to.prev_autoencoder)
         
-        return coder.to_serial_form()
+        return model.to_serial_form()
     
     @staticmethod
     def transform_phos_data(phos_x, autoencoder_train_x):
