@@ -188,15 +188,7 @@ def read_filtered_data():
 
 FS.ensure_is_folder(info.absolute_path_to.results_folder)
 
-if __name__ == '__main__':
-    X, y, genes, sample_size = read_data()
-    
-    # import code; code.interact(local={**globals(),**locals()})
-    # X = to_tensor(X)
-    # y = to_tensor(y)
-    # print(f'''X.shape = {X.shape}''')
-    # print(f'''y.shape = {y.shape}''')
-    
+def main(X, y, genes, sample_size):
     training_data_hash = super_hash((X, y))
     
     number_of_folds = 2
@@ -627,3 +619,8 @@ if __name__ == '__main__':
         # Positive Accuracy: 0.692262659771685
         # Negative Accuracy: 0.6668304909814715
 
+
+if __name__ == '__main__':
+    X, y, genes, sample_size = read_data()
+    main(X, y, genes, sample_size)
+    
