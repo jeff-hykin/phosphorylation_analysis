@@ -1,10 +1,7 @@
 import json
-from os.path import join
-from random import shuffle
 import math
-from random import random, sample, choices, shuffle
-import pandas
-import torch
+from os.path import join
+from random import random, sample, choices, shuffle, seed
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -18,6 +15,12 @@ from sklearn.datasets import make_classification
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy
+import pandas
+import torch
+
+default_seed = 10275023948
+seed(default_seed)
+torch.manual_seed(default_seed)
 
 from __dependencies__.quik_config import find_and_load
 from __dependencies__.informative_iterator import ProgressBar

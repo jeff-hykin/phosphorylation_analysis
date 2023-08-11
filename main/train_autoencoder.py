@@ -33,8 +33,6 @@ from main import read_filtered_data, info, read_data, read_full_data
 
 ProgressBar.layout = [ 'bar', 'title', 'percent', 'spacer', 'fraction', 'spacer', 'remaining_time', 'spacer', 'end_time', 'spacer', 'duration', 'spacer', ]
 
-default_seed = 10275023948
-torch.manual_seed(default_seed)
 
 # 
 # Autoencoder definitions
