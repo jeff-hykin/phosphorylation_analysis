@@ -53,7 +53,7 @@
             positive_label: 1
             gene_classification_threshold: 3
             negative_example_too_similar_threshold: 5 # if only 5 (of 20) or fewer amino acids are different, then its "too" similar to a positive phosphorylation example
-            bias_towards_negative: 0.1
+            bias_towards_negative: 0.2
             generate_data:
                 windowPadding: 10 # + or - 10 amino acids
                 aminoMatchPattern: "S"

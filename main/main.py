@@ -197,6 +197,7 @@ if __name__ == '__main__':
     # print(f'''X.shape = {X.shape}''')
     # print(f'''y.shape = {y.shape}''')
     
+    training_data_hash = super_hash((X, y))
     
     number_of_folds = 2
     folds = cross_validation(
@@ -304,7 +305,6 @@ if __name__ == '__main__':
             return accuracy, positive_accuracy, negative_accuracy, gene_info_for, gene_accuracy
 
         
-        training_data_hash = super_hash((X_train, y_train, X_test, y_test))
         # 
         # naive_bayes_classifier
         # 
@@ -351,7 +351,7 @@ if __name__ == '__main__':
         # random_forest
         # 
         if True:
-            @cache(depends_on=lambda *args: [ training_data_hash ])
+            @cache(depends_on=lambda *args: [ training_data_hash, progress.index ])
             def train_random_forest(n_estimators, max_depth):
                 # Create a Random Forest Classifier object
                 rf_classifier = RandomForestClassifier(n_estimators=n_estimators,max_depth=max_depth)
@@ -361,6 +361,7 @@ if __name__ == '__main__':
                 rf_classifier.fit(X_train, y_train)
                 return rf_classifier
             
+            print(f'''training_data_hash, progress.index  = {training_data_hash, progress.index }''')
             rf_classifier = train_random_forest(500, 20)
             
             if 0:
@@ -390,7 +391,7 @@ if __name__ == '__main__':
         # Neural
         # 
         if True:
-            @cache(depends_on=lambda *args: [ training_data_hash ])
+            @cache(depends_on=lambda *args: [ training_data_hash, progress.index ])
             def train_mlp():
                 # Create a Random Forest Classifier object
                 mlp_classifier = MLPClassifier(hidden_layer_sizes=(100, 50), max_iter=1000)
@@ -400,6 +401,7 @@ if __name__ == '__main__':
                 mlp_classifier.fit(X_train, y_train)
                 return mlp_classifier
             
+            print(f'''training_data_hash, progress.index  = {training_data_hash, progress.index }''')
             mlp_classifier = train_mlp()
             
             if 0:
@@ -412,20 +414,28 @@ if __name__ == '__main__':
         # 
         # DecisionTreeClassifier
         # 
-        if 0:
-            # Create a Random Forest Classifier object
-            tree_classifier = DecisionTreeClassifier()
+        if True:
+            @cache(depends_on=lambda *args: [ training_data_hash, progress.index ])
+            def train_tree():
+                # Create a Random Forest Classifier object
+                tree_classifier = DecisionTreeClassifier()
 
-            # Train the svm_classifier using the training data
-            print("training tree_classifier")
-            tree_classifier.fit(X_train, y_train)
+                # Train the svm_classifier using the training data
+                print("training tree_classifier")
+                tree_classifier.fit(X_train, y_train)
+                return tree_classifier
+                
+            
+            print(f'''training_data_hash, progress.index  = {training_data_hash, progress.index }''')
+            tree_classifier = train_tree()    
 
-            print("tree_classifier_predictions")
-            tree_accuracy, tree_positive_accuracy, tree_negative_accuracy, tree_gene_info, tree_gene_accuracy = test_accuracy_of(tree_classifier.predict)
-            pandas.DataFrame.from_dict(tree_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_tree.csv")
-            rows_of_output.append([sample_size, info.config.feature_set, "tree",             index+1, tree_accuracy            , tree_positive_accuracy            , tree_negative_accuracy            , tree_gene_accuracy             ,])
-            save_progress()
-            print("\n\n")
+            if 0:
+                print("tree_classifier_predictions")
+                tree_accuracy, tree_positive_accuracy, tree_negative_accuracy, tree_gene_info, tree_gene_accuracy = test_accuracy_of(tree_classifier.predict)
+                pandas.DataFrame.from_dict(tree_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_tree.csv")
+                rows_of_output.append([sample_size, info.config.feature_set, "tree",             index+1, tree_accuracy            , tree_positive_accuracy            , tree_negative_accuracy            , tree_gene_accuracy             ,])
+                save_progress()
+                print("\n\n")
 
         # 
         # Auto Neural
@@ -435,14 +445,16 @@ if __name__ == '__main__':
             pass
             # create an autoencoder for sequences near phos sites
             # use prev 3 amino acids to predict next amino acid
-
+        
+        rf_predictions = rf_classifier.predict_proba(X)
+        mlp_predictions = mlp_classifier.predict_proba(X)
+        tree_predictions = tree_classifier.predict_proba(X)
+        
         # 
         # average_ensemble
         # 
         if True:
             def predict(X):
-                rf_predictions = rf_classifier.predict_proba(X)
-                mlp_predictions = mlp_classifier.predict_proba(X)
                 predictions = [0]*len(rf_predictions)
                 for index, probs in enumerate(zip( rf_predictions, mlp_predictions )):
                     combined_probabilites = [ sum(each)/2.0 for each in zip(*probs)]
@@ -475,12 +487,12 @@ if __name__ == '__main__':
                     combined_probabilites = [ sum(each)/2.0 for each in zip(*probs)]
                     best_label = None
                     max_probability = -1
-                    for label_index, probability in zip((negative_label, positive_label), combined_probabilites):
-                        if label_index == negative_label:
+                    for label, probability in zip((negative_label, positive_label), combined_probabilites):
+                        if label == negative_label:
                             probability += bias_towards_negative
                         if probability > max_probability:
                             max_probability = probability
-                            best_label = label_index
+                            best_label = label
                             
                     predictions[index] = best_label
                         
@@ -497,8 +509,6 @@ if __name__ == '__main__':
         if 0:
             negative_shift_amount = 0.1
             def predict(X):
-                rf_predictions = rf_classifier.predict_proba(X)
-                mlp_predictions = mlp_classifier.predict_proba(X)
                 predictions = [0]*len(rf_predictions)
                 for index, ((rf_prediction_probability_negative_case, rf_prediction_probability_positive_case), (mlp_prediction_probability_negative_case, mlp_prediction_probability_positive_case)) in enumerate(zip( rf_predictions, mlp_predictions )):
                     rf_prediction_probability_negative_case += negative_shift_amount
@@ -525,8 +535,6 @@ if __name__ == '__main__':
         # 
         if True:
             def predict(X):
-                rf_predictions = rf_classifier.predict(X)
-                mlp_predictions = mlp_classifier.predict(X)
                 predictions = [0]*len(rf_predictions)
                 for index, (rf_prediction, mlp_prediction) in enumerate(zip( rf_predictions, mlp_predictions )):
                     if mlp_prediction == 1:
@@ -546,54 +554,40 @@ if __name__ == '__main__':
         # 
         if True:
             def predict(X):
-                rf_predictions = rf_classifier.predict(X)
-                mlp_predictions = mlp_classifier.predict(X)
-                predictions = [0]*len(rf_predictions)
-                for index, (rf_prediction, mlp_prediction) in enumerate(zip( rf_predictions, mlp_predictions )):
-                    if mlp_prediction == 1: # negative prediction
-                        predictions[index] = rf_prediction
-                    else:
-                        predictions[index] = mlp_prediction
-                        
-                return predictions
-            
-            def predict(X):
-                rf_predictions = rf_classifier.predict_proba(X)
-                mlp_predictions = mlp_classifier.predict_proba(X)
-                predictions = [0]*len(rf_predictions)
-                for prediction_index, (rf_probabilities, mlp_probabilities) in enumerate(zip( rf_predictions, mlp_predictions )):
+                predictions = [
+                    mlp_predictions,
+                    rf_pmlp_predictions,
+                    tree_pmlp_predictions,
+                ]
+                final_predictions = [0]*len(predictions[0])
+                for prediction_index, predictions_per_classifier in enumerate(zip(predictions)):
                     # 
                     # add bias
                     # 
-                    rf_probabilities = list(rf_probabilities)
-                    for index, (label, probability) in enumerate(zip((negative_label, positive_label), rf_probabilities)):
-                        if label == negative_label:
-                            rf_probabilities[index] += bias_towards_negative
-                    mlp_probabilities = list(mlp_probabilities)
-                    for index, (label, probability) in enumerate(zip((negative_label, positive_label), mlp_probabilities)):
-                        if label == negative_label:
-                            mlp_probabilities[index] += bias_towards_negative
+                    each_predictions = []
+                    predictions_per_classifier = [ list(each) for each in predictions_per_classifier ]
+                    for each_classifier_predictions in predictions_per_classifier:
+                        for index, (label, probability) in enumerate(zip((negative_label, positive_label), each_classifier_predictions)):
+                            if label == negative_label:
+                                each_classifier_predictions[index] += bias_towards_negative
                     
                     # 
                     # decide
                     # 
-                    max_probability = 0
-                    max_probability_label = 0
-                    for index, (label, probability) in enumerate(zip((negative_label, positive_label), mlp_probabilities)):
-                        if probability > max_probability:
-                            max_probability = probability
-                            max_probability_label = label
-                    predictions[prediction_index] = max_probability_label
-                    
-                    if max_probability_label == positive_label:
-                        max_probability = 0
+                    max_probability_label == positive_label
+                    for each_probabilies in predictions_per_classifier:
+                        max_probability = -1
                         max_probability_label = 0
-                        for index, (label, probability) in enumerate(zip((negative_label, positive_label), rf_probabilities)):
+                        for index, (label, probability) in enumerate(zip((negative_label, positive_label), each_probabilies)):
                             if probability > max_probability:
                                 max_probability = probability
                                 max_probability_label = label
-                        predictions[prediction_index] = max_probability_label
+                        final_predictions[prediction_index] = max_probability_label
                         
+                        if final_predictions[prediction_index] == negative_label:
+                            break
+                    
+                return final_predictions
                         
             biased_nn_1_fallback_accuracy, biased_nn_1_fallback_positive_accuracy, biased_nn_1_fallback_negative_accuracy, biased_nn_1_fallback_gene_info, biased_nn_1_fallback_gene_accuracy = test_accuracy_of(predict)
             pandas.DataFrame.from_dict(biased_nn_1_fallback_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_biased_nn_1_fallback.csv")
