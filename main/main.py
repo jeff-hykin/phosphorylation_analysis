@@ -188,19 +188,6 @@ def read_filtered_data():
 
 FS.ensure_is_folder(info.absolute_path_to.results_folder)
 
-def train_and_test(X_train, y_train, genes_train, X_test, y_test, genes_test):
-    
-    
-    return (
-        neural_accuracy, neural_positive_accuracy, neural_negative_accuracy, neural_gene_accuracy,
-        random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy, random_forest_gene_accuracy,
-        average_ensemble_accuracy, average_ensemble_positive_accuracy, average_ensemble_negative_accuracy, average_ensemble_gene_accuracy,
-        biased_ensemble_accuracy, biased_ensemble_positive_accuracy, biased_ensemble_negative_accuracy, biased_ensemble_gene_info, biased_ensemble_gene_accuracy,
-        # tree_accuracy, tree_positive_accuracy, tree_negative_accuracy, tree_gene_accuracy,
-        nn_0_fallback_accuracy, nn_0_fallback_positive_accuracy, nn_0_fallback_negative_accuracy, nn_0_fallback_gene_accuracy,
-        nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy, nn_1_fallback_gene_accuracy,
-    )
-
 if __name__ == '__main__':
     X, y, genes, sample_size = read_data()
     
@@ -211,7 +198,7 @@ if __name__ == '__main__':
     # print(f'''y.shape = {y.shape}''')
     
     
-    number_of_folds = 4
+    number_of_folds = 2
     folds = cross_validation(
         X,
         y,
@@ -232,6 +219,7 @@ if __name__ == '__main__':
             rows=rows_of_output,
             column_names=[ "sample_size", "feature_set", "model", "fold_number", "accuracy", "positive_accuracy", "negative_accuracy", "gene_accuracy",],
         )
+    
     for progress, each in ProgressBar(folds):
         index = progress.index
         X_train, y_train, genes_train = each["train"]
@@ -375,27 +363,28 @@ if __name__ == '__main__':
             
             rf_classifier = train_random_forest(500, 20)
             
-            print("random_forest_predictions")
-            random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy, random_forest_gene_info, random_forest_gene_accuracy = test_accuracy_of(rf_classifier.predict)
-            pandas.DataFrame.from_dict(random_forest_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_random_forest.csv")
-            print("\n\n")
-            
-            importances = rf_classifier.feature_importances_
-            feature_names = [ str(index) for index in range(len(X[0]))]
-            forest_importances = pd.Series(importances, index=feature_names)
-            
-            fig, ax = plt.subplots()
-            std = numpy.std([tree.feature_importances_ for tree in rf_classifier.estimators_], axis=0)
-            forest_importances.plot.bar(yerr=std, ax=ax)
-            ax.set_title("Feature importances using MDI")
-            ax.set_ylabel("Mean decrease in impurity")
-            fig.tight_layout()
-            FS.ensure_is_folder(FS.dirname(info.absolute_path_to.important_features_image))
-            fig.set_size_inches(256, 140)  # Adjust the figure size as desired
-            plt.savefig(info.absolute_path_to.important_features_image, dpi=200)
-            
-            rows_of_output.append([sample_size, info.config.feature_set, "random_forest",    index+1, random_forest_accuracy   , random_forest_positive_accuracy   , random_forest_negative_accuracy   , random_forest_gene_accuracy    ,])
-            save_progress()
+            if 0:
+                print("random_forest_predictions")
+                random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy, random_forest_gene_info, random_forest_gene_accuracy = test_accuracy_of(rf_classifier.predict)
+                pandas.DataFrame.from_dict(random_forest_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_random_forest.csv")
+                print("\n\n")
+                
+                importances = rf_classifier.feature_importances_
+                feature_names = [ str(index) for index in range(len(X[0]))]
+                forest_importances = pd.Series(importances, index=feature_names)
+                
+                fig, ax = plt.subplots()
+                std = numpy.std([tree.feature_importances_ for tree in rf_classifier.estimators_], axis=0)
+                forest_importances.plot.bar(yerr=std, ax=ax)
+                ax.set_title("Feature importances using MDI")
+                ax.set_ylabel("Mean decrease in impurity")
+                fig.tight_layout()
+                FS.ensure_is_folder(FS.dirname(info.absolute_path_to.important_features_image))
+                fig.set_size_inches(256, 140)  # Adjust the figure size as desired
+                plt.savefig(info.absolute_path_to.important_features_image, dpi=200)
+                
+                rows_of_output.append([sample_size, info.config.feature_set, "random_forest",    index+1, random_forest_accuracy   , random_forest_positive_accuracy   , random_forest_negative_accuracy   , random_forest_gene_accuracy    ,])
+                save_progress()
         
         # 
         # Neural
@@ -413,12 +402,13 @@ if __name__ == '__main__':
             
             mlp_classifier = train_mlp()
             
-            print("mlp_classifier_predictions")
-            neural_accuracy, neural_positive_accuracy, neural_negative_accuracy, neural_gene_info, neural_gene_accuracy = test_accuracy_of(mlp_classifier.predict)
-            pandas.DataFrame.from_dict(neural_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_neural.csv")
-            rows_of_output.append([sample_size, info.config.feature_set, "neural",           index+1, neural_accuracy          , neural_positive_accuracy          , neural_negative_accuracy          , neural_gene_accuracy           ,])
-            save_progress()
-            print("\n\n")
+            if 0:
+                print("mlp_classifier_predictions")
+                neural_accuracy, neural_positive_accuracy, neural_negative_accuracy, neural_gene_info, neural_gene_accuracy = test_accuracy_of(mlp_classifier.predict)
+                pandas.DataFrame.from_dict(neural_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_neural.csv")
+                rows_of_output.append([sample_size, info.config.feature_set, "neural",           index+1, neural_accuracy          , neural_positive_accuracy          , neural_negative_accuracy          , neural_gene_accuracy           ,])
+                save_progress()
+                print("\n\n")
         # 
         # DecisionTreeClassifier
         # 
@@ -515,7 +505,7 @@ if __name__ == '__main__':
                     mlp_prediction_probability_negative_case += negative_shift_amount
                     mlp_predicts_negative = mlp_prediction_probability_negative_case > mlp_prediction_probability_positive_case
                     rf_predicts_negative = rf_prediction_probability_negative_case > rf_prediction_probability_positive_case
-                    if mlp_predicts_negative: # negative prediction
+                    if mlp_predicts_negative:
                         if rf_predicts_negative:
                             predictions[index] = negative_label
                         else:
@@ -539,7 +529,7 @@ if __name__ == '__main__':
                 mlp_predictions = mlp_classifier.predict(X)
                 predictions = [0]*len(rf_predictions)
                 for index, (rf_prediction, mlp_prediction) in enumerate(zip( rf_predictions, mlp_predictions )):
-                    if mlp_prediction == 1: # negative prediction
+                    if mlp_prediction == 1:
                         predictions[index] = rf_prediction
                     else:
                         predictions[index] = mlp_prediction
@@ -549,6 +539,65 @@ if __name__ == '__main__':
             nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy, nn_1_fallback_gene_info, nn_1_fallback_gene_accuracy = test_accuracy_of(predict)
             pandas.DataFrame.from_dict(nn_1_fallback_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_nn_1_fallback.csv")
             rows_of_output.append([sample_size, info.config.feature_set, "nn_1_fallback",    index+1, nn_1_fallback_accuracy   , nn_1_fallback_positive_accuracy   , nn_1_fallback_negative_accuracy   , nn_1_fallback_gene_accuracy    ,])
+            save_progress()
+        
+        # 
+        # biased_nn_1_fallback
+        # 
+        if True:
+            def predict(X):
+                rf_predictions = rf_classifier.predict(X)
+                mlp_predictions = mlp_classifier.predict(X)
+                predictions = [0]*len(rf_predictions)
+                for index, (rf_prediction, mlp_prediction) in enumerate(zip( rf_predictions, mlp_predictions )):
+                    if mlp_prediction == 1: # negative prediction
+                        predictions[index] = rf_prediction
+                    else:
+                        predictions[index] = mlp_prediction
+                        
+                return predictions
+            
+            def predict(X):
+                rf_predictions = rf_classifier.predict_proba(X)
+                mlp_predictions = mlp_classifier.predict_proba(X)
+                predictions = [0]*len(rf_predictions)
+                for prediction_index, (rf_probabilities, mlp_probabilities) in enumerate(zip( rf_predictions, mlp_predictions )):
+                    # 
+                    # add bias
+                    # 
+                    rf_probabilities = list(rf_probabilities)
+                    for index, (label, probability) in enumerate(zip((negative_label, positive_label), rf_probabilities)):
+                        if label == negative_label:
+                            rf_probabilities[index] += bias_towards_negative
+                    mlp_probabilities = list(mlp_probabilities)
+                    for index, (label, probability) in enumerate(zip((negative_label, positive_label), mlp_probabilities)):
+                        if label == negative_label:
+                            mlp_probabilities[index] += bias_towards_negative
+                    
+                    # 
+                    # decide
+                    # 
+                    max_probability = 0
+                    max_probability_label = 0
+                    for index, (label, probability) in enumerate(zip((negative_label, positive_label), mlp_probabilities)):
+                        if probability > max_probability:
+                            max_probability = probability
+                            max_probability_label = label
+                    predictions[prediction_index] = max_probability_label
+                    
+                    if max_probability_label == positive_label:
+                        max_probability = 0
+                        max_probability_label = 0
+                        for index, (label, probability) in enumerate(zip((negative_label, positive_label), rf_probabilities)):
+                            if probability > max_probability:
+                                max_probability = probability
+                                max_probability_label = label
+                        predictions[prediction_index] = max_probability_label
+                        
+                        
+            biased_nn_1_fallback_accuracy, biased_nn_1_fallback_positive_accuracy, biased_nn_1_fallback_negative_accuracy, biased_nn_1_fallback_gene_info, biased_nn_1_fallback_gene_accuracy = test_accuracy_of(predict)
+            pandas.DataFrame.from_dict(biased_nn_1_fallback_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_biased_nn_1_fallback.csv")
+            rows_of_output.append([sample_size, info.config.feature_set, "biased_nn_1_fallback",    index+1, biased_nn_1_fallback_accuracy   , biased_nn_1_fallback_positive_accuracy   , biased_nn_1_fallback_negative_accuracy   , biased_nn_1_fallback_gene_accuracy    ,])
             save_progress()
         
     # 200,000 raw features
