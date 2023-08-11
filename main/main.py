@@ -361,7 +361,6 @@ if __name__ == '__main__':
                 rf_classifier.fit(X_train, y_train)
                 return rf_classifier
             
-            print(f'''training_data_hash, progress.index  = {training_data_hash, progress.index }''')
             rf_classifier = train_random_forest(500, 20)
             
             if 0:
@@ -401,7 +400,6 @@ if __name__ == '__main__':
                 mlp_classifier.fit(X_train, y_train)
                 return mlp_classifier
             
-            print(f'''training_data_hash, progress.index  = {training_data_hash, progress.index }''')
             mlp_classifier = train_mlp()
             
             if 0:
@@ -426,8 +424,7 @@ if __name__ == '__main__':
                 return tree_classifier
                 
             
-            print(f'''training_data_hash, progress.index  = {training_data_hash, progress.index }''')
-            tree_classifier = train_tree()    
+            tree_classifier = train_tree()
 
             if 0:
                 print("tree_classifier_predictions")
@@ -446,15 +443,25 @@ if __name__ == '__main__':
             # create an autoencoder for sequences near phos sites
             # use prev 3 amino acids to predict next amino acid
         
-        rf_predictions = rf_classifier.predict_proba(X)
-        mlp_predictions = mlp_classifier.predict_proba(X)
-        tree_predictions = tree_classifier.predict_proba(X)
+        
+        # add caching for ensembles
+        @cache()
+        def rf_predictor(X):
+            return rf_classifier.predict_proba(X)
+        @cache()
+        def mlp_predictor(X):
+            return mlp_classifier.predict_proba(X)
+        @cache()
+        def tree_predictor(X):
+            return tree_classifier.predict_proba(X)
         
         # 
         # average_ensemble
         # 
-        if True:
+        if 0:
             def predict(X):
+                rf_predictions = rf_predictor(X)
+                mlp_predictions = mlp_predictor(X)
                 predictions = [0]*len(rf_predictions)
                 for index, probs in enumerate(zip( rf_predictions, mlp_predictions )):
                     combined_probabilites = [ sum(each)/2.0 for each in zip(*probs)]
@@ -477,11 +484,11 @@ if __name__ == '__main__':
         # 
         # biased_ensemble
         # 
-        if True:
-            bias_towards_negative = info.config.bias_towards_negative
+        bias_towards_negative = info.config.bias_towards_negative
+        if 0:
             def predict(X):
-                rf_predictions = rf_classifier.predict_proba(X)
-                mlp_predictions = mlp_classifier.predict_proba(X)
+                rf_predictions = rf_predictor(X)
+                mlp_predictions = mlp_predictor(X)
                 predictions = [0]*len(rf_predictions)
                 for index, probs in enumerate(zip( rf_predictions, mlp_predictions )):
                     combined_probabilites = [ sum(each)/2.0 for each in zip(*probs)]
@@ -509,6 +516,8 @@ if __name__ == '__main__':
         if 0:
             negative_shift_amount = 0.1
             def predict(X):
+                rf_predictions = rf_predictor(X)
+                mlp_predictions = mlp_predictor(X)
                 predictions = [0]*len(rf_predictions)
                 for index, ((rf_prediction_probability_negative_case, rf_prediction_probability_positive_case), (mlp_prediction_probability_negative_case, mlp_prediction_probability_positive_case)) in enumerate(zip( rf_predictions, mlp_predictions )):
                     rf_prediction_probability_negative_case += negative_shift_amount
@@ -535,14 +544,29 @@ if __name__ == '__main__':
         # 
         if True:
             def predict(X):
-                predictions = [0]*len(rf_predictions)
-                for index, (rf_prediction, mlp_prediction) in enumerate(zip( rf_predictions, mlp_predictions )):
-                    if mlp_prediction == 1:
-                        predictions[index] = rf_prediction
-                    else:
-                        predictions[index] = mlp_prediction
+                predictions = [
+                    mlp_predictor(X),
+                    rf_predictor(X),
+                ]
+                final_predictions = [0]*len(predictions[0])
+                for prediction_index, predictions_per_classifier in enumerate(zip(*predictions)):
+                    # 
+                    # decide
+                    # 
+                    max_probability_label = positive_label
+                    for each_probabilies in predictions_per_classifier:
+                        max_probability = -1
+                        max_probability_label = 0
+                        for index, (label, probability) in enumerate(zip((negative_label, positive_label), each_probabilies)):
+                            if probability > max_probability:
+                                max_probability = probability
+                                max_probability_label = label
+                        final_predictions[prediction_index] = max_probability_label
                         
-                return predictions
+                        if final_predictions[prediction_index] == negative_label:
+                            break
+                    
+                return final_predictions
 
             nn_1_fallback_accuracy, nn_1_fallback_positive_accuracy, nn_1_fallback_negative_accuracy, nn_1_fallback_gene_info, nn_1_fallback_gene_accuracy = test_accuracy_of(predict)
             pandas.DataFrame.from_dict(nn_1_fallback_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_nn_1_fallback.csv")
@@ -555,12 +579,12 @@ if __name__ == '__main__':
         if True:
             def predict(X):
                 predictions = [
-                    mlp_predictions,
-                    rf_pmlp_predictions,
-                    tree_pmlp_predictions,
+                    mlp_predictor(X),
+                    rf_predictor(X),
+                    tree_predictor(X),
                 ]
                 final_predictions = [0]*len(predictions[0])
-                for prediction_index, predictions_per_classifier in enumerate(zip(predictions)):
+                for prediction_index, predictions_per_classifier in enumerate(zip(*predictions)):
                     # 
                     # add bias
                     # 
@@ -574,7 +598,7 @@ if __name__ == '__main__':
                     # 
                     # decide
                     # 
-                    max_probability_label == positive_label
+                    max_probability_label = positive_label
                     for each_probabilies in predictions_per_classifier:
                         max_probability = -1
                         max_probability_label = 0
