@@ -308,7 +308,7 @@ if __name__ == '__main__':
         # 
         # naive_bayes_classifier
         # 
-        if 0:
+        if True:
             # positive_truncate = 10_000
             # X = negative_inputs + positive_inputs[0:positive_truncate]
             # y = negative_outputs + positive_outputs[0:positive_truncate]
@@ -363,7 +363,7 @@ if __name__ == '__main__':
             
             rf_classifier = train_random_forest(500, 20)
             
-            if 0:
+            if True:
                 print("random_forest_predictions")
                 random_forest_accuracy, random_forest_positive_accuracy, random_forest_negative_accuracy, random_forest_gene_info, random_forest_gene_accuracy = test_accuracy_of(rf_classifier.predict)
                 pandas.DataFrame.from_dict(random_forest_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_random_forest.csv")
@@ -402,7 +402,7 @@ if __name__ == '__main__':
             
             mlp_classifier = train_mlp()
             
-            if 0:
+            if True:
                 print("mlp_classifier_predictions")
                 neural_accuracy, neural_positive_accuracy, neural_negative_accuracy, neural_gene_info, neural_gene_accuracy = test_accuracy_of(mlp_classifier.predict)
                 pandas.DataFrame.from_dict(neural_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_neural.csv")
@@ -426,7 +426,7 @@ if __name__ == '__main__':
             
             tree_classifier = train_tree()
 
-            if 0:
+            if True:
                 print("tree_classifier_predictions")
                 tree_accuracy, tree_positive_accuracy, tree_negative_accuracy, tree_gene_info, tree_gene_accuracy = test_accuracy_of(tree_classifier.predict)
                 pandas.DataFrame.from_dict(tree_gene_info, orient='index').to_csv(f"{info.absolute_path_to.results_folder}/gene_accuracy_for_tree.csv")
@@ -458,7 +458,7 @@ if __name__ == '__main__':
         # 
         # average_ensemble
         # 
-        if 0:
+        if True:
             def predict(X):
                 rf_predictions = rf_predictor(X)
                 mlp_predictions = mlp_predictor(X)
@@ -485,7 +485,7 @@ if __name__ == '__main__':
         # biased_ensemble
         # 
         bias_towards_negative = info.config.bias_towards_negative
-        if 0:
+        if True:
             def predict(X):
                 rf_predictions = rf_predictor(X)
                 mlp_predictions = mlp_predictor(X)
@@ -513,7 +513,7 @@ if __name__ == '__main__':
         # 
         # nn_0_fallback
         # 
-        if 0:
+        if True:
             negative_shift_amount = 0.1
             def predict(X):
                 rf_predictions = rf_predictor(X)
