@@ -30,7 +30,8 @@
         - Done: create the spreadsheet analysis for the fixed data
         - Done-ish filter out too-close negative examples:
             - Done: efficient-ish method for generating the distance per value
-            - Done: run classifiers on filtered data
+            - Done: run classifiers on filtered data min_similarity=5
+            - run classifiers on vanilla data for comparision
             - try the huffman features after filtering out too-similar ones:
                 - create a script for converting the fasta file to a tsv
                 - update generate_data.js to use the tsv
@@ -38,8 +39,8 @@
                 - generate new huffman data with filtering
                 - train on it
             - try the autoencoder features after filtering out too-similar ones
-        - filter out positive sites with only one citation, redo the similarity-filter with this
         - bias the classifiers towards correctly classifing negative examples, then evaluate gene classification error
+        - filter out positive sites with only one citation, redo the similarity-filter with this
         - look up papers on when a gene is considered to be "phosphorylated" (does it just need one site, or many)
         - try a conv 1d approach for the NN classifier with the autoencoder
         - try a conv 1d approach for the autoencoder
