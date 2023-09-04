@@ -15,7 +15,7 @@ df = pandas.read_csv(path, sep="\t")
 # create data
 #
 match_patterns = [ "S", "T", "Y" ]
-lookback_size = info.config.phos_model.lookback_size # ex: 10
+lookback_size = info.config.lookback_size # ex: 10
 FS.ensure_is_file(path_to.human_sites)
 with open(path_to.human_sites, "r+") as file:
     columns = [

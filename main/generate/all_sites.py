@@ -14,7 +14,7 @@ if not FS.is_file(path_to.human_sites):
     stdout = subprocess.check_output(['python3', FS.local_path("human_sites.py")]).decode('utf-8')[0:-1]
     
 human_df = pandas.read_csv(path_to.human_sites, sep="\t")
-lookback_size = info.config.phos_model.lookback_size # ex: 10
+lookback_size = info.config.lookback_size # ex: 10
 
 
 # convert to dict

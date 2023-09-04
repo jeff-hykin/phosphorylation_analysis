@@ -18,9 +18,9 @@
     # example profiles
     (profiles):
         (default):
+            lookback_size: 10
             phos_model:
                 match_pattern: "S"
-                lookback_size: 10
             
             
             
