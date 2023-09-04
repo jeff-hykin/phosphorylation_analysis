@@ -7,8 +7,9 @@
     (path_to):
         models: "../models/"
         results: "../results/"
-        phos: ./data/phosphorylation.full.ignore.tsv
-        human_genes: ./data/human_genome.fasta.tsv
+        phos: ../data/phosphorylation.full.ignore.tsv
+        human_genes: ../data/human_genome.fasta.tsv
+        human_sites: ../data/human_sites.tsv
     
     # example profiles
     (profiles):

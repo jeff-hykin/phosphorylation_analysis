@@ -16,21 +16,43 @@ df = pandas.read_csv(path, sep="\t")
 #
 match_patterns = [ "S", "T", "Y" ]
 lookback_size = info.config.phos_model.lookback_size # ex: 10
-for progress, amino_acid_sequence in ProgressBar(df['amino_acids_string']):
-    index = progress.index
-    feature_vecs = []
-    for each_window in specific_tools.amino_sliding_window(amino_acid_sequence, lookback_size):
-        if each_window[lookback_size] in match_patterns:
-            feature_vec = specific_tools.amino_window_to_feature_vec(each_window)
-            
-            
-column = 'pubmed_id_for_related_references'
-new_values = [0]*len(df[column])
-for index, each in enumerate(df[column].values):
-    new_values[index] = len(each.split(" "))
-df['citation_count'] = new_values
-
-# 
-# save new column
-# 
-df.to_csv(path, sep='\t', encoding='utf-8', index=False)
+FS.ensure_is_file(path_to.human_sites)
+with open(path_to.human_sites, "r+") as file:
+    columns = [
+        'site_id',
+        'uniprot_gene_id',
+        'index_relative_to_gene',
+        'amino_acids',
+        'is_serine_site',
+        'is_threonine_site',
+        'is_tyrosine_site',
+        'is_human',
+        'is_phos_site',
+    ]
+    file.write("\t".join(columns)+"\n")
+    for progress, (has_identifiers, id_kind, id_accession, id_name, id_integer, id_sequence_number, id_application_number, id_database, id_country, id_locus, id_entry, id_chain, id_patent, id_string, amino_acids_string, comment) in ProgressBar(df.values):
+        index = progress.index
+        gene_name       = id_name
+        uniprot_gene_id = id_accession
+        
+        for index_relative_to_gene, each_window in enumerate(specific_tools.amino_sliding_window(amino_acids_string, lookback_size)):
+            if each_window[lookback_size] in match_patterns:
+                index_relative_to_gene = str(index_relative_to_gene)
+                site_id                = f"{uniprot_gene_id}|{index_relative_to_gene}"
+                amino_acids            = each_window
+                is_serine_site         = "1" if each_window[lookback_size] == "S" else "0"
+                is_threonine_site      = "1" if each_window[lookback_size] == "T" else "0"
+                is_tyrosine_site       = "1" if each_window[lookback_size] == "Y" else "0"
+                is_human               = "1"
+                is_phos_site           = "?"
+                file.write(("\t".join([
+                    site_id,
+                    uniprot_gene_id,
+                    index_relative_to_gene,
+                    amino_acids,
+                    is_serine_site,
+                    is_threonine_site,
+                    is_tyrosine_site,
+                    is_human,
+                    is_phos_site,
+                ]))+"\n")
