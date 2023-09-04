@@ -168,19 +168,22 @@ def save_new_column(*, column_name, rows, path=None):
     df.to_csv(path_to.atha_v10g_denovo, sep='\t', encoding='utf-8', index=False)
 
 
-def standard_load_train_test():
+def standard_load_train_test(path=path_to.all_sites):
     # 
     # load data
     # 
-    original_df = load_atha_v10g_denovo()
+    original_df = pandas.read_csv(path, sep="\t")
 
     # 
-    # filter
+    # filters
     # 
-    df = original_df[original_df.status == "include"]
-    y = df[info.config.column_name_to_predict]
-    x = df.drop(columns=[ each for each in df.columns if each not in info.config.selected_features ])
-    assert len(x.columns) == len(info.config.selected_features), "Looks like one of the selected features isn't in the dataset"
+    df = original_df
+    for each in config.modeling.filters:
+        df = df[df[each]]
+    
+    y = df[info.config.feature_to_predict]
+    x = df.drop(columns=[ each for each in df.columns if each not in config.modeling.selected_features ])
+    assert len(x.columns) == len(config.selected_features), "Looks like one of the selected features isn't in the dataset"
 
     # 
     # test split 
@@ -189,7 +192,10 @@ def standard_load_train_test():
     x = x.values
     y = y.values
     try:
-        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.301, stratify=y)
+        if config.modeling.stratify:
+            x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=config.modeling.test_proportion, stratify=y)
+        else:
+            x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=config.modeling.test_proportion)
     except Exception as error:
         import code; code.interact(local={**globals(),**locals()})
     y_train = y_train.squeeze()
@@ -208,7 +214,22 @@ def standard_load_train_test():
         print("    Total Accuracy:", total_accuracy)
         print("    Positive Accuracy:", positive_accuracy)
         print("    Negative Accuracy:", negative_accuracy)
-        print(f'''confusion_matrix(y_test, y_pred) = {confusion_matrix(y_test, y_pred)}''')
+        print(f'''confusion_matrix(y_test, y_pred) = {stringify(to_pure(confusion_matrix(y_test, y_pred)))}''')
         return dict(total_accuracy=total_accuracy, positive_accuracy=positive_accuracy, negative_accuracy=negative_accuracy)
     
     return x_train, x_test, y_train, y_test, test_accuracy_of
+
+def create_trainer(*, classifier, classifier_name, module_name, output_postfix=""):
+    def train(x_train, x_test, y_train, y_test, test_accuracy_of):
+        print(f"training {classifier_name}")
+        classifier.fit(x_train, y_train)
+        accuracy_info = test_accuracy_of(classifier.predict)
+        return accuracy_info, classifier
+    
+    if module_name == '__main__':
+        accuracy_info, classifier = train(*standard_load_train_test())
+        pandas.DataFrame([
+            accuracy_info
+        ]).to_csv(f"{classifier_name}_{output_postfix}_results.tsv")
+    
+    return train
