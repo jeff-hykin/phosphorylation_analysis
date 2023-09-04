@@ -1,0 +1,15 @@
+(project):
+    (local_data): ./local_data.ignore.yaml
+    
+    (path_to):
+        models: "../models/"
+        results: "../results/"
+    
+    # example profiles
+    (profiles):
+        (default):
+            phos_model:
+                match_pattern: "S"
+                lookback_size: 10
+            selected_features:
+                - _
