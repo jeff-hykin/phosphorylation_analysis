@@ -11,9 +11,8 @@ import numpy
 
 from sklearn.model_selection import train_test_split, KFold, StratifiedKFold
 from sklearn.metrics import accuracy_score, confusion_matrix
-from generic_tools.notifier import setup_notifier_if_possible
-from informative_iterator import ProgressBar
 
+from __dependencies__.informative_iterator import ProgressBar
 from __dependencies__.blissful_basics import LazyDict, Csv, FS, super_hash, flatten, large_pickle_save, large_pickle_load, stringify, print, to_pure
 from __dependencies__.quik_config import find_and_load
 from __dependencies__.telepy_notify import Notifier
