@@ -37,6 +37,18 @@
                     - amino_acids_string
                     - comment
             
+            human_sites:
+                columns:
+                    - site_id
+                    - uniprot_gene_id
+                    - index_relative_to_gene
+                    - amino_acids
+                    - is_serine_site
+                    - is_threonine_site
+                    - is_tyrosine_site
+                    - is_human
+                    - is_phos_site
+            
             phosphorylation.full:
                 columns:
                     - abbreviated_gene_species
