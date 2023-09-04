@@ -6,6 +6,9 @@ import re
 from .__dependencies__.walk_up import walk_up_until
 from .__dependencies__.super_map import Map, LazyDict
 from .__dependencies__ import ez_yaml
+import ez_yaml
+ez_yaml.yaml.width = 999999999999
+ez_yaml.yaml.explicit_end = True
 
 def find_and_load(file_name, *, fully_parse_args=False, parse_args=False, args=None, defaults_for_local_data=[], cd_to_filepath=True, show_help_for_no_args=False):
     """
