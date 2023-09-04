@@ -2,7 +2,10 @@
     (local_data): ./local_data.ignore.yaml
     
     todo:
-        - create csv of human_genome around sites
+        - generate basic features for all_sites.tsv
+        - generate min_distance_to_phos feature for all_sites.tsv
+        - create a function for reading in a balanced dataset
+        - recreate the models
     
     (path_to):
         models: "../models/"
