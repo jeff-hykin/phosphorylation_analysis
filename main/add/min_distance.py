@@ -8,45 +8,46 @@ import torch
 
 from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential, core
 
-# 
-# read data
-# 
-path = path_to.all_sites
-print(f'''reading {path}''')
-df = pandas.read_csv(path, sep="\t")
+with notifier.when_done:
+    # 
+    # read data
+    # 
+    path = path_to.all_sites
+    print(f'''reading {path}''')
+    df = pandas.read_csv(path, sep="\t")
 
-# 
-# create data
-#
-df['min_distance_to_phos'] = tuple([0])*len(df['is_phos_site'])
-print(f'''creating positive_feature_tensors''')
-positive_feature_tensors = torch.tensor(
-    df[df['is_phos_site'] == 1][basic_feature_names].values
-)
-print(f'''creating negative_feature_tensors''')
-negative_feature_tensors = torch.tensor(
-    df[df['is_phos_site'] != 1][basic_feature_names].values
-)
+    # 
+    # create data
+    #
+    df['min_distance_to_phos'] = tuple([0])*len(df['is_phos_site'])
+    print(f'''creating positive_feature_tensors''')
+    positive_feature_tensors = torch.tensor(
+        df[df['is_phos_site'] == 1][basic_feature_names].values
+    )
+    print(f'''creating negative_feature_tensors''')
+    negative_feature_tensors = torch.tensor(
+        df[df['is_phos_site'] != 1][basic_feature_names].values
+    )
 
-# import code; code.interact(local={**globals(),**locals()})
+    # import code; code.interact(local={**globals(),**locals()})
 
-step_size = 22 # doing it all at once would require terrabytes of ram
-if step_size >= 3:
-    index = 0
-    min_distances = None
-    for _ in ProgressBar(math.ceil(len(negative_feature_tensors)/step_size)):
-        chunk = positive_feature_tensors.sub(
-            negative_feature_tensors[index:index+step_size][:, None]
-        ).abs_().sum(dim=2).min(dim=1).values
-        if type(min_distances) == type(None):
-            min_distances = chunk
-        else:
-            min_distances = torch.concat((min_distances, chunk))
-        index += step_size
-else:
-    min_distances = torch.zeros(len(negative_feature_tensors))
-    for progress, each_negative_tensor in ProgressBar(negative_feature_tensors):
-        min_distances[progress.index] = (positive_feature_tensors - each_negative_tensor).abs().sum(dim=1).min().item()
+    step_size = 22 # doing it all at once would require terrabytes of ram
+    if step_size >= 3:
+        index = 0
+        min_distances = None
+        for _ in notifier.progress(math.ceil(len(negative_feature_tensors)/step_size), percent_per_notify=10, minutes_per_notify=(60*12), notify_iter_delay=3):
+            chunk = positive_feature_tensors.sub(
+                negative_feature_tensors[index:index+step_size][:, None]
+            ).abs_().sum(dim=2).min(dim=1).values
+            if type(min_distances) == type(None):
+                min_distances = chunk
+            else:
+                min_distances = torch.concat((min_distances, chunk))
+            index += step_size
+    else:
+        min_distances = torch.zeros(len(negative_feature_tensors))
+        for progress, each_negative_tensor in ProgressBar(negative_feature_tensors):
+            min_distances[progress.index] = (positive_feature_tensors - each_negative_tensor).abs().sum(dim=1).min().item()
 
     try:
         print(f'''assigning data''')
@@ -55,14 +56,13 @@ else:
         print(f'''error assigning min_distance vals to df''')
         import code; code.interact(local={**globals(),**locals()})
 
-
-    
-# 
-# save new column
-# 
-try:
-    print(f'''writing data''')
-    df.to_csv(path+".new", sep='\t', encoding='utf-8', index=False)
-except Exception as error:
-    print(f'''error saving min_distance vals to file''')
-    import code; code.interact(local={**globals(),**locals()})
+        
+    # 
+    # save new column
+    # 
+    try:
+        print(f'''writing data''')
+        df.to_csv(path+".new", sep='\t', encoding='utf-8', index=False)
+    except Exception as error:
+        print(f'''error saving min_distance vals to file''')
+        import code; code.interact(local={**globals(),**locals()})
