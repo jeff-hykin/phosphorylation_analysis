@@ -6,6 +6,8 @@ from specific_tools import *
 import specific_tools
 import torch
 
+from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential, core
+
 # 
 # read data
 # 
@@ -26,16 +28,32 @@ negative_feature_tensors = torch.tensor(
     df[df['is_phos_site'] != 1][basic_feature_names].values
 )
 
-min_distances = [0]*len(negative_inputs)
-for progress, each_negative_tensor in ProgressBar(negative_feature_tensors):
-    min_distances[progress.index] = (positive_feature_tensors - each_negative_tensor).abs().sum(dim=1).min().item()
+# import code; code.interact(local={**globals(),**locals()})
 
-try:
-    print(f'''assigning data''')
-    df.loc[df.is_phos_site != 1, 'min_distance_to_phos'] = min_distances
-except Exception as error:
-    print(f'''error assigning min_distance vals to df''')
-    import code; code.interact(local={**globals(),**locals()})
+step_size = 22 # doing it all at once would require terrabytes of ram
+if step_size >= 3:
+    index = 0
+    min_distances = None
+    for _ in ProgressBar(math.ceil(len(negative_feature_tensors)/step_size)):
+        chunk = positive_feature_tensors.sub(
+            negative_feature_tensors[index:index+step_size][:, None]
+        ).abs_().sum(dim=2).min(dim=1).values
+        if type(min_distances) == type(None):
+            min_distances = chunk
+        else:
+            min_distances = torch.concat((min_distances, chunk))
+        index += step_size
+else:
+    min_distances = torch.zeros(len(negative_feature_tensors))
+    for progress, each_negative_tensor in ProgressBar(negative_feature_tensors):
+        min_distances[progress.index] = (positive_feature_tensors - each_negative_tensor).abs().sum(dim=1).min().item()
+
+    try:
+        print(f'''assigning data''')
+        df.loc[df.is_phos_site != 1, 'min_distance_to_phos'] = min_distances
+    except Exception as error:
+        print(f'''error assigning min_distance vals to df''')
+        import code; code.interact(local={**globals(),**locals()})
 
 
     
