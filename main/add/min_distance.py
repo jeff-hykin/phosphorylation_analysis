@@ -27,10 +27,12 @@ with notifier.when_done:
 
     print(f'''len(negative_feature_tensors) = {len(negative_feature_tensors)}''')
     
+    start = 0
+    stop = 861_374 # half
     # import code; code.interact(local={**globals(),**locals()})
-    min_distances = specific_tools.nearest_neighbor_distances(base_array=negative_feature_tensors, neighbor_array=positive_feature_tensors)
+    min_distances = specific_tools.nearest_neighbor_distances(base_array=negative_feature_tensors[0:stop], neighbor_array=positive_feature_tensors)
     
-    large_pickle_save(min_distances, file_path="./min_distances_1.pickle")
+    large_pickle_save(min_distances, file_path=f"./min_distances_{start}_{stop}.pickle")
     
     # step_size = 22 # doing it all at once would require terrabytes of ram
     # if step_size >= 3:
