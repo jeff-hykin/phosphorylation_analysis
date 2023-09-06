@@ -233,3 +233,67 @@ def create_trainer(*, classifier, classifier_name, module_name, output_postfix="
         ]).to_csv(f"{classifier_name}_{output_postfix}_results.tsv")
     
     return train
+
+
+def bytes_to_binary(value, separator=""):
+    return separator.join([f'{each:0<8b}' for each in value])
+            
+def nearest_neighbor_distances(base_array, neighbor_array):
+    assert isinstance(base_array, numpy.ndarray)
+    assert isinstance(neighbor_array, numpy.ndarray)
+    
+    # base_array = numpy.array([
+    #     [0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,],
+    #     [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,],
+    # ])
+    # neighbor_array = numpy.array([
+    #     [1,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,],
+    #     [0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,],
+    # ])
+    
+    def packbits_64(array):
+        array = numpy.packbits(array, axis=1)
+        data_type_existing_size = 8
+        data_type_target_size = 64
+        rows, columns = array.shape
+        bits_per_column = columns * data_type_existing_size
+        padding_needed = math.ceil(bits_per_column / data_type_target_size)
+        if padding_needed != 0:
+            array = numpy.concatenate(
+                (
+                    array,
+                    numpy.zeros((len(array), padding_needed), dtype='uint8')
+                ),
+                axis=1
+            )
+        rows, columns = array.shape
+        bits_per_column = columns * data_type_existing_size
+        new_shape = (rows, bits_per_column//data_type_target_size)
+        return numpy.ndarray(
+            new_shape,
+            numpy.uint64,
+            array.tobytes(),
+        )
+    
+    packed_base     = packbits_64(base_array)
+    packed_neighbor = packbits_64(neighbor_array)
+    
+    min_distances = []
+    for _, each_row in ProgressBar(packed_base):
+        distances = numpy.bitwise_xor(each_row, packed_neighbor)
+        min_distance = numpy.unpackbits(numpy.packbits(distances, axis=1), axis=1).sum(axis=1).min()
+        # min_distance = numpy.unpackbits(distances, axis=1).sum(axis=1).min()
+        # min_distance = min(sum(int(each_cell).bit_count() for each_cell in each_row) for each_row in distances)
+        min_distances.append(min_distance)
+    
+    return min_distances
+        
+    # for _ in notifier.progress(math.ceil(len(negative_feature_tensors)/step_size), percent_per_notify=10, minutes_per_notify=(60*12), notify_iter_delay=3):
+    #     chunk = ndarray.sub(
+    #         base_array[index:index+step_size][:, None]
+    #     ).abs_().sum(dim=2).min(dim=1).values
+    #     if type(min_distances) == type(None):
+    #         min_distances = chunk
+    #     else:
+    #         min_distances = torch.concat((min_distances, chunk))
+    #     index += step_size
