@@ -8,34 +8,32 @@ import torch
 
 from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential, core
 
-# numpy.concat(
-#     large_pickle_load("min_distances_0_430687.pickle"),
-#     large_pickle_load("min_distances_0_430687.pickle"),
-    
-# )
+data = dict()
 
 with notifier.when_done:
+    start = config.min_distances.start
+    stop = config.min_distances.stop 
+    
     # 
     # read data
     # 
     path = path_to.all_sites
     print(f'''reading {path}''')
-    df = pandas.read_csv(path, sep="\t")
+    data["df"] = pandas.read_csv(path, sep="\t")
 
     # 
     # create data
     #
-    df['min_distance_to_phos'] = tuple([0])*len(df['is_phos_site'])
+    data["df"]['min_distance_to_phos'] = tuple([0])*len(data["df"]['is_phos_site'])
     print(f'''creating positive_feature_tensors''')
-    positive_feature_tensors = df[df['is_phos_site'] == 1][basic_feature_names].values
+    positive_feature_tensors = data["df"][data["df"]['is_phos_site'] == 1][basic_feature_names].values
     print(f'''creating negative_feature_tensors''')
-    negative_feature_tensors = df[df['is_phos_site'] != 1][basic_feature_names].values
-
-    print(f'''len(negative_feature_tensors) = {len(negative_feature_tensors)}''')
+    negative_feature_tensors = data["df"][data["df"]['is_phos_site'] != 1][basic_feature_names].values[start:stop]
     
-    start = config.min_distances.start
-    stop = config.min_distances.stop
-    min_distances = specific_tools.nearest_neighbor_distances(base_array=negative_feature_tensors[0:stop], neighbor_array=positive_feature_tensors)
+    del data["df"]
+
+    # import code; code.interact(local={**globals(),**locals()})
+    min_distances = specific_tools.nearest_neighbor_distances(base_array=negative_feature_tensors, neighbor_array=positive_feature_tensors)
     
     large_pickle_save(min_distances, file_path=f"./min_distances_{start}_{stop}.pickle")
     
