@@ -8,6 +8,12 @@ import torch
 
 from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential, core
 
+# numpy.concat(
+#     large_pickle_load("min_distances_0_430687.pickle"),
+#     large_pickle_load("min_distances_0_430687.pickle"),
+    
+# )
+
 with notifier.when_done:
     # 
     # read data
@@ -27,9 +33,8 @@ with notifier.when_done:
 
     print(f'''len(negative_feature_tensors) = {len(negative_feature_tensors)}''')
     
-    start = 0
-    stop = 861_374 # half
-    # import code; code.interact(local={**globals(),**locals()})
+    start = config.min_distances.start
+    stop = config.min_distances.stop
     min_distances = specific_tools.nearest_neighbor_distances(base_array=negative_feature_tensors[0:stop], neighbor_array=positive_feature_tensors)
     
     large_pickle_save(min_distances, file_path=f"./min_distances_{start}_{stop}.pickle")
