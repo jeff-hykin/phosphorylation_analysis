@@ -8,64 +8,59 @@ import torch
 
 from __dependencies__.trivial_torch_tools import to_tensor, layer_output_shapes, Sequential, core
 
+data = dict()
+
 with notifier.when_done:
+    start = config.min_distances.start
+    stop = config.min_distances.stop 
     # 
     # read data
     # 
     path = path_to.all_sites
     print(f'''reading {path}''')
-    df = pandas.read_csv(path, sep="\t")
-
+    data["df"] = pandas.read_csv(path, sep="\t")
+    
     # 
     # create data
     #
-    df['min_distance_to_phos'] = tuple([0])*len(df['is_phos_site'])
-    print(f'''creating positive_feature_tensors''')
-    positive_feature_tensors = df[df['is_phos_site'] == 1][basic_feature_names].values
-    print(f'''creating negative_feature_tensors''')
-    negative_feature_tensors = df[df['is_phos_site'] != 1][basic_feature_names].values
+    if 0:
+        data["df"]['min_distance_to_phos'] = tuple([0])*len(data["df"]['is_phos_site'])
+        print(f'''creating positive_feature_tensors''')
+        positive_feature_tensors = data["df"][data["df"]['is_phos_site'] == 1][basic_feature_names].values
+        print(f'''creating negative_feature_tensors''')
+        negative_feature_tensors = data["df"][data["df"]['is_phos_site'] != 1][basic_feature_names].values[start:stop]
+        
+        del data["df"]
 
-    print(f'''len(negative_feature_tensors) = {len(negative_feature_tensors)}''')
+        min_distances = specific_tools.nearest_neighbor_distances(base_array=negative_feature_tensors, neighbor_array=positive_feature_tensors)
+        large_pickle_save(min_distances, file_path=f"./min_distances_{start}_{stop}.pickle")
     
-    start = 0
-    stop = 861_374 # half
-    # import code; code.interact(local={**globals(),**locals()})
-    min_distances = specific_tools.nearest_neighbor_distances(base_array=negative_feature_tensors[0:stop], neighbor_array=positive_feature_tensors)
+    # 
+    # save data
+    # 
+    min_distances = numpy.concatenate(
+        (
+            numpy.array(large_pickle_load(f"{path_to.data}/min_distances_0_861374.ignore.pickle")),
+            numpy.array(large_pickle_load(f"{path_to.data}/min_distances_861374_1292061.ignore.pickle")),
+            numpy.array(large_pickle_load(f"{path_to.data}/min_distances_1292061_1722749.ignore.pickle")),
+        )
+    )
     
-    large_pickle_save(min_distances, file_path=f"./min_distances_{start}_{stop}.pickle")
-    
-    # step_size = 22 # doing it all at once would require terrabytes of ram
-    # if step_size >= 3:
-    #     index = 0
-    #     min_distances = None
-    #     for _ in notifier.progress(math.ceil(len(negative_feature_tensors)/step_size), percent_per_notify=10, minutes_per_notify=(60*12), notify_iter_delay=3):
-    #         chunk = positive_feature_tensors.sub(
-    #             negative_feature_tensors[index:index+step_size][:, None]
-    #         ).abs_().sum(dim=2).min(dim=1).values
-    #         if type(min_distances) == type(None):
-    #             min_distances = chunk
-    #         else:
-    #             min_distances = torch.concat((min_distances, chunk))
-    #         index += step_size
-    # else:
-    #     min_distances = torch.zeros(len(negative_feature_tensors))
-    #     for progress, each_negative_tensor in ProgressBar(negative_feature_tensors):
-    #         min_distances[progress.index] = (positive_feature_tensors - each_negative_tensor).abs().sum(dim=1).min().item()
-
-    # try:
-    #     print(f'''assigning data''')
-    #     df.loc[df.is_phos_site != 1, 'min_distance_to_phos'] = min_distances
-    # except Exception as error:
-    #     print(f'''error assigning min_distance vals to df''')
-    #     import code; code.interact(local={**globals(),**locals()})
+    try:
+        print(f'''assigning data''')
+        df.loc[df.is_phos_site == 1, 'min_distance_to_phos'] = 0
+        df.loc[df.is_phos_site != 1, 'min_distance_to_phos'] = min_distances
+    except Exception as error:
+        print(f'''error assigning min_distance vals to df''')
+        import code; code.interact(local={**globals(),**locals()})
 
         
-    # # 
-    # # save new column
-    # # 
-    # try:
-    #     print(f'''writing data''')
-    #     df.to_csv(path+".new", sep='\t', encoding='utf-8', index=False)
-    # except Exception as error:
-    #     print(f'''error saving min_distance vals to file''')
-    #     import code; code.interact(local={**globals(),**locals()})
+    # 
+    # save new column
+    # 
+    try:
+        print(f'''writing data''')
+        df.to_csv(path+".new", sep='\t', encoding='utf-8', index=False)
+    except Exception as error:
+        print(f'''error saving min_distance vals to file''')
+        import code; code.interact(local={**globals(),**locals()})
