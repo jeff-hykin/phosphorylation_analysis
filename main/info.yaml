@@ -1136,9 +1136,4 @@
                     - comment
             min_distances:
                 start: 0
-                stop: 430_687
-                
-                one_quater: 430_687
-                one_half: 861_374
-                three_quaters: 1_292_061
-                max: 1_722_749
+                stop: 1_722_749
