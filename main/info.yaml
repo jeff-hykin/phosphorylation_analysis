@@ -1,6 +1,9 @@
 (project):
     (local_data): ./local_data.ignore.yaml
     
+    at meeting:
+        - min_distances_count
+    
     todo:
         - generate basic features for all_sites.tsv
         - generate min_distance_to_phos feature for all_sites.tsv
@@ -15,6 +18,7 @@
         human_genes: ../data/human_genome.fasta.tsv
         human_sites: ../data/human_sites.tsv
         all_sites: ../data/all_sites.ignore.tsv
+        all_sites_with_features: ../data/all_sites.ignore.tsv
         all_sites_snippet: ../data/all_sites.ignore.snippet.tsv
     
     # example profiles
@@ -562,7 +566,7 @@
                     - is_human
                     - is_phos_site
             
-            all_sites_with_partial_min:
+            all_sites_with_features:
                 columns:
                     - site_id
                     - uniprot_gene_id
