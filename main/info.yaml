@@ -18,8 +18,8 @@
         human_genes: ../data/human_genome.fasta.tsv
         human_sites: ../data/human_sites.tsv
         all_sites: ../data/all_sites.ignore.tsv
-        all_sites_with_features: ../data/all_sites.ignore.tsv
         all_sites_snippet: ../data/all_sites.ignore.snippet.tsv
+        all_sites_with_features: ../data/all_sites_with_features.ignore.tsv
     
     # example profiles
     (profiles):

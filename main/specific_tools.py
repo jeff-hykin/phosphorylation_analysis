@@ -168,7 +168,7 @@ def save_new_column(*, column_name, rows, path=None):
     df.to_csv(path_to.atha_v10g_denovo, sep='\t', encoding='utf-8', index=False)
 
 
-def standard_load_train_test(path=path_to.all_sites):
+def standard_load_train_test(path=path_to.all_sites_with_features):
     # 
     # load data
     # 
@@ -239,6 +239,11 @@ def bytes_to_binary(value, separator=""):
     return separator.join([f'{each:0<8b}' for each in value])
             
 def nearest_neighbor_distances(base_array, neighbor_array):
+    """
+    Summary:
+        - the arrays to be boolean
+        - it only performs manhatten distance
+    """
     assert isinstance(base_array, numpy.ndarray)
     assert isinstance(neighbor_array, numpy.ndarray)
     
