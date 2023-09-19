@@ -20,8 +20,6 @@ data = dict()
 # 
 
 with notifier.when_done:
-    start = config.min_distances.start
-    stop = config.min_distances.stop 
     # 
     # read data
     # 
@@ -29,15 +27,20 @@ with notifier.when_done:
     print(f'''reading {path}''')
     df = pandas.read_csv(path, sep="\t")
     
+    # start = config.min_distances.start
+    # stop = config.min_distances.stop 
+    start = 0
+    stop = len(df)
+    
     # 
     # create data
     #
     if True:
-        df['min_distance_to_phos'] = tuple([0])*len(df['is_phos_site'])
+        df['min_distance_to_human_phos'] = tuple([0])*len(df['is_phos_site'])
         print(f'''creating positive_feature_tensors''')
-        positive_feature_tensors = df[df['is_phos_site'] == 1][basic_feature_names].values
+        positive_feature_tensors = df[(df['is_phos_site'] == 1) * df.is_human][basic_feature_names].values
         print(f'''creating negative_feature_tensors''')
-        negative_feature_tensors = df[df['is_phos_site'] != 1][basic_feature_names].values[start:stop]
+        negative_feature_tensors = df[(df['is_phos_site'] != 1) * df.is_human][basic_feature_names].values[start:stop]
         
         min_distances = specific_tools.nearest_neighbor_distances(base_array=negative_feature_tensors, neighbor_array=positive_feature_tensors)
         
@@ -55,8 +58,9 @@ with notifier.when_done:
     # 
     try:
         print(f'''assigning data''')
-        df.loc[df.is_phos_site == 1, 'min_distance_to_phos'] = 0
-        df.loc[df.is_phos_site != 1, 'min_distance_to_phos'] = numpy.array(min_distances)
+        df.loc[not df.is_human, 'min_distance_to_human_phos'] = float('NaN')
+        df.loc[df.is_phos_site == 1, 'min_distance_to_human_phos'] = 0
+        df.loc[(df.is_phos_site != 1) and (df.is_human), 'min_distance_to_human_phos'] = numpy.array(min_distances)
     except Exception as error:
         print(f'''error assigning min_distance vals to df''')
         import code; code.interact(local={**globals(),**locals()})
