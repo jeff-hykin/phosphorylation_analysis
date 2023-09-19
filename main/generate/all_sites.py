@@ -54,10 +54,15 @@ with open(path_to.all_sites, "r+") as file:
             is_serine_site         = 1 if amino_acids_string[lookback_size] == "S" else 0
             is_threonine_site      = 1 if amino_acids_string[lookback_size] == "T" else 0
             is_tyrosine_site       = 1 if amino_acids_string[lookback_size] == "Y" else 0
-            is_human               = "HUMAN" in f"{abbreviated_gene_species}"
+            is_human               = 1 if "HUMAN" in f"{abbreviated_gene_species}" else 0
             is_phos_site           = 1
+            
         
-        is_phos_site = "1"
+        is_serine_site         = 1 if is_serine_site    else 0
+        is_threonine_site      = 1 if is_threonine_site else 0
+        is_tyrosine_site       = 1 if is_tyrosine_site  else 0
+        is_human               = 1 if is_human          else 0
+        is_phos_site           = 1 if is_phos_site      else 0
         
         row_as_string = "\t".join([
             str(each) for each in [
