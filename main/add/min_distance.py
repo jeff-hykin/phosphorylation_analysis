@@ -35,14 +35,17 @@ with notifier.when_done:
     # 
     # create data
     #
-    if True:
+    try:
         df['min_distance_to_human_phos'] = tuple([0])*len(df['is_phos_site'])
         print(f'''creating positive_feature_tensors''')
-        positive_feature_tensors = df[(df['is_phos_site'] == 1) * df.is_human][basic_feature_names].values
+        positive_feature_tensors = df[(df.is_phos_site == 1) * (df.is_human==1)][basic_feature_names].values
         print(f'''creating negative_feature_tensors''')
-        negative_feature_tensors = df[(df['is_phos_site'] != 1) * df.is_human][basic_feature_names].values[start:stop]
+        negative_feature_tensors = df[(df.is_phos_site != 1) * (df.is_human==1)][basic_feature_names].values[start:stop]
         
         min_distances = specific_tools.nearest_neighbor_distances(base_array=negative_feature_tensors, neighbor_array=positive_feature_tensors)
+    except Exception as error:
+        print("issue with main operation")
+        import code; code.interact(local={**globals(),**locals()})
         
         # large_pickle_save(min_distances, file_path=f"./min_distances_{start}_{stop}.pickle")
         
