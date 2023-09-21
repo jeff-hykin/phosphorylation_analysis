@@ -41,29 +41,22 @@ with open(path_to.all_sites, "r+") as file:
         site_id = f"{uniprot_gene_id}|{index_relative_to_gene}"
         existing_data = sites.get(site_id, None)
         if existing_data:
-            site_id, uniprot_gene_id, index_relative_to_gene, amino_acids, is_serine_site, is_threonine_site, is_tyrosine_site, is_human, is_phos_site = existing_data
+            _, _, _, amino_acids_string, _, _, _, _, _ = existing_data
             del sites[site_id]
-        else:
-            # some entries are just missing data
-            if type(amino_acids_string) != str:
-                continue
-            
-            site_id                = f"{uniprot_gene_id}|{index_relative_to_gene}"
-            uniprot_gene_id        = uniprot_gene_id
-            index_relative_to_gene = index_relative_to_gene
-            is_serine_site         = 1 if amino_acids_string[lookback_size] == "S" else 0
-            is_threonine_site      = 1 if amino_acids_string[lookback_size] == "T" else 0
-            is_tyrosine_site       = 1 if amino_acids_string[lookback_size] == "Y" else 0
-            is_human               = 1 if "HUMAN" in f"{abbreviated_gene_species}" else 0
-            is_phos_site           = 1
-            
         
-        is_serine_site         = 1 if int(is_serine_site)    else 0
-        is_threonine_site      = 1 if int(is_threonine_site) else 0
-        is_tyrosine_site       = 1 if int(is_tyrosine_site)  else 0
-        is_human               = 1 if int(is_human)          else 0
-        is_phos_site           = 1 if int(is_phos_site)      else 0
+        # some entries are just missing data
+        if type(amino_acids_string) != str:
+            continue
         
+        site_id                = f"{uniprot_gene_id}|{index_relative_to_gene}"
+        uniprot_gene_id        = uniprot_gene_id
+        index_relative_to_gene = index_relative_to_gene
+        is_serine_site         = 1 if amino_acids_string[lookback_size] == "S" else 0
+        is_threonine_site      = 1 if amino_acids_string[lookback_size] == "T" else 0
+        is_tyrosine_site       = 1 if amino_acids_string[lookback_size] == "Y" else 0
+        is_human               = 1 if "HUMAN" in f"{abbreviated_gene_species}" else 0
+        is_phos_site           = 1
+            
         row_as_string = "\t".join([
             str(each) for each in [
                 site_id,
