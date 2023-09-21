@@ -15,7 +15,7 @@ FS.ensure_is_file(path_to.all_sites)
 first_line = ""
 with open(path_to.all_sites, "r+") as file:
     for line in file:
-        first_line = line.trim()
+        first_line = line.strip()
         break
 
 new_filepath = path_to.all_sites+".new"
