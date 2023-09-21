@@ -44,7 +44,7 @@ with open(path_to.human_sites, "r+") as file:
                 is_threonine_site      = "1" if each_window[lookback_size] == "T" else "0"
                 is_tyrosine_site       = "1" if each_window[lookback_size] == "Y" else "0"
                 is_human               = "1"
-                is_phos_site           = "?"
+                is_phos_site           = "0"
                 file.write(("\t".join([
                     site_id,
                     uniprot_gene_id,
