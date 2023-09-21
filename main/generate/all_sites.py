@@ -58,11 +58,11 @@ with open(path_to.all_sites, "r+") as file:
             is_phos_site           = 1
             
         
-        is_serine_site         = 1 if is_serine_site    else 0
-        is_threonine_site      = 1 if is_threonine_site else 0
-        is_tyrosine_site       = 1 if is_tyrosine_site  else 0
-        is_human               = 1 if is_human          else 0
-        is_phos_site           = 1 if is_phos_site      else 0
+        is_serine_site         = 1 if int(is_serine_site)    else 0
+        is_threonine_site      = 1 if int(is_threonine_site) else 0
+        is_tyrosine_site       = 1 if int(is_tyrosine_site)  else 0
+        is_human               = 1 if int(is_human)          else 0
+        is_phos_site           = 1 if int(is_phos_site)      else 0
         
         row_as_string = "\t".join([
             str(each) for each in [
