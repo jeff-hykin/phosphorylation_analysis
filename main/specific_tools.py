@@ -168,7 +168,7 @@ def save_new_column(*, column_name, rows, path=None):
     df.to_csv(path_to.atha_v10g_denovo, sep='\t', encoding='utf-8', index=False)
 
 
-def standard_load_train_test(path=path_to.all_sites_with_features):
+def standard_load_train_test(path=path_to.all_sites):
     # 
     # load data
     # 
@@ -179,11 +179,11 @@ def standard_load_train_test(path=path_to.all_sites_with_features):
     # 
     df = original_df
     for each in config.modeling.filters:
-        df = df[df[each]]
+        df = df[df[each] == True]
     
-    y = df[info.config.feature_to_predict]
+    y = df[info.config.modeling.feature_to_predict]
     x = df.drop(columns=[ each for each in df.columns if each not in config.modeling.selected_features ])
-    assert len(x.columns) == len(config.selected_features), "Looks like one of the selected features isn't in the dataset"
+    assert len(x.columns) == len(config.modeling.selected_features), "Looks like one of the selected features isn't in the dataset"
 
     # 
     # test split 
@@ -197,6 +197,7 @@ def standard_load_train_test(path=path_to.all_sites_with_features):
         else:
             x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=config.modeling.test_proportion)
     except Exception as error:
+        print(error)
         import code; code.interact(local={**globals(),**locals()})
     y_train = y_train.squeeze()
     y_test = y_test.squeeze()
