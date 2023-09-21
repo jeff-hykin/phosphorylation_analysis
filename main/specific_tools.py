@@ -12,6 +12,7 @@ import numpy
 from sklearn.model_selection import train_test_split, KFold, StratifiedKFold
 from sklearn.metrics import accuracy_score, confusion_matrix
 
+import __dependencies__.blissful_basics as bb
 from __dependencies__.informative_iterator import ProgressBar
 from __dependencies__.blissful_basics import LazyDict, Csv, FS, super_hash, flatten, large_pickle_save, large_pickle_load, stringify, print, to_pure
 from __dependencies__.quik_config import find_and_load
@@ -303,3 +304,18 @@ def nearest_neighbor_distances(base_array, neighbor_array):
     #     else:
     #         min_distances = torch.concat((min_distances, chunk))
     #     index += step_size
+
+def save_with_snippet(df, path, limit=200):
+    df.to_csv(path, sep='\t', encoding='utf-8', index=False)
+    try:
+        first_serveral_lines = ""
+        with open(path,'r') as the_file:
+            for index, line in enumerate(the_file):
+                first_serveral_lines += line
+                if index > limit:
+                    break
+        *folders, name, extension = FS.path_pieces(path)
+        with open(FS.join(*folders, name+".snippet"+extension), 'w') as the_file:
+            the_file.write(first_serveral_lines)
+    except Exception as error:
+        print(f"error creating snippet: {error}")
