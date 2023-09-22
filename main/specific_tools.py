@@ -18,6 +18,7 @@ from __dependencies__.blissful_basics import LazyDict, Csv, FS, super_hash, flat
 from __dependencies__.quik_config import find_and_load
 from __dependencies__.telepy_notify import Notifier
 from __dependencies__ import blissful_basics
+from __dependencies__.cool_cache import cache
 
 # 
 # config
