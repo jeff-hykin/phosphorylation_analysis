@@ -18,14 +18,14 @@ with open(path_to.all_sites, "r+") as file:
         first_line = line.strip()
         break
 
-new_filepath = path_to.all_sites+".new"
+new_filepath = f"{path_to.data}/all_sites_with_features.ignore.tsv"
 FS.ensure_is_file(new_filepath)
 with open(new_filepath, "r+") as file:
-    file.write(first_line + ("\t".join(basic_feature_names))+"\n")
+    file.write(first_line + "\t" + ("\t".join(basic_feature_names))+"\n")
     for progress, (site_id, uniprot_gene_id, index_relative_to_gene, amino_acids, is_serine_site, is_threonine_site, is_tyrosine_site, is_human, is_phos_site, *_) in ProgressBar(df.values):
         values = [
             # converts NaN's to empty strings
             str(each) if each == each else ""
-                for each in ([ site_id, uniprot_gene_id, index_relative_to_gene, amino_acids, is_serine_site, is_threonine_site, is_tyrosine_site, is_human, ] + specific_tools.amino_window_to_feature_vec(amino_acids).tolist())
+                for each in ([ site_id, uniprot_gene_id, index_relative_to_gene, amino_acids, is_serine_site, is_threonine_site, is_tyrosine_site, is_human, is_phos_site ] + specific_tools.amino_window_to_feature_vec(amino_acids).tolist())
         ]
         file.write("\t".join(values)+"\n")
