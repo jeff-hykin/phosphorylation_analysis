@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.append(os.path.dirname(__file__))
+
 from generic_tools.misc import *
 from specific_tools import *
 import specific_tools
