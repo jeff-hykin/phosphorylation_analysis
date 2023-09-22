@@ -170,7 +170,7 @@ def save_new_column(*, column_name, rows, path=None):
     df.to_csv(path_to.atha_v10g_denovo, sep='\t', encoding='utf-8', index=False)
 
 
-def standard_load_train_test(path=path_to.all_sites):
+def standard_load_train_test(path=path_to.all_sites_with_features):
     # 
     # load data
     # 
@@ -209,8 +209,8 @@ def standard_load_train_test(path=path_to.all_sites):
         # total
         # 
         y_pred = tuple(each for each in predict(x_test))
-        y_test_positive, y_pred_positive = zip(*((y_test[index], y_pred[index]) for index, value in enumerate(y_pred) if value == info.config.positive_label_value))
-        y_test_negative, y_pred_negative = zip(*((y_test[index], y_pred[index]) for index, value in enumerate(y_pred) if value == info.config.negative_label_value))
+        y_test_positive, y_pred_positive = tuple(zip(*((y_test[index], y_pred[index]) for index, value in enumerate(y_pred) if value == info.config.positive_label_value))) or ((), (),)
+        y_test_negative, y_pred_negative = tuple(zip(*((y_test[index], y_pred[index]) for index, value in enumerate(y_pred) if value == info.config.negative_label_value))) or ((), (),)
         total_accuracy    = accuracy_score(y_test, y_pred)
         positive_accuracy = accuracy_score(y_test_positive, y_pred_positive)
         negative_accuracy = accuracy_score(y_test_negative, y_pred_negative)
