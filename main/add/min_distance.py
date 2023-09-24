@@ -24,6 +24,7 @@ with notifier.when_done:
     # read data
     # 
     path = path_to.all_sites
+    path = "../data/all_sites.ignore.tsv.new"
     print(f'''reading {path}''')
     df = pandas.read_csv(path, sep="\t")
     
@@ -42,7 +43,19 @@ with notifier.when_done:
         print(f'''creating negative_feature_tensors''')
         negative_feature_tensors = df[(df.is_phos_site != 1) * (df.is_human==1)][basic_feature_names].values[start:stop]
         
-        min_distances = specific_tools.nearest_neighbor_distances(base_array=negative_feature_tensors, neighbor_array=positive_feature_tensors)
+        from sklearn.neighbors import NearestNeighbors
+        obj = NearestNeighbors(
+            n_neighbors=1,
+            algorithm='auto',
+            leaf_size=30,
+            p=1,
+            metric='minkowski',
+            metric_params=None,
+            n_jobs=None,
+        )
+        obj.fit(positive_feature_tensors)
+        min_distances, indicies = obj.kneighbors(negative_feature_tensors)
+        # min_distances = numpy.array(specific_tools.nearest_neighbor_distances(base_array=negative_feature_tensors, neighbor_array=positive_feature_tensors))
     except Exception as error:
         print("issue with main operation")
         import code; code.interact(local={**globals(),**locals()})
@@ -61,9 +74,12 @@ with notifier.when_done:
     # 
     try:
         print(f'''assigning data''')
-        df.loc[not df.is_human, 'min_distance_to_human_phos'] = float('NaN')
-        df.loc[df.is_phos_site == 1, 'min_distance_to_human_phos'] = 0
-        df.loc[(df.is_phos_site != 1) and (df.is_human), 'min_distance_to_human_phos'] = numpy.array(min_distances)
+        df.loc[1-df.is_human, 'min_distance_to_human_phos'] = float('NaN')
+        df.loc[(df.is_phos_site == 1) * (df.is_human==1), 'min_distance_to_human_phos'] = 0
+        df.loc[(df.is_phos_site != 1) * (df.is_human==1), 'min_distance_to_human_phos'] = min_distances
+        df.loc[1-df.is_human, 'min_distance_index_to_human_phos'] = float('NaN')
+        df.loc[(df.is_phos_site == 1) * (df.is_human==1), 'min_distance_index_to_human_phos'] = 0
+        df.loc[(df.is_phos_site != 1) * (df.is_human==1), 'min_distance_index_to_human_phos'] = indicies
     except Exception as error:
         print(f'''error assigning min_distance vals to df''')
         import code; code.interact(local={**globals(),**locals()})
@@ -74,7 +90,7 @@ with notifier.when_done:
     # 
     try:
         print(f'''writing data''')
-        df.to_csv(path+".new", sep='\t', encoding='utf-8', index=False)
+        save_with_snippet(df, path+".new")
     except Exception as error:
         print(f'''error saving min_distance vals to file''')
         import code; code.interact(local={**globals(),**locals()})
