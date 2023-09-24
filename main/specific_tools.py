@@ -209,16 +209,47 @@ def standard_load_train_test(path=path_to.all_sites_with_features):
         # total
         # 
         y_pred = tuple(each for each in predict(x_test))
-        y_test_positive, y_pred_positive = tuple(zip(*((y_test[index], y_pred[index]) for index, value in enumerate(y_pred) if value == info.config.positive_label_value))) or ((), (),)
-        y_test_negative, y_pred_negative = tuple(zip(*((y_test[index], y_pred[index]) for index, value in enumerate(y_pred) if value == info.config.negative_label_value))) or ((), (),)
+        (
+            (negative_guess_was_correct_count, positive_guess_was_wrong_count),
+            (negative_guess_was_wrong_count  , positive_guess_was_correct_count)
+        ) = to_pure(confusion_matrix(y_test, y_pred))
+        
         total_accuracy    = accuracy_score(y_test, y_pred)
-        positive_accuracy = accuracy_score(y_test_positive, y_pred_positive)
-        negative_accuracy = accuracy_score(y_test_negative, y_pred_negative)
-        print("    Total Accuracy:", total_accuracy)
-        print("    Positive Accuracy:", positive_accuracy)
-        print("    Negative Accuracy:", negative_accuracy)
-        print(f'''confusion_matrix(y_test, y_pred) = {stringify(to_pure(confusion_matrix(y_test, y_pred)))}''')
-        return dict(total_accuracy=total_accuracy, positive_accuracy=positive_accuracy, negative_accuracy=negative_accuracy)
+        number_of_positive_guesses = (positive_guess_was_correct_count + positive_guess_was_wrong_count)
+        number_of_negative_guesses = (negative_guess_was_correct_count + negative_guess_was_wrong_count)
+        number_of_true_positives = (positive_guess_was_correct_count + negative_guess_was_wrong_count)
+        number_of_true_negatives = (negative_guess_was_correct_count + positive_guess_was_wrong_count)
+        guessing_positive_accuracy = positive_guess_was_correct_count/number_of_positive_guesses if number_of_positive_guesses != 0 else 0
+        guessing_negative_accuracy = negative_guess_was_correct_count/number_of_negative_guesses if number_of_negative_guesses != 0 else 0
+        true_positive_accuracy = positive_guess_was_correct_count/number_of_true_positives if number_of_true_positives != 0 else 0
+        true_negative_accuracy = negative_guess_was_correct_count/number_of_true_negatives if number_of_true_negatives != 0 else 0
+        number_of_false_positives_per_false_negative = positive_guess_was_wrong_count / negative_guess_was_wrong_count if negative_guess_was_wrong_count != 0 else float("inf")
+        number_of_false_negatives_per_false_positive = negative_guess_was_wrong_count / positive_guess_was_wrong_count if positive_guess_was_wrong_count != 0 else float("inf")
+        
+        print(f"    total accuracy:", total_accuracy)
+        print(f"    when guessing:")
+        print(f"        positive: accuracy is {guessing_positive_accuracy} (precision)")
+        print(f"        negative: accuracy is {guessing_negative_accuracy}")
+        print(f"    when actual:")
+        print(f"        positive: accuracy is {true_positive_accuracy} (recall)")
+        print(f"        negative: accuracy is {true_negative_accuracy}")
+        print(f"    for every:")
+        print(f"        false positive there were {number_of_false_negatives_per_false_positive} false negatives")
+        print(f"        false negative there were {number_of_false_positives_per_false_negative} false positives")
+        print(f'''    confusion_matrix(y_test, y_pred) = {indent(stringify(to_pure(confusion_matrix(y_test, y_pred))))}''')
+        return dict(
+            total_accuracy=total_accuracy,
+            true_positive_accuracy=true_positive_accuracy,
+            true_negative_accuracy=true_negative_accuracy,
+            guessing_positive_accuracy=guessing_positive_accuracy,
+            guessing_negative_accuracy=guessing_negative_accuracy,
+            number_of_positive_guesses=number_of_positive_guesses,
+            number_of_negative_guesses=number_of_negative_guesses,
+            number_of_true_positives=number_of_true_positives,
+            number_of_true_negatives=number_of_true_negatives,
+            number_of_false_positives_per_false_negative=number_of_false_positives_per_false_negative,
+            number_of_false_negatives_per_false_positive=number_of_false_negatives_per_false_positive,
+        )
     
     return x_train, x_test, y_train, y_test, test_accuracy_of
 
