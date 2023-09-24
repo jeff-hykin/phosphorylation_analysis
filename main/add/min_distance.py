@@ -24,7 +24,7 @@ with notifier.when_done:
     # read data
     # 
     path = path_to.all_sites
-    path = "../data/all_sites.ignore.tsv.new"
+    path = "../data/all_sites_with_features.ignore.tsv"
     print(f'''reading {path}''')
     df = pandas.read_csv(path, sep="\t")
     
@@ -90,7 +90,7 @@ with notifier.when_done:
     # 
     try:
         print(f'''writing data''')
-        save_with_snippet(df, path+".new")
+        save_with_snippet(df, path+".with_min.tsv")
     except Exception as error:
         print(f'''error saving min_distance vals to file''')
         import code; code.interact(local={**globals(),**locals()})
