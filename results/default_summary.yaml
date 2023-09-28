@@ -5,8 +5,8 @@
   test_size: 15050
   train_size: 34950
 - model: dumb_guesser
-  sample_size: 1
-  stdev_of_f1_score: null
+  sample_size: 4
+  stdev_of_f1_score: 0.0
   average_super_f1_score: 0.0
   average_f1_score: 0.0
   average_inverse_f1_score: 0.756
@@ -30,49 +30,49 @@
      guessing_positive: 0.0
      guessing_negative: 0.607
 - model: dumb_motif_guesser
-  sample_size: 1
-  stdev_of_f1_score: null
-  average_super_f1_score: 0.234
-  average_f1_score: 0.138
+  sample_size: 4
+  stdev_of_f1_score: 0.003
+  average_super_f1_score: 0.239
+  average_f1_score: 0.141
   average_inverse_f1_score: 0.766
-  average_total_accuracy: 0.632
-  average_weighted_f1_score: 0.042
+  average_total_accuracy: 0.633
+  average_weighted_f1_score: 0.044
   average_weighted_basic_score: 0.013
-  average_true_positive_accuracy_aka_recall: 0.078
+  average_true_positive_accuracy_aka_recall: 0.081
   average_true_negative_accuracy: 0.965
-  median_f1_score: 0.138
-  median_total_accuracy: 0.632
-  median_true_positive_accuracy: 0.078
+  median_f1_score: 0.141
+  median_total_accuracy: 0.633
+  median_true_positive_accuracy: 0.081
   median_true_negative_accuracy: 0.965
-  average_guessing_positive_accuracy_aka_precision: 0.576
-  average_guessing_negative_accuracy: 0.635
-  median_guessing_positive_accuracy: 0.576
-  median_guessing_negative_accuracy: 0.635
+  average_guessing_positive_accuracy_aka_precision: 0.579
+  average_guessing_negative_accuracy: 0.636
+  median_guessing_positive_accuracy: 0.579
+  median_guessing_negative_accuracy: 0.636
   best_true_positive_accuracy_info:
-     total: 0.632
-     true_positive: 0.078
+     total: 0.634
+     true_positive: 0.083
      true_negative: 0.965
-     guessing_positive: 0.576
-     guessing_negative: 0.635
+     guessing_positive: 0.583
+     guessing_negative: 0.637
 - model: decision_tree
-  sample_size: 1
-  stdev_of_f1_score: null
-  average_super_f1_score: 0.509
-  average_f1_score: 0.401
-  average_inverse_f1_score: 0.694
-  average_total_accuracy: 0.595
-  average_weighted_f1_score: 0.312
-  average_weighted_basic_score: 0.102
-  average_true_positive_accuracy_aka_recall: 0.402
-  average_true_negative_accuracy: 0.693
-  median_f1_score: 0.401
-  median_total_accuracy: 0.595
-  median_true_positive_accuracy: 0.402
-  median_true_negative_accuracy: 0.693
-  average_guessing_positive_accuracy_aka_precision: 0.4
-  average_guessing_negative_accuracy: 0.695
-  median_guessing_positive_accuracy: 0.4
-  median_guessing_negative_accuracy: 0.695
+  sample_size: 4
+  stdev_of_f1_score: 0.007
+  average_super_f1_score: 0.503
+  average_f1_score: 0.394
+  average_inverse_f1_score: 0.693
+  average_total_accuracy: 0.592
+  average_weighted_f1_score: 0.303
+  average_weighted_basic_score: 0.097
+  average_true_positive_accuracy_aka_recall: 0.392
+  average_true_negative_accuracy: 0.695
+  median_f1_score: 0.396
+  median_total_accuracy: 0.593
+  median_true_positive_accuracy: 0.394
+  median_true_negative_accuracy: 0.696
+  average_guessing_positive_accuracy_aka_precision: 0.397
+  average_guessing_negative_accuracy: 0.69
+  median_guessing_positive_accuracy: 0.398
+  median_guessing_negative_accuracy: 0.691
   best_true_positive_accuracy_info:
      total: 0.595
      true_positive: 0.402
@@ -80,52 +80,52 @@
      guessing_positive: 0.4
      guessing_negative: 0.695
 - model: random_forest_basic
-  sample_size: 1
-  stdev_of_f1_score: null
-  average_super_f1_score: 0.618
-  average_f1_score: 0.509
-  average_inverse_f1_score: 0.786
-  average_total_accuracy: 0.702
-  average_weighted_f1_score: 0.42
-  average_weighted_basic_score: 0.183
-  average_true_positive_accuracy_aka_recall: 0.498
+  sample_size: 4
+  stdev_of_f1_score: 0.009
+  average_super_f1_score: 0.614
+  average_f1_score: 0.504
+  average_inverse_f1_score: 0.784
+  average_total_accuracy: 0.699
+  average_weighted_f1_score: 0.413
+  average_weighted_basic_score: 0.178
+  average_true_positive_accuracy_aka_recall: 0.491
   average_true_negative_accuracy: 0.794
-  median_f1_score: 0.509
-  median_total_accuracy: 0.702
-  median_true_positive_accuracy: 0.498
-  median_true_negative_accuracy: 0.794
-  average_guessing_positive_accuracy_aka_precision: 0.521
-  average_guessing_negative_accuracy: 0.778
-  median_guessing_positive_accuracy: 0.521
-  median_guessing_negative_accuracy: 0.778
+  median_f1_score: 0.503
+  median_total_accuracy: 0.699
+  median_true_positive_accuracy: 0.49
+  median_true_negative_accuracy: 0.795
+  average_guessing_positive_accuracy_aka_precision: 0.519
+  average_guessing_negative_accuracy: 0.775
+  median_guessing_positive_accuracy: 0.519
+  median_guessing_negative_accuracy: 0.774
   best_true_positive_accuracy_info:
-     total: 0.702
-     true_positive: 0.498
-     true_negative: 0.794
-     guessing_positive: 0.521
-     guessing_negative: 0.778
+     total: 0.705
+     true_positive: 0.504
+     true_negative: 0.795
+     guessing_positive: 0.524
+     guessing_negative: 0.782
 - model: neural_net
-  sample_size: 1
-  stdev_of_f1_score: null
+  sample_size: 4
+  stdev_of_f1_score: 0.005
   average_super_f1_score: 0.549
-  average_f1_score: 0.437
-  average_inverse_f1_score: 0.739
-  average_total_accuracy: 0.643
-  average_weighted_f1_score: 0.341
-  average_weighted_basic_score: 0.124
-  average_true_positive_accuracy_aka_recall: 0.422
-  average_true_negative_accuracy: 0.751
-  median_f1_score: 0.437
-  median_total_accuracy: 0.643
-  median_true_positive_accuracy: 0.422
-  median_true_negative_accuracy: 0.751
-  average_guessing_positive_accuracy_aka_precision: 0.452
+  average_f1_score: 0.438
+  average_inverse_f1_score: 0.733
+  average_total_accuracy: 0.638
+  average_weighted_f1_score: 0.347
+  average_weighted_basic_score: 0.126
+  average_true_positive_accuracy_aka_recall: 0.432
+  average_true_negative_accuracy: 0.738
+  median_f1_score: 0.438
+  median_total_accuracy: 0.639
+  median_true_positive_accuracy: 0.427
+  median_true_negative_accuracy: 0.742
+  average_guessing_positive_accuracy_aka_precision: 0.446
   average_guessing_negative_accuracy: 0.727
-  median_guessing_positive_accuracy: 0.452
+  median_guessing_positive_accuracy: 0.447
   median_guessing_negative_accuracy: 0.727
   best_true_positive_accuracy_info:
-     total: 0.643
-     true_positive: 0.422
-     true_negative: 0.751
-     guessing_positive: 0.452
-     guessing_negative: 0.727
+     total: 0.631
+     true_positive: 0.453
+     true_negative: 0.717
+     guessing_positive: 0.437
+     guessing_negative: 0.731
