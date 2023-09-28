@@ -17,11 +17,12 @@ from specific_tools import *
 import specific_tools
 import ez_yaml
 
+classifier_name="random_forest"
 basic_train = specific_tools.create_trainer(
     classifier=RandomForestClassifier(
         random_state=0,
     ),
-    classifier_name="random_forest",
+    classifier_name=classifier_name,
     module_name=__name__,
 )
 
@@ -30,12 +31,12 @@ def train(*args, **kwargs):
     
     try:
         feature_importances = {
-            feature_name: importance
+            feature_name: format_float(importance)
                 for feature_name, importance in zip(config.modeling.selected_features, classifier.feature_importances_,)
         }
         ez_yaml.to_file(
             obj=feature_importances,
-            file_path=(f"{info.path_to.results}/{classifier_name}_{output_postfix}_feature_importance.yaml"),
+            file_path=(f"{info.path_to.results}/{classifier_name}__feature_importance.yaml"),
         )
     except Exception as error:
         import code; code.interact(local={**globals(),**locals()})

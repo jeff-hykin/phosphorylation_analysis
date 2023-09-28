@@ -189,8 +189,6 @@ def standard_load_train_test(path=path_to.all_sites_with_features):
     assert info.config.modeling.feature_to_predict not in x.columns, "The predicted feature is somehow one of the input columns"
     assert len(x.columns) == len(config.modeling.selected_features), "Looks like one of the selected features isn't in the dataset"
     
-    import code; code.interact(local={**globals(),**locals()})
-    
     # 
     # test split 
     # 
@@ -369,3 +367,18 @@ def save_with_snippet(df, path, limit=200):
             the_file.write(first_serveral_lines)
     except Exception as error:
         print(f"error creating snippet: {error}")
+
+
+def format_float(a_float):
+    size = 0
+    # smallest decimal possible without loosing accuracy
+    while float(format(a_float, f'.{size}f')) != a_float:
+        size += 1
+    return format(a_float, f'.{size}f')
+
+# @siphon(
+#     when=lambda *args: isinstance(args[0], float),
+#     is_true_for=stringify
+# )
+# def stringify(*args):
+#     return format_float(args[0])

@@ -1,0 +1,23 @@
+- model: random_forest_basic
+  sample_size: 7
+  stdev_of_f1_score: 0.0
+  average_f1_score: 1.0
+  average_total_accuracy: 1.0
+  average_weighted_f1_score: 1.0
+  average_weighted_basic_score: 1.0
+  average_true_positive_accuracy_aka_recall: 1.0
+  average_true_negative_accuracy: 1.0
+  median_f1_score: 1.0
+  median_total_accuracy: 1.0
+  median_true_positive_accuracy: 1.0
+  median_true_negative_accuracy: 1.0
+  average_guessing_positive_accuracy_aka_precision: 1.0
+  average_guessing_negative_accuracy: 1.0
+  median_guessing_positive_accuracy: 1.0
+  median_guessing_negative_accuracy: 1.0
+  best_true_positive_accuracy_info:
+     total: 1.0
+     true_positive: 1.0
+     true_negative: 1.0
+     guessing_positive: 1.0
+     guessing_negative: 1.0

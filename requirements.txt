@@ -28,7 +28,7 @@ Deprecated==1.2.14
 deprecation==2.1.0
 dulwich==0.20.50
 executing==1.2.0
-ez-yaml==2.0.2
+ez-yaml==2.1.0
 fastjsonschema==2.18.0
 Flask==2.2.5
 fonttools==4.42.0
