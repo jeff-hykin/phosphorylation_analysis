@@ -18,7 +18,7 @@ import specific_tools
 import ez_yaml
 
 classifier_name="random_forest"
-basic_train = specific_tools.create_trainer(
+train = specific_tools.create_trainer(
     classifier=RandomForestClassifier(
         random_state=0,
     ),

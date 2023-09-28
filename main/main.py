@@ -23,11 +23,13 @@ for each_name in config.selected_model_generators:
     )
     model_sources[each_name] = model_generator
 
+path = path_to.all_sites_with_features 
+
 outcomes = []
 experiment = "default"
 with notifier.when_done:
     for progress, trial_index in notifier.progress(info.config.sample_size, title=experiment, percent_per_notify=50, minutes_per_notify=30, notify_iter_delay=2):
-        x_train, x_test, y_train, y_test, test_accuracy_of = standard_load_train_test()
+        x_train, x_test, y_train, y_test, test_accuracy_of = standard_load_train_test(path)
         for each_model_name, each_model in model_sources.items():
             accuracies, model = each_model.train(x_train, x_test, y_train, y_test, test_accuracy_of)
             outcomes.append(dict(model=each_model_name, **accuracies))
@@ -35,7 +37,14 @@ with notifier.when_done:
             df.to_csv(path_to.results+f"/recent_main_{experiment}.csv")
             large_pickle_save(model, path_to.models+f"""/{experiment}_{each_model_name}_{trial_index}_{outcomes[-1]["true_positive_accuracy"]}.ignore.pickle""")
         
-        summary_info = []
+        summary_info = [
+            dict(
+                data_source=path,
+                filters=info.config.modeling.filters,
+                test_size=len(y_test),
+                train_size=len(y_train),
+            ),
+        ]
         decimals = 3
         for each_model_name, each_model in model_sources.items():
             local_df = df[df['model'] == each_model_name]

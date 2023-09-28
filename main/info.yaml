@@ -19,12 +19,12 @@
         human_sites: ../data/human_sites.tsv
         all_sites: ../data/all_sites.ignore.tsv
         all_sites_snippet: ../data/all_sites.ignore.snippet.tsv
-        all_sites_with_features: ../data/all_sites_with_features.ioerger.ignore.tsv
+        all_sites_with_features: ../data/all_sites_with_features.ioerger.subset.ignore.tsv
         # all_sites_with_features: ../data/all_sites_with_features.ignore.tsv
         # all_sites_with_features: ../data/all_sites_with_features.ignore.tsv.with_min.tsv
         # all_sites_with_features: ../data/all_sites_with_features.subset.ignore.tsv
         # all_sites_with_features: ../data/all_sites_with_features.subset.subset.ignore.tsv
-        all_sites_with_features_snippet: ../data/all_sites_with_features.ignore.snippet.tsv
+        # all_sites_with_features_snippet: ../data/all_sites_with_features.ignore.snippet.tsv
     
     # example profiles
     (profiles):
@@ -32,9 +32,11 @@
             lookback_size: 10
             positive_label_value: 1
             negative_label_value: 0
-            sample_size: 7
+            sample_size: 3
             selected_model_generators:
+                - dumb_motif_guesser
                 - random_forest_basic
+                - neural_net
             modeling:
                 test_proportion: 0.301
                 stratify: True
