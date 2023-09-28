@@ -1,3 +1,4 @@
+- data: ioerger_full
 - model: random_forest_basic
   sample_size: 7
   stdev_of_f1_score: 0.001
