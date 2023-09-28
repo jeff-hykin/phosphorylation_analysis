@@ -169,48 +169,8 @@ def save_new_column(*, column_name, rows, path=None):
     df[column_name] = rows
     df.to_csv(path_to.atha_v10g_denovo, sep='\t', encoding='utf-8', index=False)
 
-
-def standard_load_train_test(path=path_to.all_sites_with_features):
-# def standard_load_train_test(path=path_to.all_sites_with_features_snippet):
-    # 
-    # load data
-    # 
-    original_df = pandas.read_csv(path, sep="\t")
-
-    # 
-    # filters
-    # 
-    df = original_df
-    for each in config.modeling.filters:
-        df = df[df[each] == True]
-    
-    y = df[info.config.modeling.feature_to_predict]
-    x = df.drop(columns=[ each for each in df.columns if each not in config.modeling.selected_features ])
-    assert info.config.modeling.feature_to_predict not in x.columns, "The predicted feature is somehow one of the input columns"
-    assert len(x.columns) == len(config.modeling.selected_features), "Looks like one of the selected features isn't in the dataset"
-    
-    # 
-    # test split 
-    # 
-    # 70% training and 30% test; stratify: maintain same proportion of + and - examples
-    x = x.values
-    y = y.values
-    try:
-        if config.modeling.stratify:
-            x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=config.modeling.test_proportion, stratify=y)
-        else:
-            x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=config.modeling.test_proportion)
-    except Exception as error:
-        print(error)
-        import code; code.interact(local={**globals(),**locals()})
-    y_train = y_train.squeeze()
-    y_test = y_test.squeeze()
-    all_classes = np.unique(np.append(y_train, y_test))
-    
-    positive_label_value = info.config.positive_label_value
-    negative_label_value = info.config.negative_label_value
+def create_test_accuracy(y_test, x_test):
     def test_accuracy_of(predict):
-        print(f'''training_size: {len(y_train)}''')
         print(f'''testing_size: {len(y_test)}''')
         # 
         # total
@@ -266,8 +226,46 @@ def standard_load_train_test(path=path_to.all_sites_with_features):
             number_of_false_positives_per_false_negative=number_of_false_positives_per_false_negative,
             number_of_false_negatives_per_false_positive=number_of_false_negatives_per_false_positive,
         )
+    return test_accuracy_of
+
+def standard_load_train_test(path=path_to.all_sites_with_features):
+# def standard_load_train_test(path=path_to.all_sites_with_features_snippet):
+    # 
+    # load data
+    # 
+    original_df = pandas.read_csv(path, sep="\t")
+
+    # 
+    # filters
+    # 
+    df = original_df
+    for each in config.modeling.filters:
+        df = df[df[each] == True]
     
-    return x_train, x_test, y_train, y_test, test_accuracy_of
+    y = df[info.config.modeling.feature_to_predict]
+    x = df.drop(columns=[ each for each in df.columns if each not in config.modeling.selected_features ])
+    assert info.config.modeling.feature_to_predict not in x.columns, "The predicted feature is somehow one of the input columns"
+    assert len(x.columns) == len(config.modeling.selected_features), "Looks like one of the selected features isn't in the dataset"
+    
+    # 
+    # test split 
+    # 
+    # 70% training and 30% test; stratify: maintain same proportion of + and - examples
+    x = x.values
+    y = y.values
+    try:
+        if config.modeling.stratify:
+            x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=config.modeling.test_proportion, stratify=y)
+        else:
+            x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=config.modeling.test_proportion)
+    except Exception as error:
+        print(error)
+        import code; code.interact(local={**globals(),**locals()})
+    y_train = y_train.squeeze()
+    y_test = y_test.squeeze()
+    all_classes = np.unique(np.append(y_train, y_test))
+    
+    return x_train, x_test, y_train, y_test, create_test_accuracy(y_test, x_test)
 
 def create_trainer(*, classifier, classifier_name, module_name, output_postfix=""):
     def train(x_train, x_test, y_train, y_test, test_accuracy_of):
