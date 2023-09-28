@@ -190,10 +190,11 @@ def create_test_accuracy(y_test, x_test):
         would_be_number_of_positive_guesses = total_number_of_samples * proportion_of_positive_guesses
         would_be_number_of_negative_guesses = total_number_of_samples - would_be_number_of_positive_guesses
         
-        would_be_negative_guess_was_correct_count = info.config.stats.all_human_positive_examples * summary["true_positive_accuracy"]
-        would_be_positive_guess_was_correct_count = info.config.stats.all_human_negative_examples * summary["true_negative_accuracy"]
+        would_be_positive_guess_was_correct_count = info.config.stats.all_human_positive_examples * summary["true_positive_accuracy"]
+        would_be_negative_guess_was_correct_count = info.config.stats.all_human_negative_examples * summary["true_negative_accuracy"]
         would_be_positive_guess_was_wrong_count   = would_be_number_of_positive_guesses * (1-summary["guessing_positive_accuracy"])
         would_be_negative_guess_was_wrong_count   = would_be_number_of_negative_guesses * (1-summary["guessing_negative_accuracy"])
+        
         return confusion_to_stats((
             (would_be_negative_guess_was_correct_count, would_be_positive_guess_was_wrong_count,),
             (would_be_negative_guess_was_wrong_count, would_be_positive_guess_was_correct_count,),
