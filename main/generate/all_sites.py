@@ -19,10 +19,11 @@ lookback_size = info.config.lookback_size # ex: 10
 
 # convert to dict
 sites = {}
-for site_id, uniprot_gene_id, index_relative_to_gene, amino_acids, is_serine_site, is_threonine_site, is_tyrosine_site, is_human, is_phos_site in human_df.values:
-    sites[site_id] = [ site_id, uniprot_gene_id, index_relative_to_gene, amino_acids, is_serine_site, is_threonine_site, is_tyrosine_site, is_human, is_phos_site ]
+for site_id, uniprot_gene_id, index_relative_to_gene, amino_acids_string, is_serine_site, is_threonine_site, is_tyrosine_site, is_human, is_phos_site in human_df.values:
+    sites[site_id] = [ site_id, uniprot_gene_id, index_relative_to_gene, amino_acids_string, is_serine_site, is_threonine_site, is_tyrosine_site, is_human, is_phos_site ]
 
 phos_df = pandas.read_csv(path_to.phos, sep="\t")
+FS.remove(path_to.all_sites)
 FS.ensure_is_file(path_to.all_sites)
 with open(path_to.all_sites, "r+") as file:
     columns = [
@@ -62,7 +63,7 @@ with open(path_to.all_sites, "r+") as file:
                 site_id,
                 uniprot_gene_id,
                 index_relative_to_gene,
-                amino_acids,
+                amino_acids_string,
                 is_serine_site,
                 is_threonine_site,
                 is_tyrosine_site,
@@ -70,7 +71,6 @@ with open(path_to.all_sites, "r+") as file:
                 is_phos_site,
             ]
         ])+"\n"
-        
         file.write(row_as_string)
 
     # all not-phos human sites
