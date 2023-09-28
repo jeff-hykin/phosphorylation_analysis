@@ -14,6 +14,8 @@ path = "../data/all_sites_with_features.ignore.tsv"
 print(f'''reading {path}''')
 df = pandas.read_csv(path, sep="\t")
 
+df = df[(((df.is_human == 1) * (df.is_serine_site == 1)) == 1)]
+
 try:
     df = pandas.concat(
         [
