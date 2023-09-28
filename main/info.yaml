@@ -1,14 +1,9 @@
 (project):
     (local_data): ./local_data.ignore.yaml
     
-    at meeting:
-        - min_distances_count
     
     todo:
-        - figure out why there are nan's in the dataset
-        - DONE; generate basic features for all_sites.tsv
-        - pending; generate min_distance_to_phos feature for all_sites.tsv
-        - recreate the models
+        - pending; re-generate min_distance_to_phos_human
     
     (path_to):
         models: "../models/"
@@ -21,6 +16,7 @@
         all_sites_snippet: ../data/all_sites.ignore.snippet.tsv
         all_sites_with_features: ../data/all_sites_with_features.ioerger.subset.ignore.tsv
         # all_sites_with_features: ../data/all_sites_with_features.ignore.tsv
+        # all_sites_with_features: ../data/all_sites_with_features.ignore.tsv
         # all_sites_with_features: ../data/all_sites_with_features.ignore.tsv.with_min.tsv
         # all_sites_with_features: ../data/all_sites_with_features.subset.ignore.tsv
         # all_sites_with_features: ../data/all_sites_with_features.subset.subset.ignore.tsv
@@ -32,11 +28,17 @@
             lookback_size: 10
             positive_label_value: 1
             negative_label_value: 0
-            sample_size: 3
+            sample_size: 4
             selected_model_generators:
+                - dumb_guesser
                 - dumb_motif_guesser
+                - decision_tree
                 - random_forest_basic
                 - neural_net
+            stats:
+                all_human_positive_examples:   506_457
+                all_human_negative_examples: 1_722_609
+                positive_to_negative_ratio: 0.22720592391611555
             modeling:
                 test_proportion: 0.301
                 stratify: True
@@ -565,6 +567,9 @@
                     - Y@20
                     - Z@20
                     - X@20
+            
+            ioerger_no_filter:
+                proportion_of_negative_examples: 0.57
             
             all_sites:
                 columns:

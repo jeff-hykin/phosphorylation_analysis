@@ -55,6 +55,7 @@ with notifier.when_done:
                 stdev_of_f1_score = to_pure(round(stdev(local_df['f1_score'].values), ndigits=decimals))
             except Exception as error:
                 pass
+                
             summary_info.append(dict(
                 model=each_model_name,
                 sample_size=len(local_df['total_accuracy']),

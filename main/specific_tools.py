@@ -11,6 +11,7 @@ import numpy
 
 from sklearn.model_selection import train_test_split, KFold, StratifiedKFold
 from sklearn.metrics import accuracy_score, confusion_matrix
+from generic_tools.misc import confusion_to_stats
 
 import __dependencies__.blissful_basics as bb
 from __dependencies__.informative_iterator import ProgressBar
@@ -176,56 +177,28 @@ def create_test_accuracy(y_test, x_test):
         # total
         # 
         y_pred = tuple(each for each in predict(x_test))
-        (
+        matrix = (
             (negative_guess_was_correct_count, positive_guess_was_wrong_count),
             (negative_guess_was_wrong_count  , positive_guess_was_correct_count)
         ) = to_pure(confusion_matrix(y_test, y_pred))
         
-        total_accuracy    = accuracy_score(y_test, y_pred)
-        number_of_positive_guesses = (positive_guess_was_correct_count + positive_guess_was_wrong_count)
-        number_of_negative_guesses = (negative_guess_was_correct_count + negative_guess_was_wrong_count)
-        number_of_true_positives = (positive_guess_was_correct_count + negative_guess_was_wrong_count)
-        number_of_true_negatives = (negative_guess_was_correct_count + positive_guess_was_wrong_count)
-        guessing_positive_accuracy = positive_guess_was_correct_count/number_of_positive_guesses if number_of_positive_guesses != 0 else 0
-        guessing_negative_accuracy = negative_guess_was_correct_count/number_of_negative_guesses if number_of_negative_guesses != 0 else 0
-        true_positive_accuracy = positive_guess_was_correct_count/number_of_true_positives if number_of_true_positives != 0 else 0
-        true_negative_accuracy = negative_guess_was_correct_count/number_of_true_negatives if number_of_true_negatives != 0 else 0
-        number_of_false_positives_per_false_negative = positive_guess_was_wrong_count / negative_guess_was_wrong_count if negative_guess_was_wrong_count != 0 else float("inf")
-        number_of_false_negatives_per_false_positive = negative_guess_was_wrong_count / positive_guess_was_wrong_count if positive_guess_was_wrong_count != 0 else float("inf")
-        f1_score = 2 * (true_positive_accuracy * guessing_positive_accuracy) / (true_positive_accuracy + guessing_positive_accuracy) if 0 != (true_positive_accuracy + guessing_positive_accuracy) else 0
-        weighted_f1_score = 2 * ((true_positive_accuracy**1.5) * guessing_positive_accuracy) / ((true_positive_accuracy**1.5) + guessing_positive_accuracy) if 0 != (true_positive_accuracy + guessing_positive_accuracy) else 0
-        weighted_basic_score = (true_positive_accuracy**1.5) * guessing_positive_accuracy
+        summary = confusion_to_stats(matrix)
+        number_of_positive_guesses = summary["number_of_positive_guesses"]
+        number_of_negative_guesses = summary["number_of_negative_guesses"]
+        proportion_of_positive_guesses = number_of_positive_guesses / (number_of_positive_guesses + number_of_negative_guesses)
+        total_number_of_samples = (info.config.stats.all_human_positive_examples + info.config.stats.all_human_negative_examples)
+        would_be_number_of_positive_guesses = total_number_of_samples * proportion_of_positive_guesses
+        would_be_number_of_negative_guesses = total_number_of_samples - would_be_number_of_positive_guesses
         
-        print(f"    f1_score:", f1_score)
-        print(f"    total_accuracy:", total_accuracy)
-        print(f"    weighted_f1_score:", weighted_f1_score) 
-        print(f"    weighted_basic_score:", weighted_basic_score) 
-        print(f"    when guessing:")
-        print(f"        positive: accuracy is {guessing_positive_accuracy} (precision)")
-        print(f"        negative: accuracy is {guessing_negative_accuracy}")
-        print(f"    when actual:")
-        print(f"        positive: accuracy is {true_positive_accuracy} (recall)")
-        print(f"        negative: accuracy is {true_negative_accuracy}")
-        print(f"    for every:")
-        print(f"        false positive there were {number_of_false_negatives_per_false_positive} false negatives")
-        print(f"        false negative there were {number_of_false_positives_per_false_negative} false positives")
-        print(f'''    confusion_matrix(y_test, y_pred) = {indent(stringify(to_pure(confusion_matrix(y_test, y_pred))))}''')
-        return dict(
-            f1_score=f1_score,
-            total_accuracy=total_accuracy,
-            weighted_f1_score=weighted_f1_score,
-            weighted_basic_score=weighted_basic_score,
-            true_positive_accuracy=true_positive_accuracy, # aka recall 
-            true_negative_accuracy=true_negative_accuracy,
-            guessing_positive_accuracy=guessing_positive_accuracy,
-            guessing_negative_accuracy=guessing_negative_accuracy,
-            number_of_positive_guesses=number_of_positive_guesses, # aka precision
-            number_of_negative_guesses=number_of_negative_guesses,
-            number_of_true_positives=number_of_true_positives,
-            number_of_true_negatives=number_of_true_negatives,
-            number_of_false_positives_per_false_negative=number_of_false_positives_per_false_negative,
-            number_of_false_negatives_per_false_positive=number_of_false_negatives_per_false_positive,
-        )
+        would_be_negative_guess_was_correct_count = info.config.stats.all_human_positive_examples * summary["true_positive_accuracy"]
+        would_be_positive_guess_was_correct_count = info.config.stats.all_human_negative_examples * summary["true_negative_accuracy"]
+        would_be_positive_guess_was_wrong_count   = would_be_number_of_positive_guesses * (1-summary["guessing_positive_accuracy"])
+        would_be_negative_guess_was_wrong_count   = would_be_number_of_negative_guesses * (1-summary["guessing_negative_accuracy"])
+        return confusion_to_stats((
+            (would_be_negative_guess_was_correct_count, would_be_positive_guess_was_wrong_count,),
+            (would_be_negative_guess_was_wrong_count, would_be_positive_guess_was_correct_count,),
+        ))
+        
     return test_accuracy_of
 
 def standard_load_train_test(path=path_to.all_sites_with_features):
@@ -240,7 +213,10 @@ def standard_load_train_test(path=path_to.all_sites_with_features):
     # 
     df = original_df
     for each in config.modeling.filters:
-        df = df[df[each] == True]
+        if each not in df.columns:
+            print(f"warning; tried to filter by {repr(each)} but that wasn't one of the columns")
+        else:
+            df = df[df[each] == True]
     
     y = df[info.config.modeling.feature_to_predict]
     x = df.drop(columns=[ each for each in df.columns if each not in config.modeling.selected_features ])

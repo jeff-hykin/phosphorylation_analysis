@@ -53,3 +53,56 @@ def line_count_of(file_path):
         count = sum(buf.count(b"\n") for buf in _make_gen(file.raw.read))
     
     return count
+
+def confusion_to_stats(confusion_matrix):
+    from __dependencies__.blissful_basics import LazyDict, Csv, FS, super_hash, flatten, large_pickle_save, large_pickle_load, stringify, print, to_pure, indent
+    (
+        (negative_guess_was_correct_count, positive_guess_was_wrong_count),
+        (negative_guess_was_wrong_count  , positive_guess_was_correct_count)
+    ) = to_pure(confusion_matrix)
+    
+    total_accuracy    = (negative_guess_was_correct_count + positive_guess_was_correct_count)/ (negative_guess_was_correct_count + positive_guess_was_wrong_count + negative_guess_was_wrong_count + positive_guess_was_correct_count)
+    number_of_positive_guesses = (positive_guess_was_correct_count + positive_guess_was_wrong_count)
+    number_of_negative_guesses = (negative_guess_was_correct_count + negative_guess_was_wrong_count)
+    number_of_true_positives = (positive_guess_was_correct_count + negative_guess_was_wrong_count)
+    number_of_true_negatives = (negative_guess_was_correct_count + positive_guess_was_wrong_count)
+    guessing_positive_accuracy = positive_guess_was_correct_count/number_of_positive_guesses if number_of_positive_guesses != 0 else 0
+    guessing_negative_accuracy = negative_guess_was_correct_count/number_of_negative_guesses if number_of_negative_guesses != 0 else 0
+    true_positive_accuracy = positive_guess_was_correct_count/number_of_true_positives if number_of_true_positives != 0 else 0
+    true_negative_accuracy = negative_guess_was_correct_count/number_of_true_negatives if number_of_true_negatives != 0 else 0
+    number_of_false_positives_per_false_negative = positive_guess_was_wrong_count / negative_guess_was_wrong_count if negative_guess_was_wrong_count != 0 else float("inf")
+    number_of_false_negatives_per_false_positive = negative_guess_was_wrong_count / positive_guess_was_wrong_count if positive_guess_was_wrong_count != 0 else float("inf")
+    f1_score = 2 * (true_positive_accuracy * guessing_positive_accuracy) / (true_positive_accuracy + guessing_positive_accuracy) if 0 != (true_positive_accuracy + guessing_positive_accuracy) else 0
+    weighted_f1_score = 2 * ((true_positive_accuracy**1.5) * guessing_positive_accuracy) / ((true_positive_accuracy**1.5) + guessing_positive_accuracy) if 0 != (true_positive_accuracy + guessing_positive_accuracy) else 0
+    weighted_basic_score = (true_positive_accuracy**1.5) * guessing_positive_accuracy
+    
+    print(f"    f1_score:", f1_score)
+    print(f"    total_accuracy:", total_accuracy)
+    print(f"    weighted_f1_score:", weighted_f1_score) 
+    print(f"    weighted_basic_score:", weighted_basic_score) 
+    print(f"    when guessing:")
+    print(f"        positive: accuracy is {guessing_positive_accuracy} (precision)")
+    print(f"        negative: accuracy is {guessing_negative_accuracy}")
+    print(f"    when actual:")
+    print(f"        positive: accuracy is {true_positive_accuracy} (recall)")
+    print(f"        negative: accuracy is {true_negative_accuracy}")
+    print(f"    for every:")
+    print(f"        false positive there were {number_of_false_negatives_per_false_positive} false negatives")
+    print(f"        false negative there were {number_of_false_positives_per_false_negative} false positives")
+    print(f'''    confusion_matrix = {indent(stringify(to_pure(confusion_matrix)))}''')
+    return dict(
+        f1_score=f1_score,
+        total_accuracy=total_accuracy,
+        weighted_f1_score=weighted_f1_score,
+        weighted_basic_score=weighted_basic_score,
+        true_positive_accuracy=true_positive_accuracy, # aka recall 
+        true_negative_accuracy=true_negative_accuracy,
+        guessing_positive_accuracy=guessing_positive_accuracy, # aka precision
+        guessing_negative_accuracy=guessing_negative_accuracy,
+        number_of_positive_guesses=number_of_positive_guesses, 
+        number_of_negative_guesses=number_of_negative_guesses,
+        number_of_true_positives=number_of_true_positives,
+        number_of_true_negatives=number_of_true_negatives,
+        number_of_false_positives_per_false_negative=number_of_false_positives_per_false_negative,
+        number_of_false_negatives_per_false_positive=number_of_false_negatives_per_false_positive,
+    )
