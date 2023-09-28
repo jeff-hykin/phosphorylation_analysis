@@ -2,6 +2,7 @@
   filters:
   - is_human
   - is_serine_site
+  - distance_of_8_or_less
 - model: dumb_motif_guesser
   sample_size: 3
   stdev_of_f1_score: 0.004

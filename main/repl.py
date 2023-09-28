@@ -1,7 +1,7 @@
 import sys
 import os
 sys.path.append(os.path.dirname(__file__))
-from generic_tools.misc import *
+# from generic_tools.misc import *
 from specific_tools import *
 import specific_tools
 import plotly.express as px
@@ -11,8 +11,8 @@ import numpy as np
 
 
 from collections import Counter
-path = "data/sp_sites.tsv"
-df = pandas.read_csv(path, sep="\t")
+# path = "data/sp_sites.tsv"
+df = pandas.read_csv(path_to.all_sites_with_features, sep="\t")
 print(Counter(df.is_phos_site.values))
 
 
