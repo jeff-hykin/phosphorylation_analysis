@@ -17,8 +17,8 @@ df = pandas.read_csv(path, sep="\t")
 try:
     df = pandas.concat(
         [
-            df[df.is_phos_site][0:25_000],
-            df[1-df.is_phos_site][0:25_000],
+            df[df.is_phos_site == 1][0:25_000],
+            df[df.is_phos_site == 0][0:25_000],
         ],
         axis=0
     )
