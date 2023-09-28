@@ -192,8 +192,8 @@ def create_test_accuracy(y_test, x_test):
         true_negative_accuracy = negative_guess_was_correct_count/number_of_true_negatives if number_of_true_negatives != 0 else 0
         number_of_false_positives_per_false_negative = positive_guess_was_wrong_count / negative_guess_was_wrong_count if negative_guess_was_wrong_count != 0 else float("inf")
         number_of_false_negatives_per_false_positive = negative_guess_was_wrong_count / positive_guess_was_wrong_count if positive_guess_was_wrong_count != 0 else float("inf")
-        f1_score = 2 * (true_positive_accuracy * guessing_positive_accuracy) / (true_positive_accuracy + guessing_positive_accuracy)
-        weighted_f1_score = 2 * ((true_positive_accuracy**1.5) * guessing_positive_accuracy) / ((true_positive_accuracy**1.5) + guessing_positive_accuracy)
+        f1_score = 2 * (true_positive_accuracy * guessing_positive_accuracy) / (true_positive_accuracy + guessing_positive_accuracy) if 0 != (true_positive_accuracy + guessing_positive_accuracy) else 0
+        weighted_f1_score = 2 * ((true_positive_accuracy**1.5) * guessing_positive_accuracy) / ((true_positive_accuracy**1.5) + guessing_positive_accuracy) if 0 != (true_positive_accuracy + guessing_positive_accuracy) else 0
         weighted_basic_score = (true_positive_accuracy**1.5) * guessing_positive_accuracy
         
         print(f"    f1_score:", f1_score)
