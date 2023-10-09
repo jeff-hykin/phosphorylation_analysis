@@ -36,6 +36,7 @@ with open(path_to.all_sites, "r+") as file:
         'is_tyrosine_site',
         'is_human',
         'is_phos_site',
+        'number_of_publications',
     ]
     file.write("\t".join(columns)+"\n")
     for progess, (abbreviated_gene_species, uniprot_gene_id, index_relative_to_gene, type_of_site, pubmed_id_for_related_references, amino_acids_string) in ProgressBar(phos_df.values):
@@ -57,6 +58,7 @@ with open(path_to.all_sites, "r+") as file:
         is_tyrosine_site       = 1 if amino_acids_string[lookback_size] == "Y" else 0
         is_human               = 1 if "HUMAN" in f"{abbreviated_gene_species}" else 0
         is_phos_site           = 1
+        number_of_publications = len(pubmed_id_for_related_references.split(";"))
             
         row_as_string = "\t".join([
             str(each) for each in [
@@ -69,6 +71,7 @@ with open(path_to.all_sites, "r+") as file:
                 is_tyrosine_site,
                 is_human,
                 is_phos_site,
+                number_of_publications,
             ]
         ])+"\n"
         file.write(row_as_string)
